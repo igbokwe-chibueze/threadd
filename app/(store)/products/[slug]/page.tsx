@@ -63,7 +63,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="grid lg:grid-cols-[1.45fr_1fr]">
       {image ? (
-        <ProductImageViewer src={image.url} alt={image.altText} />
+        <ProductImageViewer images={product.images} />
       ) : (
         <section className="min-h-[70svh] bg-[#d8d2c8] lg:min-h-[calc(100svh-81px)]" />
       )}

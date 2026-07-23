@@ -35,8 +35,10 @@ Open [http://localhost:3000](http://localhost:3000).
 4. Try each sort option and confirm the order changes.
 5. Open **Study 001** from the footer and confirm the collection has its own
    editorial heading and filtered catalogue.
-6. Open a product and confirm its image, description, category, collections,
-   colours, sizes, stock messaging, price, and page title are present.
+6. Open a product and confirm its image gallery, description, category,
+   collections, colours, sizes, stock messaging, price, and page title are
+   present. For a product with multiple photos, use its arrows, thumbnails,
+   keyboard arrow keys, and full-screen viewer.
 7. Open `/products/not-a-real-thread` and confirm the styled 404 page appears.
 8. Open `/sitemap.xml` and `/robots.txt`; confirm public products are listed
    and private account/admin routes are excluded from crawling.
@@ -64,14 +66,16 @@ DemoShopper123!
 3. Confirm the dark THREADD Studio screen shows Catalogue, Inventory, Orders,
    and Customers.
 4. Select **Catalogue**, then **New product**.
-5. Create a draft with a JPEG, PNG, or WebP image under 4 MB and at least one
-   variant in this format:
+5. Create a draft with two or more JPEG, PNG, or WebP photos under 4 MB each
+   and at least one variant in this format:
 
    ```text
    TEST-TEE-BLK-M | M | Black | #171713 | 5 | 0
    ```
 
-6. Confirm the product appears in Studio but not on `/shop`.
+6. Confirm the product appears in Studio but not on `/shop`. Edit it once to
+   append another photo, then try the replacement option and confirm the
+   selected photos replace the previous gallery.
 7. Edit it, change **Visibility** to **Published**, save, and confirm it appears
    on `/shop` and opens at its product URL.
 8. Edit it again and archive it. Confirm it disappears from the public shop

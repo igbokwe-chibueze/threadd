@@ -25,7 +25,7 @@ export default async function EditProductPage({
     db.product.findUnique({
       where: { id },
       include: {
-        images: { orderBy: { position: "asc" }, take: 1 },
+        images: { orderBy: { position: "asc" } },
         variants: { orderBy: [{ colour: "asc" }, { size: "asc" }] },
         collections: { take: 1 },
       },
@@ -56,7 +56,7 @@ export default async function EditProductPage({
     seoTitle: product.seoTitle ?? "",
     seoDescription: product.seoDescription ?? "",
     imageAlt: product.images[0]?.altText ?? "",
-    imageUrl: product.images[0]?.url,
+    imageUrls: product.images.map((image) => image.url),
     variants: product.variants
       .map((variant) =>
         [

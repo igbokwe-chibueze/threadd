@@ -37,15 +37,38 @@ function readProductInput(formData: FormData) {
   });
 }
 
-async function resolveImage(formData: FormData, existingImage?: string) {
-  const image = formData.get("image");
-  if (image instanceof File && image.size > 0) {
-    return storeCatalogueImage(image);
+type ResolvedImage = { url: string; altText: string };
+
+async function resolveImages(
+  formData: FormData,
+  imageAlt: string,
+  existingImages: ResolvedImage[] = [],
+) {
+  const files = formData
+    .getAll("images")
+    .filter((value): value is File => value instanceof File && value.size > 0);
+  const replaceExisting =
+    formData.get("replaceImages") === "on" && files.length > 0;
+  const retainedImages = replaceExisting ? [] : existingImages;
+
+  if (retainedImages.length + files.length === 0) {
+    throw new Error("Add at least one product photo.");
   }
-  if (existingImage) {
-    return existingImage;
+  if (retainedImages.length + files.length > 6) {
+    throw new Error("A product can have up to 6 photos.");
   }
-  throw new Error("Add a product image.");
+
+  const uploadedUrls = await Promise.all(files.map(storeCatalogueImage));
+  return [
+    ...retainedImages,
+    ...uploadedUrls.map((url, index) => ({
+      url,
+      altText:
+        uploadedUrls.length > 1
+          ? `${imageAlt} — view ${retainedImages.length + index + 1}`
+          : imageAlt,
+    })),
+  ];
 }
 
 function publicPaths(slug: string) {
@@ -73,8 +96,8 @@ export async function createProductAction(
     const session = await requireRole(allowedRoles);
     const input = readProductInput(formData);
     const variants = parseVariantRows(String(formData.get("variants") ?? ""));
-    const imageUrl = await resolveImage(formData);
     const { collectionId, imageAlt, ...productData } = input;
+    const images = await resolveImages(formData, imageAlt);
 
     const product = await db.$transaction(async (tx) => {
       const created = await tx.product.create({
@@ -84,7 +107,7 @@ export async function createProductAction(
           publishedAt: input.status === "ACTIVE" ? new Date() : null,
           collections: collectionId ? { create: { collectionId } } : undefined,
           images: {
-            create: { url: imageUrl, altText: imageAlt, position: 0 },
+            create: images.map((image, position) => ({ ...image, position })),
           },
           variants: { create: variants },
         },
@@ -118,7 +141,7 @@ export async function updateProductAction(
     const session = await requireRole(allowedRoles);
     const existing = await db.product.findUnique({
       where: { id: productId },
-      include: { images: { orderBy: { position: "asc" }, take: 1 } },
+      include: { images: { orderBy: { position: "asc" } } },
     });
     if (!existing) {
       throw new Error("Product not found.");
@@ -126,8 +149,15 @@ export async function updateProductAction(
 
     const input = readProductInput(formData);
     const variants = parseVariantRows(String(formData.get("variants") ?? ""));
-    const imageUrl = await resolveImage(formData, existing.images[0]?.url);
     const { collectionId, imageAlt, ...productData } = input;
+    const images = await resolveImages(
+      formData,
+      imageAlt,
+      existing.images.map((image) => ({
+        url: image.url,
+        altText: image.altText,
+      })),
+    );
 
     await db.$transaction(async (tx) => {
       await tx.productVariant.deleteMany({ where: { productId } });
@@ -144,7 +174,7 @@ export async function updateProductAction(
               : null,
           collections: collectionId ? { create: { collectionId } } : undefined,
           images: {
-            create: { url: imageUrl, altText: imageAlt, position: 0 },
+            create: images.map((image, position) => ({ ...image, position })),
           },
           variants: { create: variants },
         },

@@ -168,6 +168,31 @@ const catalogue = [
     sizes: ["28", "30", "32", "34", "36"],
     sku: "TH-FD01",
   },
+  {
+    name: "Ease Trouser 02",
+    slug: "ease-trouser-02",
+    shortDescription:
+      "A fluid pull-on trouser balancing soft movement with a long, clean line.",
+    description:
+      "Ease Trouser 02 uses a relaxed wide leg, elasticated drawcord waist, and fluid drape for effortless daily wear. Designed to sit naturally at the waist or lower on the hip, it moves easily between quiet tailoring and off-duty styling.",
+    category: "Trousers",
+    categorySlug: "trousers",
+    price: 38500,
+    compareAtPrice: null,
+    image: "/images/catalogue/ease-trouser-black.png",
+    additionalImages: ["/images/catalogue/ease-trouser-sand.png"],
+    imageAlt:
+      "Woman wearing the THREADD Ease Trouser 02 with a white fitted tank",
+    collection: "Essentials",
+    collectionSlug: "essentials",
+    featured: true,
+    colours: [
+      ["Black", "#111111"],
+      ["Sand", "#d5c1a6"],
+    ],
+    sizes: ["XS", "S", "M", "L", "XL"],
+    sku: "TH-ET02",
+  },
 ] as const;
 
 async function seed(): Promise<void> {
@@ -285,15 +310,21 @@ async function seed(): Promise<void> {
       },
     });
 
-    await prisma.productImage.create({
-      data: {
+    const additionalImages =
+      "additionalImages" in item ? item.additionalImages : [];
+
+    await prisma.productImage.createMany({
+      data: [item.image, ...additionalImages].map((url, imagePosition) => ({
         productId: product.id,
-        url: item.image,
-        altText: item.imageAlt,
-        position: 0,
-        width: 1024,
-        height: 1792,
-      },
+        url,
+        altText:
+          additionalImages.length === 0
+            ? item.imageAlt
+            : imagePosition === 0
+              ? `${item.imageAlt} in black`
+              : `${item.imageAlt} in sand`,
+        position: imagePosition,
+      })),
     });
 
     await prisma.productVariant.createMany({

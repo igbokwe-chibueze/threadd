@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 
 import type { ProductFormState } from "@/features/catalogue/admin-actions";
 
@@ -19,7 +19,7 @@ type ProductValue = {
   seoTitle: string;
   seoDescription: string;
   imageAlt: string;
-  imageUrl?: string;
+  imageUrls?: string[];
   variants: string;
 };
 
@@ -55,6 +55,19 @@ export function ProductForm({
   const [state, formAction, pending] = useActionState(action, {});
   const [name, setName] = useState(product?.name ?? "");
   const [slug, setSlug] = useState(product?.slug ?? "");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  function updateSelectedFiles(files: File[]) {
+    const nextFiles = files.slice(0, 6);
+    const transfer = new DataTransfer();
+    nextFiles.forEach((file) => transfer.items.add(file));
+
+    if (imageInputRef.current) {
+      imageInputRef.current.files = transfer.files;
+    }
+    setSelectedFiles(nextFiles);
+  }
 
   return (
     <form
@@ -203,33 +216,111 @@ export function ProductForm({
       </label>
 
       <section className="border-t border-white/20 pt-8">
-        <h2 className="text-3xl font-medium tracking-[-0.04em]">Image</h2>
-        {product?.imageUrl ? (
-          <p className="mt-2 text-xs text-white/50">
-            Current: {product.imageUrl}
-          </p>
+        <h2 className="text-3xl font-medium tracking-[-0.04em]">
+          Product gallery
+        </h2>
+        {product?.imageUrls?.length ? (
+          <div className="mt-3 text-xs leading-5 text-white/50">
+            <p>
+              {product.imageUrls.length} current{" "}
+              {product.imageUrls.length === 1 ? "photo" : "photos"}:
+            </p>
+            <ul className="mt-1 list-inside list-decimal">
+              {product.imageUrls.map((url) => (
+                <li key={url} className="truncate">
+                  {url}
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : null}
         <div className="mt-5 grid gap-5 lg:grid-cols-2">
           <label className="text-xs font-bold tracking-[0.14em] uppercase">
-            {product ? "Replace image (optional)" : "Product image"}
+            {product ? "Add gallery photos (optional)" : "Product photos"}
             <input
+              ref={imageInputRef}
               type="file"
-              name="image"
+              name="images"
               accept="image/jpeg,image/png,image/webp"
+              multiple
               required={!product}
+              onChange={(event) =>
+                updateSelectedFiles(Array.from(event.currentTarget.files ?? []))
+              }
               className={`${field} file:mr-4 file:border-0 file:bg-[#d7ff3f] file:px-3 file:py-1 file:text-black`}
             />
             <span className="mt-2 block font-normal tracking-normal text-white/45 normal-case">
-              JPEG, PNG, or WebP. Maximum 4 MB.
+              Select up to 6 JPEG, PNG, or WebP photos. Maximum 4 MB each. The
+              first photo becomes the catalogue cover.
             </span>
           </label>
           <Field
-            label="Image description"
+            label="Gallery description"
             name="imageAlt"
             defaultValue={product?.imageAlt}
             required
+            help="Describe the product and model briefly for visitors using screen readers."
           />
         </div>
+        {selectedFiles.length ? (
+          <div
+            aria-live="polite"
+            className="mt-5 border border-white/15 bg-black/20 p-4"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-xs font-bold tracking-[0.14em] uppercase">
+                {selectedFiles.length} selected{" "}
+                {selectedFiles.length === 1 ? "photo" : "photos"}
+              </p>
+              <button
+                type="button"
+                onClick={() => updateSelectedFiles([])}
+                className="text-[0.62rem] font-bold tracking-[0.12em] text-white/60 uppercase hover:text-white"
+              >
+                Clear all
+              </button>
+            </div>
+            <ul className="mt-3 grid gap-2">
+              {selectedFiles.map((file, index) => (
+                <li
+                  key={`${file.name}-${file.lastModified}-${index}`}
+                  className="flex items-center justify-between gap-4 border-t border-white/10 pt-2 text-xs"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate text-white">
+                      {index + 1}. {file.name}
+                    </span>
+                    <span className="mt-1 block text-white/40">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                      {index === 0 ? " · Catalogue cover" : ""}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      updateSelectedFiles(
+                        selectedFiles.filter(
+                          (_selectedFile, selectedIndex) =>
+                            selectedIndex !== index,
+                        ),
+                      )
+                    }
+                    className="shrink-0 border border-white/20 px-3 py-2 text-[0.6rem] font-bold tracking-[0.12em] uppercase hover:border-red-200 hover:text-red-200"
+                    aria-label={`Remove ${file.name}`}
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        {product?.imageUrls?.length ? (
+          <label className="mt-5 flex items-center gap-3 text-xs font-bold tracking-[0.14em] uppercase">
+            <input type="checkbox" name="replaceImages" />
+            Replace the current gallery with the newly selected photos
+          </label>
+        ) : null}
       </section>
 
       <section className="border-t border-white/20 pt-8">
