@@ -7,10 +7,10 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 3 — Design System and Public Layout                   |
+| Current phase    | Phase 4 — Catalogue and Product Management                  |
 | Phase status     | In progress                                                 |
-| Previous phase   | Phase 2 — Completed on 23 July 2026                         |
-| Next phase       | Phase 4 — Catalogue and Product Management                  |
+| Previous phase   | Phase 3 — Completed on 23 July 2026                         |
+| Next phase       | Phase 5 — Inventory Controls                                |
 | Last reviewed    | 23 July 2026                                                |
 
 ### Status Rules
@@ -216,19 +216,19 @@ All must pass.
 
 </details>
 
-<details open>
-<summary><strong>PHASE 3 — CREATE THE VISUAL SYSTEM</strong> · In progress</summary>
+<details>
+<summary><strong>PHASE 3 — CREATE THE VISUAL SYSTEM</strong> · Completed</summary>
 
-**Status:** In progress.
+**Status:** Completed on 23 July 2026.
 
 ### Current Progress
 
 - [x] Establish the first editorial THREADD homepage direction.
 - [x] Add the original campaign image and typographic wordmark.
-- [ ] Extract the shared responsive public header and footer.
-- [ ] Establish reusable UI and motion primitives.
-- [ ] Complete the core public information-page shells.
-- [ ] Verify responsive, reduced-motion, and keyboard behaviour.
+- [x] Extract the shared responsive public header and footer.
+- [x] Establish reusable UI and motion primitives.
+- [x] Complete the core public information-page shells.
+- [x] Verify responsive, reduced-motion, and keyboard behaviour.
 
 ### Deliverables
 
@@ -258,8 +258,19 @@ All must pass.
 
 </details>
 
-<details>
-<summary><strong>PHASE 4 — BUILD THE PRODUCT CATALOGUE</strong> · Upcoming</summary>
+<details open>
+<summary><strong>PHASE 4 — BUILD THE PRODUCT CATALOGUE</strong> · In progress</summary>
+
+**Status:** In progress.
+
+### Current Progress
+
+- [ ] Define catalogue, category, collection, product, variant, and image data.
+- [ ] Migrate and seed the representative unisex catalogue.
+- [ ] Build the public shop, collection, and product-detail routes.
+- [ ] Add search, filters, sorting, and pagination.
+- [ ] Build administrator catalogue management.
+- [ ] Verify visibility, variant, metadata, and invalid-route rules.
 
 ### Deliverables
 

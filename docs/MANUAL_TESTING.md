@@ -14,6 +14,15 @@ Open [http://localhost:3000](http://localhost:3000).
 2. Resize the browser to a mobile width and confirm there is no horizontal
    scrolling.
 3. Select **Sign in** and confirm the authentication page opens.
+4. At a mobile width, select the circular menu button and confirm the bright
+   navigation panel opens.
+5. Press `Escape` and confirm the mobile navigation closes.
+6. Scroll through **The foundation**, **Manifesto**, and the footer; confirm
+   each section reveals smoothly without delaying links or scrolling.
+7. Open each footer page: **About**, **Contact**, **Delivery**, **Returns**,
+   **Privacy**, and **Terms**.
+8. Confirm the interior-page header remains readable and each page returns to
+   the homepage through the THREADD wordmark.
 
 ## Test the customer account
 

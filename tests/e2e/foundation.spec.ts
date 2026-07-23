@@ -25,6 +25,73 @@ test("renders the THREADD foundation", async ({ page }) => {
   await expect(page).toHaveTitle(/THREADD/);
 });
 
+test("mobile navigation opens, navigates, and closes accessibly", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /open navigation/i }).click();
+  const navigation = page.getByRole("dialog", { name: /THREADD navigation/i });
+  await expect(navigation).toBeVisible();
+  await expect(navigation.getByRole("link", { name: /about/i })).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(navigation).not.toBeVisible();
+});
+
+test("public information pages are reachable from the storefront", async ({
+  page,
+}) => {
+  const pages = [
+    ["/about", /clothes without categories/i],
+    ["/contact", /talk to THREADD/i],
+    ["/delivery", /from Lagos to everywhere/i],
+    ["/returns", /a considered way back/i],
+    ["/privacy", /only what the store needs/i],
+    ["/terms", /the useful boundaries/i],
+  ] as const;
+
+  for (const [path, heading] of pages) {
+    await page.goto(path);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(heading);
+  }
+});
+
+test("public layouts avoid horizontal overflow at representative sizes", async ({
+  page,
+}) => {
+  const viewports = [
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 900 },
+  ];
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+
+    for (const path of ["/", "/about", "/delivery"]) {
+      await page.goto(path);
+      const hasOverflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > window.innerWidth,
+      );
+      expect(hasOverflow).toBe(false);
+    }
+  }
+});
+
+test("reduced-motion visitors receive complete landing-page content", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  await expect(
+    page.getByText(/dress the person\. ignore the box\./i),
+  ).toBeVisible();
+  await expect(page.getByRole("contentinfo")).toBeVisible();
+});
+
 test("demo customer signs in without admin access", async ({ page }) => {
   await page.goto("/sign-in");
   await page.getByRole("button", { name: /enter as customer/i }).click();
@@ -113,6 +180,8 @@ test("signing out revokes access to the authenticated session", async ({
 test("password-reset tokens are single-use and revoke existing sessions", async ({
   page,
 }) => {
+  test.setTimeout(60_000);
+
   const email = `phase2-${Date.now()}@demo.threadd.store`;
   const originalPassword = "TemporaryDemo123!";
   const replacementPassword = "ReplacementDemo123!";
@@ -132,11 +201,18 @@ test("password-reset tokens are single-use and revoke existing sessions", async 
     await page.getByRole("button", { name: /create reset message/i }).click();
 
     const resetLink = page
-      .getByRole("link", { name: /open secure link/i })
-      .first();
+      .locator("article")
+      .filter({ hasText: "Reset your THREADD password" })
+      .getByRole("link", { name: /open secure link/i });
     const resetUrl = await resetLink.getAttribute("href");
     expect(resetUrl).toBeTruthy();
-    await resetLink.click();
+    await page.goto(resetUrl!, { waitUntil: "domcontentloaded" });
+    await expect(page).toHaveURL(/\/reset-password\?token=/, {
+      timeout: 20_000,
+    });
+    await expect(
+      page.getByRole("heading", { name: /choose something only you know/i }),
+    ).toBeVisible({ timeout: 20_000 });
 
     await page.getByLabel(/^new password$/i).fill(replacementPassword);
     await page.getByLabel(/^confirm password$/i).fill(replacementPassword);

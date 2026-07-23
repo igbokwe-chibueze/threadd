@@ -19,11 +19,13 @@ export function PasswordField({
   const [isVisible, setIsVisible] = useState(false);
 
   return (
-    <label
-      htmlFor={id}
-      className="grid gap-2 text-[0.65rem] font-semibold tracking-[0.16em] uppercase"
-    >
-      {label}
+    <div className="grid gap-2">
+      <label
+        htmlFor={id}
+        className="text-[0.65rem] font-semibold tracking-[0.16em] uppercase"
+      >
+        {label}
+      </label>
       <span className="relative block">
         <input
           id={id}
@@ -44,6 +46,6 @@ export function PasswordField({
           {isVisible ? "Hide" : "Show"}
         </button>
       </span>
-    </label>
+    </div>
   );
 }

@@ -80,12 +80,12 @@ export default async function DemoOutboxPage() {
                   </pre>
                   <div className="mt-6 flex flex-wrap gap-3">
                     {actionUrl ? (
-                      <Link
+                      <a
                         href={actionUrl}
                         className="bg-[#171713] px-5 py-3 text-[0.65rem] font-bold tracking-[0.15em] text-white uppercase"
                       >
                         Open secure link
-                      </Link>
+                      </a>
                     ) : null}
                     <Link
                       href={`/account/outbox/${message.id}/download`}

@@ -18,6 +18,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -30,6 +31,11 @@ body {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 45%);
+  backdrop-filter: blur(8px);
 }
 
 ::selection {
