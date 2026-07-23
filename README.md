@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# THREADD
 
-## Getting Started
+THREADD is a modern, highly visual unisex fashion ecommerce portfolio project. It is designed as a realistic single-store application with a safe public demo, test payments, customer and administrator workflows, and architecture that can be adapted for a real merchant.
 
-First, run the development server:
+## Current status
+
+The canonical phase status and delivery scope live in [`docs/ROADMAP.md`](docs/ROADMAP.md).
+Current browser checks are listed in
+[`docs/MANUAL_TESTING.md`](docs/MANUAL_TESTING.md).
+
+## Local development
+
+Requirements:
+
+- Node.js 22
+- npm
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy `.env.example` to `.env.local` when a phase introduces required external configuration. Never commit real credentials.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Quality commands
 
-## Learn More
+```bash
+npm run format:check
+npm run lint
+npm run typecheck
+npm run test
+npm run test:e2e
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+Playwright requires its browser once per development machine:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx playwright install chromium
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Database and authentication
 
-## Deploy on Vercel
+Apply migrations, generate the Prisma Client, and seed the two normal demo
+accounts with:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run db:migrate
+npm run db:generate
+npx prisma db seed
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The portfolio demo intentionally has no super-administrator account. For a
+real, non-demo deployment, provision the first owner from a trusted server
+terminal only:
+
+```bash
+npm run db:bootstrap-super-admin
+```
+
+That command refuses to run unless `DEMO_MODE=false` and
+`ALLOW_SUPER_ADMIN_BOOTSTRAP=true`. It also requires the
+`SUPER_ADMIN_NAME`, `SUPER_ADMIN_EMAIL`, and `SUPER_ADMIN_PASSWORD`
+environment variables. Disable the bootstrap flag immediately after use.
+
+Password-reset and verification messages use the private Demo Outbox. The
+email service is provider-neutral so a future Resend adapter can replace the
+demo provider without changing authentication or commerce workflows.
+
+## Architecture
+
+- `app/` — Next.js routes and route composition
+- `components/` — shared brand, layout, and UI components
+- `features/` — domain-specific services, schemas, actions, and UI
+- `lib/` — cross-cutting infrastructure
+- `prisma/` — schema, migrations, and seed data
+- `tests/` — unit, integration, and end-to-end tests
+
+The public portfolio demo will use isolated infrastructure and Paystack test mode. It must never share production data or credentials.

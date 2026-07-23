@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum AuditOutcome {
+  SUCCESS
+  DENIED
+  FAILURE
+}
+
+enum EmailKind {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  ORDER_CONFIRMATION
+  PAYMENT_CONFIRMATION
+  ORDER_STATUS
+  ENQUIRY_CONFIRMATION
+  ADMIN_NOTIFICATION
+}
+
+enum EmailDeliveryStatus {
+  PREVIEW_READY
+  SENT
+  FAILED
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  emailVerified Boolean        @default(false)
+  image         String?
+  role          UserRole       @default(CUSTOMER)
+  isDemoAccount Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  auditLogs     AuditLog[]     @relation("AuditActor")
+  emailMessages EmailMessage[]
+
+  @@index([role])
+  @@index([createdAt])
+}
+
+model EmailMessage {
+  id                String              @id @default(cuid())
+  recipientEmail    String
+  recipientUserId   String?
+  subject           String
+  textBody          String
+  kind              EmailKind
+  deliveryStatus    EmailDeliveryStatus @default(PREVIEW_READY)
+  providerMessageId String?
+  previewTokenHash  String?
+  previewExpiresAt  DateTime?
+  expiresAt         DateTime?
+  createdAt         DateTime            @default(now())
+  recipientUser     User?               @relation(fields: [recipientUserId], references: [id], onDelete: Cascade)
+
+  @@index([recipientUserId, createdAt])
+  @@index([recipientEmail, createdAt])
+  @@index([kind, createdAt])
+  @@index([previewTokenHash, previewExpiresAt])
+  @@index([expiresAt])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@index([identifier])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id            String       @id @default(cuid())
+  actorId       String?
+  action        String
+  resourceType  String
+  resourceId    String?
+  outcome       AuditOutcome @default(SUCCESS)
+  correlationId String?
+  metadata      Json?
+  ipAddress     String?
+  createdAt     DateTime     @default(now())
+  actor         User?        @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([resourceType, resourceId])
+  @@index([correlationId])
+  @@index([createdAt])
+}
