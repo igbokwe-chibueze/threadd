@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 import {
   canAccessAdmin,
@@ -57,21 +58,34 @@ export default async function AdminPage() {
         </div>
 
         <div className="grid content-start">
-          {modules.map(([name, description], index) => (
-            <div
-              key={name}
-              className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-t border-white/20 py-5"
-            >
-              <span className="text-[0.6rem] text-white/40">0{index + 1}</span>
-              <span>
-                <span className="block text-lg font-medium">{name}</span>
-                <span className="mt-1 block text-xs text-white/45">
-                  {description}
+          {modules.map(([name, description], index) => {
+            const content = (
+              <>
+                <span className="text-[0.6rem] text-white/40">
+                  0{index + 1}
                 </span>
-              </span>
-              <span className="text-[#d7ff3f]">→</span>
-            </div>
-          ))}
+                <span>
+                  <span className="block text-lg font-medium">{name}</span>
+                  <span className="mt-1 block text-xs text-white/45">
+                    {description}
+                  </span>
+                </span>
+                <span className="text-[#d7ff3f]">→</span>
+              </>
+            );
+            const className =
+              "group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-t border-white/20 py-5";
+
+            return name === "Catalogue" ? (
+              <Link key={name} href="/admin/catalogue" className={className}>
+                {content}
+              </Link>
+            ) : (
+              <div key={name} className={className}>
+                {content}
+              </div>
+            );
+          })}
         </div>
       </section>
     </main>

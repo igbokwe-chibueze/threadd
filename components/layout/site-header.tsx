@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Wordmark } from "@/components/brand/wordmark";
 
 const navigation = [
-  { label: "New study", href: "/#foundation" },
+  { label: "Shop", href: "/shop" },
   { label: "About", href: "/about" },
   { label: "Delivery", href: "/delivery" },
   { label: "Account", href: "/sign-in" },

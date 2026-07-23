@@ -7,10 +7,10 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 4 — Catalogue and Product Management                  |
-| Phase status     | In progress                                                 |
-| Previous phase   | Phase 3 — Completed on 23 July 2026                         |
-| Next phase       | Phase 5 — Inventory Controls                                |
+| Current phase    | Phase 5 — Inventory Controls                                |
+| Phase status     | Ready to begin                                               |
+| Previous phase   | Phase 4 — Completed on 23 July 2026                         |
+| Next phase       | Phase 6A — Product Enquiries                                |
 | Last reviewed    | 23 July 2026                                                |
 
 ### Status Rules
@@ -258,19 +258,19 @@ All must pass.
 
 </details>
 
-<details open>
-<summary><strong>PHASE 4 — BUILD THE PRODUCT CATALOGUE</strong> · In progress</summary>
+<details>
+<summary><strong>PHASE 4 — BUILD THE PRODUCT CATALOGUE</strong> · Completed</summary>
 
-**Status:** In progress.
+**Status:** Completed on 23 July 2026.
 
 ### Current Progress
 
-- [ ] Define catalogue, category, collection, product, variant, and image data.
-- [ ] Migrate and seed the representative unisex catalogue.
-- [ ] Build the public shop, collection, and product-detail routes.
-- [ ] Add search, filters, sorting, and pagination.
-- [ ] Build administrator catalogue management.
-- [ ] Verify visibility, variant, metadata, and invalid-route rules.
+- [x] Define catalogue, category, collection, product, variant, and image data.
+- [x] Migrate and seed the representative unisex catalogue.
+- [x] Build the public shop, collection, and product-detail routes.
+- [x] Add search, filters, sorting, and pagination.
+- [x] Build administrator catalogue management.
+- [x] Verify visibility, variant, metadata, and invalid-route rules.
 
 ### Deliverables
 
@@ -303,8 +303,10 @@ All must pass.
 
 </details>
 
-<details>
-<summary><strong>PHASE 5 — CONTROL INVENTORY</strong> · Upcoming</summary>
+<details open>
+<summary><strong>PHASE 5 — CONTROL INVENTORY</strong> · Ready to begin</summary>
+
+**Status:** Ready to begin.
 
 ### Deliverables
 

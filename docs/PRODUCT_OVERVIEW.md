@@ -20,6 +20,13 @@ Build a fast, visually polished clothing website that allows Xtamaliy to:
 
 The experience should feel premium and fashion-focused without being heavy, slow, or difficult to use.
 
+### Visual Casting Direction
+
+THREADD remains a unisex store with broad appeal. When generating new campaign
+or catalogue image sets, use a visibly diverse cast and feature more women than
+men overall. This is a casting preference, not a gender restriction on any
+product or collection.
+
 ## 3. Delivery Modes
 
 The application must support two commercial modes. The selected mode must be controlled through configuration, not through duplicated codebases.

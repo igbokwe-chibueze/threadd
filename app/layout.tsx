@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
   title: {
     default: "THREADD — Clothes without categories",
     template: "%s — THREADD",

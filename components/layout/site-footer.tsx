@@ -18,6 +18,8 @@ export function SiteFooter() {
           className="grid content-start text-sm"
         >
           {[
+            ["Shop", "/shop"],
+            ["Study 001", "/collections/study-001"],
             ["About", "/about"],
             ["Contact", "/contact"],
             ["Delivery", "/delivery"],
