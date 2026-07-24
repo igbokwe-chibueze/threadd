@@ -7,10 +7,10 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 7 — Checkout, Payments, and Orders                     |
-| Phase status     | Ready                                                         |
-| Previous phase   | Phase 6B — Completed on 24 July 2026                        |
-| Next phase       | Phase 8 — Deliver Notifications Reliably                     |
+| Current phase    | Phase 8 — Deliver Notifications Reliably                     |
+| Phase status     | In progress                                                   |
+| Previous phase   | Phase 7 — Completed on 24 July 2026                         |
+| Next phase       | Phase 9 — Protect and Reset the Public Demo                  |
 | Last reviewed    | 24 July 2026                                                |
 
 ### Status Rules
@@ -413,10 +413,19 @@ This phase is required only for Mode B.
 
 </details>
 
-<details open>
-<summary><strong>PHASE 7 — CHECKOUT, PAYMENTS, AND ORDERS</strong> · Ready</summary>
+<details>
+<summary><strong>PHASE 7 — CHECKOUT, PAYMENTS, AND ORDERS</strong> · Completed</summary>
 
-**Status:** Ready to begin.
+**Status:** Completed on 24 July 2026, including Paystack-hosted test-mode validation.
+
+### Current Progress
+
+- [x] Add shipping, order, payment, event, cancellation, return, and refund records.
+- [x] Build server-authoritative checkout and Nigeria shipping calculation.
+- [x] Add provider-independent test checkout and Paystack test integration.
+- [x] Add verified callbacks and idempotent signed webhooks.
+- [x] Build customer order history and administrator order management.
+- [x] Complete a Paystack-hosted test payment and verify its callback, order, inventory, and cart effects.
 
 Required only for Mode B.
 
@@ -466,8 +475,10 @@ Required only for Mode B.
 
 </details>
 
-<details>
-<summary><strong>PHASE 8 — DELIVER NOTIFICATIONS RELIABLY</strong> · Upcoming</summary>
+<details open>
+<summary><strong>PHASE 8 — DELIVER NOTIFICATIONS RELIABLY</strong> · In progress</summary>
+
+**Status:** In progress.
 
 ### Deliverables
 

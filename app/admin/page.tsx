@@ -18,6 +18,7 @@ const modules = [
   ["Inventory", "Variant stock and movement history"],
   ["Enquiries", "Customer questions, notes, and follow-up"],
   ["Orders", "Payment and fulfilment workflow"],
+  ["Shipping", "Nigeria delivery zones and fees"],
   ["Customers", "Profiles, history, and support"],
 ] as const;
 
@@ -84,7 +85,11 @@ export default async function AdminPage() {
                   ? "/admin/inventory"
                   : name === "Enquiries"
                     ? "/admin/enquiries"
-                    : null;
+                    : name === "Orders"
+                      ? "/admin/orders"
+                      : name === "Shipping"
+                        ? "/admin/shipping"
+                        : null;
 
             return href ? (
               <Link key={name} href={href} className={className}>

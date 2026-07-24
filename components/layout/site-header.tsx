@@ -10,17 +10,22 @@ const navigation = [
   { label: "About", href: "/about" },
   { label: "Delivery", href: "/delivery" },
   { label: "Cart", href: "/cart" },
+  { label: "Outbox", href: "/demo-outbox" },
   { label: "Account", href: "/sign-in" },
 ] as const;
 
 type SiteHeaderProps = Readonly<{
   appearance?: "overlay" | "solid";
   cartQuantity?: number;
+  isSignedIn?: boolean;
+  unreadMessageCount?: number;
 }>;
 
 export function SiteHeader({
   appearance = "overlay",
   cartQuantity = 0,
+  isSignedIn = false,
+  unreadMessageCount = 0,
 }: SiteHeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -71,6 +76,31 @@ export function SiteHeader({
         </nav>
 
         <div className="flex items-center gap-2">
+          {isSignedIn ? (
+            <Link
+              href="/demo-outbox"
+              aria-label={`Outbox${unreadMessageCount ? `, ${unreadMessageCount} unread messages` : ""}`}
+              title="Outbox"
+              className="relative grid size-10 place-items-center rounded-full border border-current/40 transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f]"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="size-[1.05rem]"
+                stroke="currentColor"
+                strokeWidth="1.7"
+              >
+                <path d="M3.75 6.75h16.5v11.5H3.75z" />
+                <path d="m4.5 7.5 7.5 6 7.5-6" />
+              </svg>
+              {unreadMessageCount > 0 ? (
+                <span className="absolute -top-1.5 -right-1.5 grid min-h-5 min-w-5 place-items-center rounded-full bg-[#d7ff3f] px-1 text-[0.55rem] font-bold tracking-normal text-[#171713] ring-2 ring-[#171713]">
+                  {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
+                </span>
+              ) : null}
+            </Link>
+          ) : null}
           <Link
             href="/cart"
             className="rounded-full border border-current/40 px-4 py-2 text-[0.62rem] font-semibold tracking-[0.18em] uppercase transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f]"
@@ -129,28 +159,33 @@ export function SiteHeader({
             aria-label="Mobile navigation"
             className="my-auto grid border-t border-black/25"
           >
-            {navigation.map((item, index) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b border-black/25 py-5"
-              >
-                <span className="text-[0.6rem] font-semibold">
-                  0{index + 1}
-                </span>
-                <span className="text-4xl font-medium tracking-[-0.06em]">
-                  {item.label}
-                  {item.href === "/cart" ? ` (${cartQuantity})` : ""}
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="text-2xl transition-transform group-hover:translate-x-1"
+            {navigation
+              .filter((item) => item.href !== "/demo-outbox" || isSignedIn)
+              .map((item, index) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b border-black/25 py-5"
                 >
-                  →
-                </span>
-              </Link>
-            ))}
+                  <span className="text-[0.6rem] font-semibold">
+                    0{index + 1}
+                  </span>
+                  <span className="text-4xl font-medium tracking-[-0.06em]">
+                    {item.label}
+                    {item.href === "/cart" ? ` (${cartQuantity})` : ""}
+                    {item.href === "/demo-outbox" && unreadMessageCount
+                      ? ` (${unreadMessageCount})`
+                      : ""}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="text-2xl transition-transform group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
+                </Link>
+              ))}
           </nav>
 
           <p className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase">

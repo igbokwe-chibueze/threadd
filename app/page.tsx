@@ -4,14 +4,24 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Reveal } from "@/components/motion/reveal";
+import { getCurrentSession } from "@/features/auth/authorization";
 import { getCurrentCartQuantity } from "@/features/cart/service";
+import { getUnreadEmailMessageCount } from "@/features/email/queries";
 
 export default async function Home() {
-  const cartQuantity = await getCurrentCartQuantity();
+  const [cartQuantity, session] = await Promise.all([
+    getCurrentCartQuantity(),
+    getCurrentSession(),
+  ]);
+  const unreadMessageCount = await getUnreadEmailMessageCount(session?.user.id);
 
   return (
     <div className="min-h-screen bg-[#ece8df] text-[#171713]">
-      <SiteHeader cartQuantity={cartQuantity} />
+      <SiteHeader
+        cartQuantity={cartQuantity}
+        isSignedIn={Boolean(session)}
+        unreadMessageCount={unreadMessageCount}
+      />
 
       <main>
         <section className="relative isolate min-h-[100svh] overflow-hidden bg-[#373632]">

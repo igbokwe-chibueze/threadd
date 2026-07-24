@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { Wordmark } from "@/components/brand/wordmark";
 import { getCurrentSession } from "@/features/auth/authorization";
+import { MarkOutboxRead } from "@/features/email/components/mark-outbox-read";
 import {
   extractActionUrl,
   getAccessibleEmailMessages,
@@ -31,6 +32,9 @@ export default async function DemoOutboxPage() {
 
   return (
     <main className="min-h-screen bg-[#ece8df] px-5 py-6 text-[#171713] sm:px-10 lg:px-14">
+      <MarkOutboxRead
+        hasUnread={messages.some((message) => message.readAt === null)}
+      />
       <header className="flex items-center justify-between border-b border-black/20 pb-5">
         <Link href="/" aria-label="Return to THREADD home">
           <Wordmark />

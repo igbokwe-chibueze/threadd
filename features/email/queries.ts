@@ -31,6 +31,17 @@ export async function getAccessibleEmailMessages(viewer: EmailViewer) {
   });
 }
 
+export async function getUnreadEmailMessageCount(userId?: string) {
+  if (!userId) return 0;
+
+  return db.emailMessage.count({
+    where: {
+      recipientUserId: userId,
+      readAt: null,
+    },
+  });
+}
+
 export async function getAccessibleEmailMessage(
   id: string,
   viewer: EmailViewer,

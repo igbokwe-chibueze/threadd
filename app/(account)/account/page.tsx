@@ -27,6 +27,12 @@ export default async function AccountPage() {
     where: { userId: session.user.id },
     orderBy: [{ isDefault: "desc" }, { createdAt: "asc" }],
   });
+  const orders = await db.order.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+    include: { items: true, cancellation: true, returnRequest: true },
+  });
 
   return (
     <main className="min-h-screen bg-[#ece8df] px-5 py-6 text-[#171713] sm:px-10 lg:px-14">
@@ -57,12 +63,63 @@ export default async function AccountPage() {
             >
               Demo outbox <span>Open →</span>
             </Link>
-            <div className="flex justify-between border-b border-black/20 py-4 text-sm text-black/40">
-              Orders <span>Phase 7</span>
-            </div>
+            <a
+              href="#orders"
+              className="flex justify-between border-b border-black/20 py-4 text-sm"
+            >
+              Orders <span>{orders.length}</span>
+            </a>
           </nav>
         </div>
         <div className="grid content-start gap-12">
+          <section
+            id="orders"
+            className="scroll-mt-8 border-t border-black/20 pt-6"
+          >
+            <p className="text-[0.6rem] font-bold tracking-[0.15em] uppercase">
+              Recent orders
+            </p>
+            <div className="mt-5 grid gap-3">
+              {orders.map((order) => (
+                <Link
+                  key={order.id}
+                  href={`/orders/${order.id}/confirmation`}
+                  className="grid grid-cols-[1fr_auto] gap-4 border border-black/20 p-4"
+                >
+                  <span>
+                    <span className="block font-medium">
+                      {order.orderNumber}
+                    </span>
+                    <span className="mt-1 block text-xs text-black/45">
+                      {order.items.length} line items /{" "}
+                      {order.createdAt.toLocaleDateString("en-NG")}
+                    </span>
+                  </span>
+                  <span className="text-right text-xs font-bold tracking-[0.1em] uppercase">
+                    <span className="block">
+                      {order.status.replaceAll("_", " ")}
+                    </span>
+                    {order.cancellation ? (
+                      <span className="mt-1 block text-[#9b2f24]">
+                        Cancellation {order.cancellation.status.toLowerCase()}
+                      </span>
+                    ) : null}
+                    {order.returnRequest ? (
+                      <span className="mt-1 block text-black/50">
+                        Return{" "}
+                        {order.returnRequest.status
+                          .replaceAll("_", " ")
+                          .toLowerCase()}
+                      </span>
+                    ) : null}
+                  </span>
+                </Link>
+              ))}
+              {!orders.length ? (
+                <p className="text-sm text-black/45">No orders yet.</p>
+              ) : null}
+            </div>
+          </section>
           <section className="border-t border-black/20 pt-6">
             <p className="text-[0.6rem] font-bold tracking-[0.15em] uppercase">
               Profile
