@@ -41,6 +41,15 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum InventoryMovementType {
+  INITIAL_STOCK
+  MANUAL_ADJUSTMENT
+  SALE
+  RETURN
+  RESTOCK
+  CORRECTION
+}
+
 model User {
   id            String         @id @default(cuid())
   name          String
@@ -55,6 +64,7 @@ model User {
   accounts      Account[]
   auditLogs     AuditLog[]     @relation("AuditActor")
   emailMessages EmailMessage[]
+  inventoryMovements InventoryMovement[] @relation("InventoryActor")
 
   @@index([role])
   @@index([createdAt])
@@ -241,10 +251,32 @@ model ProductVariant {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   product           Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  inventoryMovements InventoryMovement[]
 
   @@unique([productId, size, colour])
   @@index([productId, active])
   @@index([size, active])
   @@index([colour, active])
   @@index([inventoryQuantity])
+}
+
+model InventoryMovement {
+  id             String                @id @default(cuid())
+  variantId      String
+  actorId        String?
+  type           InventoryMovementType
+  quantityDelta  Int
+  quantityBefore Int
+  quantityAfter  Int
+  reason         String
+  referenceType  String?
+  referenceId    String?
+  createdAt      DateTime              @default(now())
+  variant        ProductVariant        @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  actor          User?                 @relation("InventoryActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([variantId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([type, createdAt])
+  @@index([createdAt])
 }

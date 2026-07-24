@@ -328,6 +328,14 @@ export function ProductForm({
         <p className="mt-2 text-xs leading-5 text-white/50">
           One per line: SKU | Size | Colour | #Hex | Stock | Price adjustment
         </p>
+        {product ? (
+          <p className="mt-3 border-l-2 border-[#d7ff3f] pl-3 text-xs leading-5 text-white/65">
+            Existing stock numbers are shown for reference but cannot be changed
+            here. Use Studio → Inventory for every stock adjustment so the
+            movement history remains complete. Stock is used here only when you
+            add a brand-new SKU.
+          </p>
+        ) : null}
         <div className="mt-4 border border-white/15 bg-black/20 p-4 text-xs leading-6 text-white/65">
           <p className="font-bold tracking-[0.12em] text-white uppercase">
             Copy this example

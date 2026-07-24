@@ -109,7 +109,21 @@ export async function createProductAction(
           images: {
             create: images.map((image, position) => ({ ...image, position })),
           },
-          variants: { create: variants },
+          variants: {
+            create: variants.map((variant) => ({
+              ...variant,
+              inventoryMovements: {
+                create: {
+                  actorId: session.user.id,
+                  type: "INITIAL_STOCK",
+                  quantityDelta: variant.inventoryQuantity,
+                  quantityBefore: 0,
+                  quantityAfter: variant.inventoryQuantity,
+                  reason: "Initial stock entered during product creation",
+                },
+              },
+            })),
+          },
         },
       });
       await tx.auditLog.create({
@@ -160,9 +174,50 @@ export async function updateProductAction(
     );
 
     await db.$transaction(async (tx) => {
-      await tx.productVariant.deleteMany({ where: { productId } });
       await tx.productCollection.deleteMany({ where: { productId } });
       await tx.productImage.deleteMany({ where: { productId } });
+      const existingVariants = await tx.productVariant.findMany({
+        where: { productId },
+      });
+      await tx.productVariant.updateMany({
+        where: { productId },
+        data: { active: false },
+      });
+      for (const variant of variants) {
+        const existingVariant = existingVariants.find(
+          (candidate) => candidate.sku === variant.sku,
+        );
+        if (existingVariant) {
+          await tx.productVariant.update({
+            where: { id: existingVariant.id },
+            data: {
+              size: variant.size,
+              colour: variant.colour,
+              colourHex: variant.colourHex,
+              priceAdjustment: variant.priceAdjustment,
+              active: true,
+            },
+          });
+        } else {
+          await tx.productVariant.create({
+            data: {
+              ...variant,
+              productId,
+              active: true,
+              inventoryMovements: {
+                create: {
+                  actorId: session.user.id,
+                  type: "INITIAL_STOCK",
+                  quantityDelta: variant.inventoryQuantity,
+                  quantityBefore: 0,
+                  quantityAfter: variant.inventoryQuantity,
+                  reason: "New variant added in catalogue",
+                },
+              },
+            },
+          });
+        }
+      }
       await tx.product.update({
         where: { id: productId },
         data: {
@@ -176,7 +231,6 @@ export async function updateProductAction(
           images: {
             create: images.map((image, position) => ({ ...image, position })),
           },
-          variants: { create: variants },
         },
       });
       await tx.auditLog.create({

@@ -93,6 +93,35 @@ admin@demo.threadd.store
 DemoAdmin123!
 ```
 
+## Test Phase 5 inventory controls
+
+1. Sign in with **Enter the studio**, select **Inventory**, and confirm the
+   total-unit, low-stock, and sold-out summaries appear.
+2. Search for `TH-ET02-1-M` and confirm the matching variant appears without
+   scrolling through the full catalogue. Clear the search.
+3. Select **Low stock** and **Sold out** in turn and confirm only matching
+   variants appear. Return to **All**.
+4. Select **Movement ledger** and confirm the ledger replaces the stock cards
+   instead of appearing below them. Search the ledger for a product, SKU, or
+   reason, then return to **Stock controls**.
+5. Find `TH-ET02-1-M`, expand **Adjust stock**, select **Remove stock**, and
+   enter a quantity larger than its current stock with a clear reason. Confirm
+   the server refuses the change because stock cannot become negative.
+6. Add 2 units with the reason `Received test delivery`. Confirm the card,
+   total-unit summary, and movement ledger show the new quantity.
+7. Confirm the movement shows the exact before quantity, change, after
+   quantity, reason, time, and administrator.
+8. Remove those same 2 units with the reason `Reverse manual test` to restore
+   the starting stock. Confirm this creates a second movement rather than
+   deleting the first.
+9. Set the variant's **Alert at** threshold equal to its current quantity.
+   Confirm the button reads **Saving…** while the request is pending, then
+   refresh and confirm it displays **Low stock**. Restore the threshold to `3`.
+10. Open the product in **Catalogue**, change only its description, and save.
+   Confirm its stock and inventory history remain unchanged.
+11. As a customer, open `/admin/inventory` manually and confirm you are
+    returned to the customer account.
+
 ## Test password reset and the Demo Outbox
 
 1. Sign out.

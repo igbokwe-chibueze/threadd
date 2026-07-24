@@ -76,8 +76,15 @@ export default async function AdminPage() {
             const className =
               "group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-t border-white/20 py-5";
 
-            return name === "Catalogue" ? (
-              <Link key={name} href="/admin/catalogue" className={className}>
+            const href =
+              name === "Catalogue"
+                ? "/admin/catalogue"
+                : name === "Inventory"
+                  ? "/admin/inventory"
+                  : null;
+
+            return href ? (
+              <Link key={name} href={href} className={className}>
                 {content}
               </Link>
             ) : (

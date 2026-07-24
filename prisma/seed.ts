@@ -341,6 +341,22 @@ async function seed(): Promise<void> {
         })),
       ),
     });
+
+    const seededVariants = await prisma.productVariant.findMany({
+      where: { productId: product.id },
+      select: { id: true, inventoryQuantity: true },
+    });
+
+    await prisma.inventoryMovement.createMany({
+      data: seededVariants.map((variant) => ({
+        variantId: variant.id,
+        type: "INITIAL_STOCK",
+        quantityDelta: variant.inventoryQuantity,
+        quantityBefore: 0,
+        quantityAfter: variant.inventoryQuantity,
+        reason: "Canonical demo catalogue seed",
+      })),
+    });
   }
 }
 

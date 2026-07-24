@@ -8,7 +8,7 @@
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
 | Current phase    | Phase 5 — Inventory Controls                                |
-| Phase status     | Ready to begin                                               |
+| Phase status     | In progress                                                  |
 | Previous phase   | Phase 4 — Completed on 23 July 2026                         |
 | Next phase       | Phase 6A — Product Enquiries                                |
 | Last reviewed    | 23 July 2026                                                |
@@ -304,9 +304,17 @@ All must pass.
 </details>
 
 <details open>
-<summary><strong>PHASE 5 — CONTROL INVENTORY</strong> · Ready to begin</summary>
+<summary><strong>PHASE 5 — CONTROL INVENTORY</strong> · In progress</summary>
 
-**Status:** Ready to begin.
+**Status:** In progress.
+
+### Current Progress
+
+- [x] Add immutable inventory movement records.
+- [x] Build transaction-safe stock adjustments with mandatory reasons.
+- [x] Add low-stock threshold controls and indicators.
+- [x] Build inventory history and administrator workflows.
+- [x] Verify negative-stock, audit, and catalogue-isolation rules.
 
 ### Deliverables
 
