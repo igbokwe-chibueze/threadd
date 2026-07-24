@@ -7,10 +7,10 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 8 — Deliver Notifications Reliably                     |
+| Current phase    | Phase 9 — Protect and Reset the Public Demo                  |
 | Phase status     | In progress                                                   |
-| Previous phase   | Phase 7 — Completed on 24 July 2026                         |
-| Next phase       | Phase 9 — Protect and Reset the Public Demo                  |
+| Previous phase   | Phase 8 — Completed on 24 July 2026                         |
+| Next phase       | Phase 10 — Optimize the Storefront                           |
 | Last reviewed    | 24 July 2026                                                |
 
 ### Status Rules
@@ -418,6 +418,16 @@ This phase is required only for Mode B.
 
 **Status:** Completed on 24 July 2026, including Paystack-hosted test-mode validation.
 
+**Post-phase enhancement:** Checkout now uses an extensible payment-provider
+registry with customer selection, Paystack, and a credential-gated OPay Cashier
+adapter. Every provider must still pass the same server-authoritative payment,
+inventory, idempotency, callback, and refund rules.
+
+**Deferred:** OPay activation is not a release blocker. The supplied merchant
+credentials are for a different country environment, so THREADD will continue
+with verified Paystack test checkout. The OPay adapter remains disabled behind
+`OPAY_ENABLED` until Nigeria-compatible credentials are available.
+
 ### Current Progress
 
 - [x] Add shipping, order, payment, event, cancellation, return, and refund records.
@@ -475,10 +485,10 @@ Required only for Mode B.
 
 </details>
 
-<details open>
-<summary><strong>PHASE 8 — DELIVER NOTIFICATIONS RELIABLY</strong> · In progress</summary>
+<details>
+<summary><strong>PHASE 8 — DELIVER NOTIFICATIONS RELIABLY</strong> · Completed</summary>
 
-**Status:** In progress.
+**Status:** Completed on 24 July 2026.
 
 ### Current Progress
 
@@ -489,7 +499,7 @@ Required only for Mode B.
 - [x] Protect guest previews with hashed, short-lived access tokens.
 - [x] Add configurable administrator recipients and bounded provider retries.
 - [x] Verify plain-text safety, access predicates, provider swapping, and retry limits.
-- [ ] Complete customer, guest, and administrator manual privacy tests.
+- [x] Complete customer, guest, and administrator manual privacy tests.
 
 ### Deliverables
 
@@ -518,8 +528,10 @@ Required only for Mode B.
 
 </details>
 
-<details>
-<summary><strong>PHASE 9 — PROTECT AND RESET THE PUBLIC DEMO</strong> · Upcoming</summary>
+<details open>
+<summary><strong>PHASE 9 — PROTECT AND RESET THE PUBLIC DEMO</strong> · In progress</summary>
+
+**Status:** In progress.
 
 ### Architecture
 

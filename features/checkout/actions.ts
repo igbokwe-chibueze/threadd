@@ -51,9 +51,13 @@ export async function beginCheckoutAction(
       where: { cartId: cart.id },
       include: { payments: { orderBy: { createdAt: "desc" }, take: 1 } },
     });
-    const provider = getPaymentProvider();
+    const provider = getPaymentProvider(result.data.paymentProvider);
     let order = existing;
-    let payment = existing?.payments[0];
+    let payment =
+      existing?.payments[0]?.provider === provider.name &&
+      ["INITIALIZED", "PENDING"].includes(existing.payments[0].status)
+        ? existing.payments[0]
+        : undefined;
 
     if (!order) {
       const totals = cartTotals(cart);
@@ -111,6 +115,24 @@ export async function beginCheckoutAction(
         include: { payments: true },
       });
       payment = order.payments[0];
+    } else if (!payment) {
+      payment = await db.$transaction(async (tx) => {
+        await tx.payment.updateMany({
+          where: {
+            orderId: order!.id,
+            status: { in: ["INITIALIZED", "PENDING"] },
+          },
+          data: { status: "FAILED" },
+        });
+        return tx.payment.create({
+          data: {
+            orderId: order!.id,
+            provider: provider.name,
+            reference: reference("THR"),
+            amount: order!.total,
+          },
+        });
+      });
     }
     if (!payment) throw new Error("Payment could not be prepared.");
     if (order.status !== "PENDING_PAYMENT") {
@@ -123,14 +145,27 @@ export async function beginCheckoutAction(
     );
     const initialized = await provider.initialize({
       email: order.email,
+      recipientName: order.recipientName,
+      phone: order.phone,
       amountKobo: Math.round(Number(order.total) * 100),
       reference: payment.reference,
-      callbackUrl: `${appUrl}/api/payments/callback`,
+      callbackUrl:
+        provider.name === "paystack"
+          ? `${appUrl}/api/payments/callback`
+          : `${appUrl}/api/payments/callback?provider=${provider.name}&reference=${encodeURIComponent(payment.reference)}`,
+      webhookUrl:
+        provider.name === "opay"
+          ? `${appUrl}/api/payments/opay/webhook`
+          : `${appUrl}/api/payments/webhook`,
+      cancelUrl: `${appUrl}/checkout?payment=cancelled`,
       orderId: order.id,
     });
     await db.payment.update({
       where: { id: payment.id },
-      data: { status: "PENDING" },
+      data: {
+        status: "PENDING",
+        providerTransactionId: initialized.accessCode,
+      },
     });
     redirect(initialized.authorizationUrl);
   } catch (error) {

@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 export const checkoutSchema = z.object({
+  paymentProvider: z.enum(["paystack", "opay", "demo"], {
+    message: "Choose a payment method.",
+  }),
   email: z.email("Enter a valid email address.").trim().toLowerCase(),
   recipientName: z
     .string()

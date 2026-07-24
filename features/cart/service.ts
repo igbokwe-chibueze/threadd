@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 
 import { getCurrentSession } from "@/features/auth/authorization";
 import { db } from "@/lib/db/client";
+import { Prisma } from "@/generated/prisma/client";
 
 export const CART_COOKIE = "threadd_cart";
 const CART_TTL_SECONDS = 30 * 24 * 60 * 60;
@@ -107,6 +108,82 @@ export async function getOrCreateCart() {
     },
     select: { id: true },
   });
+}
+
+export async function mergeGuestCartIntoUser(
+  userId: string,
+  guestToken?: string,
+) {
+  if (!guestToken) return { merged: false, adjusted: false };
+  const guestTokenHash = hashCartToken(guestToken);
+
+  return db.$transaction(
+    async (tx) => {
+      const guestCart = await tx.cart.findFirst({
+        where: { guestTokenHash, status: "ACTIVE" },
+        include: {
+          items: {
+            include: {
+              variant: { select: { inventoryQuantity: true, active: true } },
+            },
+          },
+        },
+      });
+      if (!guestCart) return { merged: false, adjusted: false };
+
+      const userCart = await tx.cart.findFirst({
+        where: { userId, status: "ACTIVE" },
+        include: { items: true },
+      });
+      if (!userCart) {
+        await tx.cart.update({
+          where: { id: guestCart.id },
+          data: {
+            userId,
+            guestTokenHash: null,
+            expiresAt: null,
+          },
+        });
+        return { merged: true, adjusted: false };
+      }
+
+      let adjusted = false;
+      for (const guestItem of guestCart.items) {
+        if (!guestItem.variant.active) {
+          adjusted = true;
+          continue;
+        }
+        const current = userCart.items.find(
+          (item) => item.variantId === guestItem.variantId,
+        );
+        const requested = (current?.quantity ?? 0) + guestItem.quantity;
+        const quantity = Math.min(
+          requested,
+          guestItem.variant.inventoryQuantity,
+        );
+        adjusted ||= quantity !== requested;
+        if (quantity <= 0) continue;
+
+        await tx.cartItem.upsert({
+          where: {
+            cartId_variantId: {
+              cartId: userCart.id,
+              variantId: guestItem.variantId,
+            },
+          },
+          update: { quantity },
+          create: {
+            cartId: userCart.id,
+            variantId: guestItem.variantId,
+            quantity,
+          },
+        });
+      }
+      await tx.cart.delete({ where: { id: guestCart.id } });
+      return { merged: true, adjusted };
+    },
+    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+  );
 }
 
 export function cartTotals(

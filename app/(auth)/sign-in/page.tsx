@@ -5,17 +5,23 @@ import { redirect } from "next/navigation";
 import { Wordmark } from "@/components/brand/wordmark";
 import { SignInForm } from "@/features/auth/components/sign-in-form";
 import { getCurrentSession } from "@/features/auth/authorization";
+import { safeReturnTo } from "@/features/auth/return-to";
 
 export const metadata = {
   title: "Sign in",
   robots: { index: false, follow: false },
 };
 
-export default async function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnTo?: string | string[] }>;
+}) {
+  const returnTo = safeReturnTo((await searchParams).returnTo);
   const session = await getCurrentSession();
 
   if (session) {
-    redirect(session.user.role === "CUSTOMER" ? "/account" : "/admin");
+    redirect(session.user.role === "CUSTOMER" ? returnTo : "/admin");
   }
 
   return (
@@ -63,7 +69,7 @@ export default async function SignInPage() {
           </p>
 
           <div className="mt-10">
-            <SignInForm />
+            <SignInForm returnTo={returnTo} />
           </div>
         </div>
       </section>

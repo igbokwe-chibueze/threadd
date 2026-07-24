@@ -8,6 +8,7 @@ import {
   CheckoutQuoteProvider,
   CheckoutSummary,
 } from "@/features/checkout/components/checkout-quote";
+import { getPaymentProviderOptions } from "@/features/payments/provider";
 import { getActiveShippingZones } from "@/features/shipping/zones";
 import { db } from "@/lib/db/client";
 
@@ -35,10 +36,7 @@ export default async function CheckoutPage() {
       : null,
     getActiveShippingZones(),
   ]);
-  const testMode = !(
-    process.env.PAYSTACK_SECRET_KEY?.startsWith("sk_test_") &&
-    !process.env.PAYSTACK_SECRET_KEY.includes("replace")
-  );
+  const paymentProviders = getPaymentProviderOptions();
   const summaryItems = cart.items.map((item) => {
     const unitPrice =
       Number(item.variant.product.basePrice) +
@@ -89,7 +87,7 @@ export default async function CheckoutPage() {
                 </p>
                 {!session ? (
                   <Link
-                    href="/sign-in"
+                    href="/sign-in?returnTo=/checkout"
                     className="mt-4 inline-flex text-xs font-bold tracking-[0.12em] uppercase underline"
                   >
                     Sign in
@@ -106,7 +104,7 @@ export default async function CheckoutPage() {
                     </p>
                   ) : null}
                   <CheckoutForm
-                    testMode={testMode}
+                    paymentProviders={paymentProviders}
                     defaults={{
                       email: session?.user.email,
                       name: defaultAddress?.recipientName ?? session?.user.name,

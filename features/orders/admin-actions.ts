@@ -120,7 +120,7 @@ export async function reviewCancellationAction(
     }
     const payment = order.payments[0];
     if (!payment) throw new Error("A successful payment was not found.");
-    const refundResult = await getPaymentProvider().refund(
+    const refundResult = await getPaymentProvider(payment.provider).refund(
       payment.reference,
       Math.round(Number(payment.amount) * 100),
     );
@@ -257,7 +257,7 @@ export async function progressReturnAction(
     const payment = order.payments[0];
     if (!payment) throw new Error("Successful payment not found.");
     const sellable = operation === "INSPECT_SELLABLE";
-    const refundResult = await getPaymentProvider().refund(
+    const refundResult = await getPaymentProvider(payment.provider).refund(
       payment.reference,
       Math.round(Number(payment.amount) * 100),
     );

@@ -6,6 +6,7 @@ describe("checkout validation", () => {
   it("accepts Nigerian delivery details without accepting a client price", () => {
     const result = checkoutSchema.safeParse({
       email: "customer@example.com",
+      paymentProvider: "paystack",
       recipientName: "Ada Okafor",
       phone: "+234 801 234 5678",
       addressLine1: "12 Market Road",
@@ -25,6 +26,7 @@ describe("checkout validation", () => {
     expect(
       checkoutSchema.safeParse({
         email: "not-email",
+        paymentProvider: "paystack",
         recipientName: "",
         phone: "12",
         addressLine1: "",

@@ -1,12 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import {
   beginCheckoutAction,
   type CheckoutActionState,
 } from "@/features/checkout/actions";
 import { useCheckoutQuote } from "@/features/checkout/components/checkout-quote";
+import type {
+  PaymentProviderName,
+  PaymentProviderOption,
+} from "@/features/payments/types";
 
 const states = [
   "Abia",
@@ -52,7 +56,7 @@ const field =
 
 export function CheckoutForm({
   defaults,
-  testMode,
+  paymentProviders,
 }: {
   defaults: {
     email?: string;
@@ -64,13 +68,19 @@ export function CheckoutForm({
     state?: string;
     postalCode?: string;
   };
-  testMode: boolean;
+  paymentProviders: PaymentProviderOption[];
 }) {
   const [state, action, pending] = useActionState<
     CheckoutActionState,
     FormData
   >(beginCheckoutAction, {});
   const quote = useCheckoutQuote();
+  const [selectedProvider, setSelectedProvider] = useState<PaymentProviderName>(
+    paymentProviders[0]?.id ?? "demo",
+  );
+  const selected = paymentProviders.find(
+    (provider) => provider.id === selectedProvider,
+  );
   return (
     <form action={action} className="grid gap-5">
       <div className="grid gap-5 sm:grid-cols-2">
@@ -125,6 +135,60 @@ export function CheckoutForm({
           defaultValue={defaults.postalCode}
         />
       </div>
+      <fieldset className="mt-3">
+        <legend className="text-[0.58rem] font-bold tracking-[0.13em] uppercase">
+          Payment method
+        </legend>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {paymentProviders.map((provider) => {
+            const active = provider.id === selectedProvider;
+            return (
+              <label
+                key={provider.id}
+                className={`relative cursor-pointer border p-4 transition-colors ${
+                  active
+                    ? "border-[#171713] bg-[#171713] text-white"
+                    : "border-black/20 bg-white/20 hover:border-black/50"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentProvider"
+                  value={provider.id}
+                  checked={active}
+                  onChange={() => setSelectedProvider(provider.id)}
+                  className="sr-only"
+                />
+                <span className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold">
+                    {provider.label}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={`size-3 rounded-full border ${
+                      active
+                        ? "border-[#d7ff3f] bg-[#d7ff3f]"
+                        : "border-black/40"
+                    }`}
+                  />
+                </span>
+                <span
+                  className={`mt-2 block text-xs leading-5 ${
+                    active ? "text-white/60" : "text-black/50"
+                  }`}
+                >
+                  {provider.description}
+                </span>
+                {provider.testMode ? (
+                  <span className="mt-3 inline-flex rounded-full bg-[#d7ff3f] px-2 py-1 text-[0.5rem] font-bold tracking-[0.12em] text-[#171713] uppercase">
+                    Test mode
+                  </span>
+                ) : null}
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
       {state.error ? (
         <p role="alert" className="text-sm text-[#9b2f24]">
           {state.error}
@@ -136,14 +200,12 @@ export function CheckoutForm({
       >
         {pending
           ? "Preparing secure payment…"
-          : testMode
-            ? "Continue to test payment"
-            : "Continue to Paystack"}
+          : `Continue with ${selected?.label ?? "payment"}`}
       </button>
-      {testMode ? (
+      {selected?.testMode ? (
         <p className="text-xs leading-5 text-black/45">
-          Test adapter active because Paystack test keys are not configured. No
-          real charge will be made.
+          {selected.label} is operating in test mode. No real charge will be
+          made.
         </p>
       ) : null}
     </form>

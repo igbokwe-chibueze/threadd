@@ -32,7 +32,7 @@ const demoAccounts: readonly DemoAccount[] = [
   },
 ];
 
-export function SignInForm() {
+export function SignInForm({ returnTo = "/account" }: { returnTo?: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pendingAccount, setPendingAccount] = useState<string | null>(null);
@@ -56,7 +56,16 @@ export function SignInForm() {
       return;
     }
 
-    router.push(destination);
+    const mergeResponse = await fetch("/api/cart/merge", { method: "POST" });
+    if (!mergeResponse.ok) {
+      setError(
+        "You are signed in, but we couldn't restore your cart. Please try again.",
+      );
+      setPendingAccount(null);
+      return;
+    }
+
+    router.push(destination === "/account" ? returnTo : destination);
     router.refresh();
   }
 
