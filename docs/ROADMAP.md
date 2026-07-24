@@ -7,10 +7,10 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 10 — Optimize the Storefront                           |
+| Current phase    | Phase 11 — Harden Security                                   |
 | Phase status     | In progress                                                   |
-| Previous phase   | Phase 9 — Completed on 24 July 2026                         |
-| Next phase       | Phase 11 — Harden Security                                   |
+| Previous phase   | Phase 10 — Completed on 24 July 2026                        |
+| Next phase       | Phase 12 — Release and Document THREADD                     |
 | Last reviewed    | 24 July 2026                                                |
 
 ### Status Rules
@@ -586,8 +586,11 @@ The demo is not a tenant inside the production database. It is a separate deploy
 
 </details>
 
-<details open>
-<summary><strong>PHASE 10 — OPTIMIZE THE STOREFRONT</strong> · In progress</summary>
+<details>
+<summary><strong>PHASE 10 — OPTIMIZE THE STOREFRONT</strong> · Completed</summary>
+
+**Status:** Completed on 24 July 2026. Deployed Lighthouse and Search Console
+evidence remains intentionally assigned to the Phase 12 release checklist.
 
 ### Current Progress
 
@@ -599,8 +602,8 @@ The demo is not a tenant inside the production database. It is a separate deploy
 - [x] Add a keyboard skip link and accessible storefront loading feedback.
 - [x] Replace catalogue filter document reloads with pending client navigation.
 - [x] Approve a PII-safe analytics event boundary; keep analytics disabled for now.
-- [ ] Complete mobile/desktop manual accessibility and responsive tests.
-- [ ] Record deployed Lighthouse and Search Console evidence during Phase 12.
+- [x] Complete mobile/desktop manual accessibility and responsive tests.
+- [x] Defer deployed Lighthouse and Search Console evidence to Phase 12.
 
 ### Deliverables
 
@@ -624,8 +627,8 @@ The demo is not a tenant inside the production database. It is a separate deploy
 
 </details>
 
-<details>
-<summary><strong>PHASE 11 — HARDEN SECURITY</strong> · Upcoming</summary>
+<details open>
+<summary><strong>PHASE 11 — HARDEN SECURITY</strong> · In progress</summary>
 
 ### Deliverables
 

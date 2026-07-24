@@ -24,10 +24,15 @@ This file contains mandatory instructions for Codex and any coding agent working
 
 Read these files before making changes:
 
-1. `PRODUCT_OVERVIEW.md`
-2. `ROADMAP.md`
-3. `SECURITY_AUDIT.md`
-4. this file
+1. `docs/PROJECT_HANDOFF.md`
+2. `docs/PRODUCT_OVERVIEW.md`
+3. `docs/ROADMAP.md`
+4. `docs/SECURITY_AUDIT.md`
+5. this file
+
+`docs/PROJECT_HANDOFF.md` is the concise continuity record for new chats. Keep
+it synchronized whenever a phase completes, the active phase changes, or a
+material product or architecture decision changes.
 
 Where instructions conflict, security and explicit product requirements take priority over convenience.
 
