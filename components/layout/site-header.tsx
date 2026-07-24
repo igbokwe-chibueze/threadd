@@ -52,6 +52,12 @@ export function SiteHeader({
       <header
         className={`${isSolid ? "relative border-b border-black/15 bg-[#ece8df] text-[#171713]" : "absolute inset-x-0 top-0 text-[#f4f0e7]"} z-30 flex items-center justify-between px-5 py-5 sm:px-10 lg:px-14`}
       >
+        <a
+          href="#main-content"
+          className="fixed top-2 left-2 z-[60] -translate-y-20 bg-[#d7ff3f] px-4 py-3 text-[0.62rem] font-bold tracking-[0.14em] text-[#171713] uppercase transition-transform focus:translate-y-0"
+        >
+          Skip to content
+        </a>
         <Link
           href="/"
           aria-label="THREADD home"
@@ -81,7 +87,7 @@ export function SiteHeader({
               href="/demo-outbox"
               aria-label={`Outbox${unreadMessageCount ? `, ${unreadMessageCount} unread messages` : ""}`}
               title="Outbox"
-              className="relative grid size-10 place-items-center rounded-full border border-current/40 transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f]"
+              className="relative hidden size-10 place-items-center rounded-full border border-current/40 transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f] md:grid"
             >
               <svg
                 aria-hidden="true"
@@ -103,7 +109,33 @@ export function SiteHeader({
           ) : null}
           <Link
             href="/cart"
-            className="rounded-full border border-current/40 px-4 py-2 text-[0.62rem] font-semibold tracking-[0.18em] uppercase transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f]"
+            aria-label={`Cart, ${cartQuantity} items`}
+            title="Cart"
+            className="relative grid size-10 place-items-center rounded-full border border-current/40 transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f] sm:hidden"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              fill="none"
+              className="size-[1.05rem]"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M6.75 8.25h10.5l.8 11H5.95l.8-11Z" />
+              <path d="M9 8.25v-1.5a3 3 0 0 1 6 0v1.5" />
+            </svg>
+            <span
+              className="absolute -top-1.5 -right-1.5 grid min-h-5 min-w-5 place-items-center rounded-full bg-[#d7ff3f] px-1 text-[0.55rem] font-bold tracking-normal text-[#171713] ring-2 ring-[#171713]"
+              aria-label={`${cartQuantity} items in cart`}
+            >
+              {cartQuantity > 99 ? "99+" : cartQuantity}
+            </span>
+          </Link>
+          <Link
+            href="/cart"
+            className="hidden rounded-full border border-current/40 px-4 py-2 text-[0.62rem] font-semibold tracking-[0.18em] uppercase transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f] sm:inline-flex"
           >
             Cart
             <span

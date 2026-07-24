@@ -30,6 +30,12 @@ export async function generateMetadata({
     ? {
         title: collection.name,
         description: collection.description,
+        alternates: { canonical: `/collections/${collection.slug}` },
+        openGraph: {
+          title: collection.name,
+          description: collection.description ?? undefined,
+          url: `/collections/${collection.slug}`,
+        },
       }
     : {};
 }

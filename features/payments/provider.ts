@@ -1,5 +1,6 @@
 import "server-only";
 
+import { isDemoDeployment } from "@/features/demo/policy";
 import { DemoPaymentProvider } from "@/features/payments/demo";
 import { OPayProvider } from "@/features/payments/opay";
 import { PaystackProvider } from "@/features/payments/paystack";
@@ -15,12 +16,14 @@ function hasValue(value: string | undefined) {
 
 function paystackProvider(): PaystackProvider | undefined {
   const key = process.env.PAYSTACK_SECRET_KEY;
+  if (isDemoDeployment() && !key?.startsWith("sk_test_")) return;
   if (key?.startsWith("sk_") && hasValue(key)) {
     return new PaystackProvider(key);
   }
 }
 
 function opayProvider(): OPayProvider | undefined {
+  if (isDemoDeployment()) return;
   if (process.env.OPAY_ENABLED !== "true") return;
   const merchantId = process.env.OPAY_MERCHANT_ID;
   const publicKey = process.env.OPAY_PUBLIC_KEY;

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db/client";
 
@@ -144,7 +146,7 @@ export async function getCatalogueFacets() {
   };
 }
 
-export async function getPublicProduct(slug: string) {
+export const getPublicProduct = cache(async (slug: string) => {
   return db.product.findFirst({
     where: {
       slug,
@@ -164,13 +166,13 @@ export async function getPublicProduct(slug: string) {
       },
     },
   });
-}
+});
 
-export async function getPublicCollection(slug: string) {
+export const getPublicCollection = cache(async (slug: string) => {
   return db.collection.findUnique({
     where: { slug },
   });
-}
+});
 
 export async function getPublicProductSlugs() {
   return db.product.findMany({

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import type { ProductFormState } from "@/features/catalogue/admin-actions";
 
@@ -35,6 +35,8 @@ type ProductFormProps = {
 
 const field =
   "mt-2 min-h-11 w-full border border-white/25 bg-transparent px-3 py-2 text-sm text-white outline-none focus:border-[#d7ff3f]";
+const fieldError =
+  "border-red-300 bg-red-950/20 focus:border-red-200 focus:ring-1 focus:ring-red-200";
 const help =
   "mt-2 block text-xs font-normal leading-5 tracking-normal text-white/50 normal-case";
 
@@ -57,6 +59,17 @@ export function ProductForm({
   const [slug, setSlug] = useState(product?.slug ?? "");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const submittedValue = (name: string, fallback?: string) => {
+    const value = state.values?.[name];
+    return typeof value === "string" ? value : (fallback ?? "");
+  };
+  const submittedChecked = (name: string, fallback?: boolean) => {
+    const value = state.values?.[name];
+    return typeof value === "boolean" ? value : (fallback ?? false);
+  };
+  const hasError = (name: string) => state.field === name;
 
   function updateSelectedFiles(files: File[]) {
     const nextFiles = files.slice(0, 6);
@@ -69,8 +82,24 @@ export function ProductForm({
     setSelectedFiles(nextFiles);
   }
 
+  useEffect(() => {
+    if (!state.submissionId) return;
+
+    if (selectedFiles.length && imageInputRef.current) {
+      const transfer = new DataTransfer();
+      selectedFiles.forEach((file) => transfer.items.add(file));
+      imageInputRef.current.files = transfer.files;
+    }
+
+    const invalidField = state.field
+      ? formRef.current?.elements.namedItem(state.field)
+      : null;
+    if (invalidField instanceof HTMLElement) invalidField.focus();
+  }, [selectedFiles, state.field, state.submissionId]);
+
   return (
     <form
+      ref={formRef}
       action={formAction}
       className="mt-10 grid gap-8"
       encType="multipart/form-data"
@@ -96,7 +125,8 @@ export function ProductForm({
               setSlug(createSlug(nextName));
             }}
             required
-            className={field}
+            aria-invalid={hasError("name")}
+            className={`${field} ${hasError("name") ? fieldError : ""}`}
           />
         </label>
         <label className="text-xs font-bold tracking-[0.14em] uppercase">
@@ -106,7 +136,8 @@ export function ProductForm({
             value={slug}
             readOnly
             required
-            className={`${field} cursor-not-allowed text-white/60`}
+            aria-invalid={hasError("slug")}
+            className={`${field} ${hasError("slug") ? fieldError : ""} cursor-not-allowed text-white/60`}
           />
           <span className={help}>
             Generated automatically from the product name.
@@ -116,7 +147,12 @@ export function ProductForm({
       <Field
         label="Short description"
         name="shortDescription"
-        defaultValue={product?.shortDescription}
+        defaultValue={submittedValue(
+          "shortDescription",
+          product?.shortDescription,
+        )}
+        key={`shortDescription-${state.submissionId ?? "initial"}`}
+        invalid={hasError("shortDescription")}
         maxLength={180}
         required
       />
@@ -124,10 +160,12 @@ export function ProductForm({
         Full description
         <textarea
           name="description"
-          defaultValue={product?.description}
+          defaultValue={submittedValue("description", product?.description)}
+          key={`description-${state.submissionId ?? "initial"}`}
+          aria-invalid={hasError("description")}
           required
           rows={7}
-          className={field}
+          className={`${field} ${hasError("description") ? fieldError : ""}`}
         />
       </label>
 
@@ -139,6 +177,9 @@ export function ProductForm({
           min="1"
           step="0.01"
           defaultValue={product?.basePrice}
+          key={`basePrice-${state.submissionId ?? "initial"}`}
+          valueAfterError={submittedValue("basePrice", product?.basePrice)}
+          invalid={hasError("basePrice")}
           required
         />
         <Field
@@ -148,14 +189,25 @@ export function ProductForm({
           min="1"
           step="0.01"
           defaultValue={product?.compareAtPrice}
+          key={`compareAtPrice-${state.submissionId ?? "initial"}`}
+          valueAfterError={submittedValue(
+            "compareAtPrice",
+            product?.compareAtPrice,
+          )}
+          invalid={hasError("compareAtPrice")}
           help="Optional. The old or regular price shown crossed out beside the current selling price. It must be higher than the product price."
         />
         <label className="text-xs font-bold tracking-[0.14em] uppercase">
           Visibility
           <select
             name="status"
-            defaultValue={product?.status === "ACTIVE" ? "ACTIVE" : "DRAFT"}
-            className={`${field} [&>option]:bg-[#171713] [&>option]:text-white`}
+            key={`status-${state.submissionId ?? "initial"}`}
+            defaultValue={submittedValue(
+              "status",
+              product?.status === "ACTIVE" ? "ACTIVE" : "DRAFT",
+            )}
+            aria-invalid={hasError("status")}
+            className={`${field} ${hasError("status") ? fieldError : ""} [&>option]:bg-[#171713] [&>option]:text-white`}
           >
             <option value="DRAFT">Draft</option>
             <option value="ACTIVE">Published</option>
@@ -171,9 +223,11 @@ export function ProductForm({
           Category
           <select
             name="categoryId"
-            defaultValue={product?.categoryId}
+            key={`categoryId-${state.submissionId ?? "initial"}`}
+            defaultValue={submittedValue("categoryId", product?.categoryId)}
+            aria-invalid={hasError("categoryId")}
             required
-            className={`${field} [&>option]:bg-[#171713] [&>option]:text-white`}
+            className={`${field} ${hasError("categoryId") ? fieldError : ""} [&>option]:bg-[#171713] [&>option]:text-white`}
           >
             <option value="">Select category</option>
             {categories.map((item) => (
@@ -187,8 +241,10 @@ export function ProductForm({
           Collection
           <select
             name="collectionId"
-            defaultValue={product?.collectionId}
-            className={`${field} [&>option]:bg-[#171713] [&>option]:text-white`}
+            key={`collectionId-${state.submissionId ?? "initial"}`}
+            defaultValue={submittedValue("collectionId", product?.collectionId)}
+            aria-invalid={hasError("collectionId")}
+            className={`${field} ${hasError("collectionId") ? fieldError : ""} [&>option]:bg-[#171713] [&>option]:text-white`}
           >
             <option value="">No collection</option>
             {collections.map((item) => (
@@ -207,7 +263,8 @@ export function ProductForm({
         <input
           type="checkbox"
           name="featured"
-          defaultChecked={product?.featured}
+          key={`featured-${state.submissionId ?? "initial"}`}
+          defaultChecked={submittedChecked("featured", product?.featured)}
         />
         Feature this product
         <span className="font-normal tracking-normal text-white/50 normal-case">
@@ -244,10 +301,11 @@ export function ProductForm({
               accept="image/jpeg,image/png,image/webp"
               multiple
               required={!product}
+              aria-invalid={hasError("images")}
               onChange={(event) =>
                 updateSelectedFiles(Array.from(event.currentTarget.files ?? []))
               }
-              className={`${field} file:mr-4 file:border-0 file:bg-[#d7ff3f] file:px-3 file:py-1 file:text-black`}
+              className={`${field} ${hasError("images") ? fieldError : ""} file:mr-4 file:border-0 file:bg-[#d7ff3f] file:px-3 file:py-1 file:text-black`}
             />
             <span className="mt-2 block font-normal tracking-normal text-white/45 normal-case">
               Select up to 6 JPEG, PNG, or WebP photos. Maximum 4 MB each. The
@@ -257,7 +315,9 @@ export function ProductForm({
           <Field
             label="Gallery description"
             name="imageAlt"
-            defaultValue={product?.imageAlt}
+            defaultValue={submittedValue("imageAlt", product?.imageAlt)}
+            key={`imageAlt-${state.submissionId ?? "initial"}`}
+            invalid={hasError("imageAlt")}
             required
             help="Describe the product and model briefly for visitors using screen readers."
           />
@@ -317,7 +377,12 @@ export function ProductForm({
         ) : null}
         {product?.imageUrls?.length ? (
           <label className="mt-5 flex items-center gap-3 text-xs font-bold tracking-[0.14em] uppercase">
-            <input type="checkbox" name="replaceImages" />
+            <input
+              type="checkbox"
+              name="replaceImages"
+              key={`replaceImages-${state.submissionId ?? "initial"}`}
+              defaultChecked={submittedChecked("replaceImages")}
+            />
             Replace the current gallery with the newly selected photos
           </label>
         ) : null}
@@ -352,10 +417,12 @@ export function ProductForm({
         </div>
         <textarea
           name="variants"
-          defaultValue={product?.variants}
+          key={`variants-${state.submissionId ?? "initial"}`}
+          defaultValue={submittedValue("variants", product?.variants)}
+          aria-invalid={hasError("variants")}
           required
           rows={8}
-          className={`${field} font-mono`}
+          className={`${field} ${hasError("variants") ? fieldError : ""} font-mono`}
           placeholder="THR-TEE-BLK-M | M | Black | #171713 | 8 | 0"
         />
       </section>
@@ -370,6 +437,9 @@ export function ProductForm({
             name="seoTitle"
             maxLength={60}
             defaultValue={product?.seoTitle}
+            key={`seoTitle-${state.submissionId ?? "initial"}`}
+            valueAfterError={submittedValue("seoTitle", product?.seoTitle)}
+            invalid={hasError("seoTitle")}
             help="The title shown by search engines. Leave blank to use the product name."
           />
           <Field
@@ -377,6 +447,12 @@ export function ProductForm({
             name="seoDescription"
             maxLength={160}
             defaultValue={product?.seoDescription}
+            key={`seoDescription-${state.submissionId ?? "initial"}`}
+            valueAfterError={submittedValue(
+              "seoDescription",
+              product?.seoDescription,
+            )}
+            invalid={hasError("seoDescription")}
             help="A short search-engine summary. Leave blank to use the product description."
           />
         </div>
@@ -395,15 +471,24 @@ export function ProductForm({
 function Field({
   label,
   help: helpText,
+  invalid = false,
+  valueAfterError,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & {
   label: string;
   help?: string;
+  invalid?: boolean;
+  valueAfterError?: string;
 }) {
   return (
     <label className="text-xs font-bold tracking-[0.14em] uppercase">
       {label}
-      <input {...props} className={field} />
+      <input
+        {...props}
+        defaultValue={valueAfterError ?? props.defaultValue}
+        aria-invalid={invalid}
+        className={`${field} ${invalid ? fieldError : ""}`}
+      />
       {helpText ? <span className={help}>{helpText}</span> : null}
     </label>
   );

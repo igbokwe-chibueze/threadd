@@ -21,7 +21,9 @@ export default async function StoreLayout({
         isSignedIn={Boolean(session)}
         unreadMessageCount={unreadMessageCount}
       />
-      <main>{children}</main>
+      <div id="main-content" tabIndex={-1}>
+        {children}
+      </div>
       <SiteFooter />
     </div>
   );

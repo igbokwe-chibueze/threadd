@@ -3,6 +3,7 @@ import { loadEnvConfig } from "@next/env";
 import { hashPassword } from "better-auth/crypto";
 
 import {
+  Prisma,
   PrismaClient,
   ProductStatus,
   UserRole,
@@ -195,9 +196,11 @@ const catalogue = [
   },
 ] as const;
 
-async function seed(): Promise<void> {
+export async function seedCanonicalDemo(
+  client: PrismaClient | Prisma.TransactionClient = prisma,
+): Promise<void> {
   for (const user of demoUsers) {
-    const seededUser = await prisma.user.upsert({
+    const seededUser = await client.user.upsert({
       where: { email: user.email },
       update: {
         name: user.name,
@@ -216,7 +219,7 @@ async function seed(): Promise<void> {
 
     const password = await hashPassword(user.password);
 
-    await prisma.account.upsert({
+    await client.account.upsert({
       where: {
         providerId_accountId: {
           providerId: "credential",
@@ -234,7 +237,7 @@ async function seed(): Promise<void> {
   }
 
   for (const [position, item] of catalogue.entries()) {
-    const category = await prisma.category.upsert({
+    const category = await client.category.upsert({
       where: { slug: item.categorySlug },
       update: { name: item.category, position },
       create: {
@@ -245,7 +248,7 @@ async function seed(): Promise<void> {
       },
     });
 
-    const collection = await prisma.collection.upsert({
+    const collection = await client.collection.upsert({
       where: { slug: item.collectionSlug },
       update: {
         name: item.collection,
@@ -263,7 +266,7 @@ async function seed(): Promise<void> {
       },
     });
 
-    const product = await prisma.product.upsert({
+    const product = await client.product.upsert({
       where: { slug: item.slug },
       update: {
         name: item.name,
@@ -294,15 +297,15 @@ async function seed(): Promise<void> {
       },
     });
 
-    await prisma.$transaction([
-      prisma.productCollection.deleteMany({
-        where: { productId: product.id },
-      }),
-      prisma.productImage.deleteMany({ where: { productId: product.id } }),
-      prisma.productVariant.deleteMany({ where: { productId: product.id } }),
-    ]);
+    await client.productCollection.deleteMany({
+      where: { productId: product.id },
+    });
+    await client.productImage.deleteMany({ where: { productId: product.id } });
+    await client.productVariant.deleteMany({
+      where: { productId: product.id },
+    });
 
-    await prisma.productCollection.create({
+    await client.productCollection.create({
       data: {
         productId: product.id,
         collectionId: collection.id,
@@ -313,7 +316,7 @@ async function seed(): Promise<void> {
     const additionalImages =
       "additionalImages" in item ? item.additionalImages : [];
 
-    await prisma.productImage.createMany({
+    await client.productImage.createMany({
       data: [item.image, ...additionalImages].map((url, imagePosition) => ({
         productId: product.id,
         url,
@@ -327,7 +330,7 @@ async function seed(): Promise<void> {
       })),
     });
 
-    await prisma.productVariant.createMany({
+    await client.productVariant.createMany({
       data: item.colours.flatMap(([colour, colourHex], colourIndex) =>
         item.sizes.map((size, sizeIndex) => ({
           productId: product.id,
@@ -342,12 +345,12 @@ async function seed(): Promise<void> {
       ),
     });
 
-    const seededVariants = await prisma.productVariant.findMany({
+    const seededVariants = await client.productVariant.findMany({
       where: { productId: product.id },
       select: { id: true, inventoryQuantity: true },
     });
 
-    await prisma.inventoryMovement.createMany({
+    await client.inventoryMovement.createMany({
       data: seededVariants.map((variant) => ({
         variantId: variant.id,
         type: "INITIAL_STOCK",
@@ -358,14 +361,219 @@ async function seed(): Promise<void> {
       })),
     });
   }
+
+  await client.shippingZone.deleteMany();
+  await client.shippingZone.createMany({
+    data: [
+      { name: "Lagos", states: ["Lagos"], fee: 3000, position: 0 },
+      {
+        name: "South West",
+        states: ["Ogun", "Oyo", "Osun", "Ondo", "Ekiti"],
+        fee: 4500,
+        position: 1,
+      },
+      {
+        name: "Nigeria",
+        states: [
+          "Abia",
+          "Adamawa",
+          "Akwa Ibom",
+          "Anambra",
+          "Bauchi",
+          "Bayelsa",
+          "Benue",
+          "Borno",
+          "Cross River",
+          "Delta",
+          "Ebonyi",
+          "Edo",
+          "Enugu",
+          "FCT",
+          "Gombe",
+          "Imo",
+          "Jigawa",
+          "Kaduna",
+          "Kano",
+          "Katsina",
+          "Kebbi",
+          "Kogi",
+          "Kwara",
+          "Nasarawa",
+          "Niger",
+          "Plateau",
+          "Rivers",
+          "Sokoto",
+          "Taraba",
+          "Yobe",
+          "Zamfara",
+        ],
+        fee: 6000,
+        position: 2,
+      },
+    ],
+  });
+
+  const demoCustomer = await client.user.findUniqueOrThrow({
+    where: { email: "customer@demo.threadd.store" },
+  });
+  const demoAdmin = await client.user.findUniqueOrThrow({
+    where: { email: "admin@demo.threadd.store" },
+  });
+
+  await client.address.deleteMany({ where: { userId: demoCustomer.id } });
+  await client.address.create({
+    data: {
+      userId: demoCustomer.id,
+      label: "Home",
+      recipientName: "THREADD Demo Customer",
+      phone: "08012345678",
+      line1: "24 Admiralty Way",
+      city: "Lekki",
+      state: "Lagos",
+      postalCode: "106104",
+      isDefault: true,
+    },
+  });
+
+  for (const customer of [
+    { name: "Amara Okafor", email: "amara@example.demo" },
+    { name: "Tunde Balogun", email: "tunde@example.demo" },
+  ]) {
+    await client.user.upsert({
+      where: { email: customer.email },
+      update: { name: customer.name, isDemoAccount: true },
+      create: {
+        ...customer,
+        emailVerified: true,
+        isDemoAccount: true,
+      },
+    });
+  }
+
+  await client.enquiry.deleteMany({
+    where: { email: { in: ["amara@example.demo", "tunde@example.demo"] } },
+  });
+  await client.enquiry.createMany({
+    data: [
+      {
+        kind: "PRODUCT",
+        status: "NEW",
+        name: "Amara Okafor",
+        email: "amara@example.demo",
+        message: "Is the Ease Trouser suitable for a 34-inch inseam?",
+        ipHash: "canonical-demo-amara",
+      },
+      {
+        kind: "GENERAL",
+        status: "CONTACTED",
+        name: "Tunde Balogun",
+        email: "tunde@example.demo",
+        message: "Please let me know when the next collection is released.",
+        ipHash: "canonical-demo-tunde",
+      },
+    ],
+  });
+
+  const sampleVariant = await client.productVariant.findFirstOrThrow({
+    where: { sku: "TH-ET02-1-M" },
+    include: { product: true },
+  });
+  const sampleOrder = await client.order.upsert({
+    where: { orderNumber: "THR-DEMO-240701" },
+    update: {
+      userId: demoCustomer.id,
+      status: "DELIVERED",
+      paidAt: new Date("2026-07-01T10:00:00.000Z"),
+      dispatchedAt: new Date("2026-07-02T09:00:00.000Z"),
+      deliveredAt: new Date("2026-07-03T14:00:00.000Z"),
+    },
+    create: {
+      orderNumber: "THR-DEMO-240701",
+      userId: demoCustomer.id,
+      status: "DELIVERED",
+      email: demoCustomer.email,
+      recipientName: demoCustomer.name,
+      phone: "08012345678",
+      addressLine1: "24 Admiralty Way",
+      city: "Lekki",
+      state: "Lagos",
+      postalCode: "106104",
+      shippingZoneName: "Lagos",
+      subtotal: sampleVariant.product.basePrice,
+      shippingFee: 3000,
+      total: Number(sampleVariant.product.basePrice) + 3000,
+      paidAt: new Date("2026-07-01T10:00:00.000Z"),
+      dispatchedAt: new Date("2026-07-02T09:00:00.000Z"),
+      deliveredAt: new Date("2026-07-03T14:00:00.000Z"),
+    },
+  });
+
+  await client.orderItem.deleteMany({ where: { orderId: sampleOrder.id } });
+  await client.payment.deleteMany({ where: { orderId: sampleOrder.id } });
+  await client.orderStatusHistory.deleteMany({
+    where: { orderId: sampleOrder.id },
+  });
+
+  await client.orderItem.create({
+    data: {
+      orderId: sampleOrder.id,
+      variantId: sampleVariant.id,
+      productName: sampleVariant.product.name,
+      productSlug: sampleVariant.product.slug,
+      sku: sampleVariant.sku,
+      size: sampleVariant.size,
+      colour: sampleVariant.colour,
+      unitPrice: sampleVariant.product.basePrice,
+      quantity: 1,
+      lineTotal: sampleVariant.product.basePrice,
+    },
+  });
+  await client.payment.create({
+    data: {
+      orderId: sampleOrder.id,
+      provider: "paystack",
+      reference: "THR-DEMO-PAY-240701",
+      providerTransactionId: "demo-seeded-transaction",
+      status: "SUCCESS",
+      amount: sampleOrder.total,
+      channel: "card",
+      gatewayResponse: "Successful",
+      paidAt: sampleOrder.paidAt,
+    },
+  });
+  await client.orderStatusHistory.createMany({
+    data: [
+      {
+        orderId: sampleOrder.id,
+        actorId: demoAdmin.id,
+        toStatus: "PAID",
+        reason: "Canonical demo payment",
+      },
+      {
+        orderId: sampleOrder.id,
+        actorId: demoAdmin.id,
+        fromStatus: "PAID",
+        toStatus: "DELIVERED",
+        reason: "Canonical completed order",
+      },
+    ],
+  });
 }
 
-seed()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (error: unknown) => {
-    console.error(error);
-    await prisma.$disconnect();
-    process.exitCode = 1;
-  });
+const isDirectExecution =
+  process.argv[1] &&
+  new URL(import.meta.url).pathname
+    .toLowerCase()
+    .endsWith(process.argv[1].replaceAll("\\", "/").toLowerCase());
+
+if (isDirectExecution) {
+  seedCanonicalDemo()
+    .then(async () => {
+      await prisma.$disconnect();
+    })
+    .catch(async (error: unknown) => {
+      console.error(error);
+      await prisma.$disconnect();
+      process.exitCode = 1;
+    });
+}

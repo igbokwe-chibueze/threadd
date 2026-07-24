@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Reveal } from "@/components/motion/reveal";
+import { StructuredData } from "@/components/seo/structured-data";
 import { getCurrentSession } from "@/features/auth/authorization";
 import { getCurrentCartQuantity } from "@/features/cart/service";
 import { getUnreadEmailMessageCount } from "@/features/email/queries";
@@ -14,16 +15,42 @@ export default async function Home() {
     getCurrentSession(),
   ]);
   const unreadMessageCount = await getUnreadEmailMessageCount(session?.user.id);
+  const baseUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(
+    /\/$/,
+    "",
+  );
 
   return (
     <div className="min-h-screen bg-[#ece8df] text-[#171713]">
+      <StructuredData
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "@id": `${baseUrl}/#organization`,
+            name: "THREADD",
+            url: baseUrl,
+            description:
+              "A Nigerian unisex fashion store creating clothes without categories.",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "@id": `${baseUrl}/#website`,
+            name: "THREADD",
+            url: baseUrl,
+            publisher: { "@id": `${baseUrl}/#organization` },
+            inLanguage: "en-NG",
+          },
+        ]}
+      />
       <SiteHeader
         cartQuantity={cartQuantity}
         isSignedIn={Boolean(session)}
         unreadMessageCount={unreadMessageCount}
       />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <section className="relative isolate min-h-[100svh] overflow-hidden bg-[#373632]">
           <Image
             src="/images/campaign/threadd-hero-01.png"

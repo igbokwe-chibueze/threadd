@@ -6,6 +6,7 @@ import { EnquiryForm } from "@/features/enquiries/components/enquiry-form";
 export const metadata: Metadata = {
   title: "Contact",
   description: "Contact THREADD for product, delivery, and order support.",
+  alternates: { canonical: "/contact" },
 };
 
 export default async function ContactPage() {

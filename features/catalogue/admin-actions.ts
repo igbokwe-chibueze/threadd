@@ -10,14 +10,58 @@ import {
   parseVariantRows,
   productInputSchema,
 } from "@/features/catalogue/validation";
+import type { ParsedVariant } from "@/features/catalogue/validation";
+import { Prisma } from "@/generated/prisma/client";
 import type { ProductStatus } from "@/generated/prisma/enums";
 import { db } from "@/lib/db/client";
 
 export type ProductFormState = {
   error?: string;
+  field?: string;
+  values?: Record<string, string | boolean>;
+  submissionId?: string;
 };
 
 const allowedRoles = ["ADMIN", "SUPER_ADMIN"] as const;
+
+class CatalogueFieldError extends Error {
+  constructor(
+    message: string,
+    readonly field: string,
+  ) {
+    super(message);
+    this.name = "CatalogueFieldError";
+  }
+}
+
+function readSubmittedValues(formData: FormData) {
+  const fields = [
+    "name",
+    "slug",
+    "shortDescription",
+    "description",
+    "status",
+    "basePrice",
+    "compareAtPrice",
+    "categoryId",
+    "collectionId",
+    "seoTitle",
+    "seoDescription",
+    "imageAlt",
+    "variants",
+  ] as const;
+
+  return {
+    ...Object.fromEntries(
+      fields.map((fieldName) => [
+        fieldName,
+        String(formData.get(fieldName) ?? ""),
+      ]),
+    ),
+    featured: formData.get("featured") === "on",
+    replaceImages: formData.get("replaceImages") === "on",
+  };
+}
 
 function readProductInput(formData: FormData) {
   return productInputSchema.parse({
@@ -52,10 +96,13 @@ async function resolveImages(
   const retainedImages = replaceExisting ? [] : existingImages;
 
   if (retainedImages.length + files.length === 0) {
-    throw new Error("Add at least one product photo.");
+    throw new CatalogueFieldError("Add at least one product photo.", "images");
   }
   if (retainedImages.length + files.length > 6) {
-    throw new Error("A product can have up to 6 photos.");
+    throw new CatalogueFieldError(
+      "A product can have up to 6 photos.",
+      "images",
+    );
   }
 
   const uploadedUrls = await Promise.all(files.map(storeCatalogueImage));
@@ -78,24 +125,100 @@ function publicPaths(slug: string) {
   revalidatePath("/admin/catalogue");
 }
 
+async function assertSkusAvailable(
+  variants: readonly ParsedVariant[],
+  excludeProductId?: string,
+) {
+  const conflicts = await db.productVariant.findMany({
+    where: {
+      sku: { in: variants.map((variant) => variant.sku) },
+      ...(excludeProductId ? { productId: { not: excludeProductId } } : {}),
+    },
+    select: {
+      sku: true,
+      size: true,
+      colour: true,
+      product: { select: { name: true, status: true } },
+    },
+    orderBy: { sku: "asc" },
+  });
+
+  if (!conflicts.length) return;
+
+  const details = conflicts
+    .slice(0, 3)
+    .map(
+      (conflict) =>
+        `"${conflict.sku}" is already used by ${conflict.product.name} (${conflict.size} / ${conflict.colour}, ${conflict.product.status.toLowerCase()})`,
+    )
+    .join("; ");
+  const remaining =
+    conflicts.length > 3 ? `, plus ${conflicts.length - 3} more` : "";
+
+  throw new CatalogueFieldError(
+    `${details}${remaining}. Change the conflicting SKU or edit the existing product.`,
+    "variants",
+  );
+}
+
 function message(error: unknown) {
   if (error instanceof ZodError) {
-    return error.issues.map((issue) => issue.message).join(" ");
+    return {
+      error: error.issues.map((issue) => issue.message).join(" "),
+      field: String(error.issues[0]?.path[0] ?? ""),
+    };
   }
 
-  return error instanceof Error
-    ? error.message
-    : "The product could not be saved.";
+  if (error instanceof CatalogueFieldError) {
+    return { error: error.message, field: error.field };
+  }
+
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2002"
+  ) {
+    const target = Array.isArray(error.meta?.target)
+      ? error.meta.target.join(",")
+      : String(error.meta?.target ?? "");
+
+    if (target.includes("sku")) {
+      return {
+        error:
+          "One of these SKUs was just used by another product. Review the variant SKUs and try again.",
+        field: "variants",
+      };
+    }
+    if (target.includes("slug")) {
+      return {
+        error:
+          "Another product already uses this URL. Change the product name or URL slug and try again.",
+        field: "name",
+      };
+    }
+    return {
+      error:
+        "A product with one of these unique details already exists. Review the URL and variant details.",
+    };
+  }
+
+  if (error instanceof Error && !error.name.startsWith("Prisma")) {
+    return { error: error.message };
+  }
+
+  console.error("Catalogue product save failed", error);
+  return { error: "The product could not be saved. Please try again." };
 }
 
 export async function createProductAction(
   _state: ProductFormState,
   formData: FormData,
 ): Promise<ProductFormState> {
+  const values = readSubmittedValues(formData);
   try {
     const session = await requireRole(allowedRoles);
     const input = readProductInput(formData);
     const variants = parseVariantRows(String(formData.get("variants") ?? ""));
+    await assertSkusAvailable(variants);
     const { collectionId, imageAlt, ...productData } = input;
     const images = await resolveImages(formData, imageAlt);
 
@@ -140,7 +263,11 @@ export async function createProductAction(
 
     publicPaths(product.slug);
   } catch (error) {
-    return { error: message(error) };
+    return {
+      ...message(error),
+      values,
+      submissionId: crypto.randomUUID(),
+    };
   }
 
   redirect("/admin/catalogue?created=1");
@@ -151,6 +278,7 @@ export async function updateProductAction(
   _state: ProductFormState,
   formData: FormData,
 ): Promise<ProductFormState> {
+  const values = readSubmittedValues(formData);
   try {
     const session = await requireRole(allowedRoles);
     const existing = await db.product.findUnique({
@@ -163,6 +291,7 @@ export async function updateProductAction(
 
     const input = readProductInput(formData);
     const variants = parseVariantRows(String(formData.get("variants") ?? ""));
+    await assertSkusAvailable(variants, productId);
     const { collectionId, imageAlt, ...productData } = input;
     const images = await resolveImages(
       formData,
@@ -251,7 +380,11 @@ export async function updateProductAction(
     publicPaths(existing.slug);
     publicPaths(input.slug);
   } catch (error) {
-    return { error: message(error) };
+    return {
+      ...message(error),
+      values,
+      submissionId: crypto.randomUUID(),
+    };
   }
 
   redirect("/admin/catalogue?updated=1");

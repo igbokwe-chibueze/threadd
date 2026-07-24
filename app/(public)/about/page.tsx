@@ -5,6 +5,7 @@ import { EditorialPage } from "@/components/layout/editorial-page";
 export const metadata: Metadata = {
   title: "About",
   description: "The thinking, place, and point of view behind THREADD.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

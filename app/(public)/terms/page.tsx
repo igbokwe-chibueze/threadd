@@ -5,6 +5,7 @@ import { EditorialPage } from "@/components/layout/editorial-page";
 export const metadata: Metadata = {
   title: "Terms",
   description: "Terms governing use of the THREADD portfolio demonstration.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

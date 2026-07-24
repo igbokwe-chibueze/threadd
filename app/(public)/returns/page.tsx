@@ -5,6 +5,7 @@ import { EditorialPage } from "@/components/layout/editorial-page";
 export const metadata: Metadata = {
   title: "Returns",
   description: "THREADD cancellation, return, and refund principles.",
+  alternates: { canonical: "/returns" },
 };
 
 export default function ReturnsPage() {

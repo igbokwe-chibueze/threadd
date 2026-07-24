@@ -9,6 +9,11 @@ import {
 } from "@/features/orders/customer-actions";
 import { OrderRequestForm } from "@/features/orders/components/order-request-form";
 
+export const metadata = {
+  title: "Order confirmation",
+  robots: { index: false, follow: false },
+};
+
 type Props = { params: Promise<{ id: string }> };
 
 export default async function OrderConfirmationPage({ params }: Props) {

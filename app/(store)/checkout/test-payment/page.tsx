@@ -4,6 +4,11 @@ import { completeDemoPaymentAction } from "@/features/payments/demo-actions";
 import { formatNaira } from "@/features/catalogue/format";
 import { db } from "@/lib/db/client";
 
+export const metadata = {
+  title: "Test payment",
+  robots: { index: false, follow: false },
+};
+
 type Props = { searchParams: Promise<{ reference?: string }> };
 
 export default async function TestPaymentPage({ searchParams }: Props) {

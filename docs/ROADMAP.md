@@ -7,10 +7,10 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 9 — Protect and Reset the Public Demo                  |
+| Current phase    | Phase 10 — Optimize the Storefront                           |
 | Phase status     | In progress                                                   |
-| Previous phase   | Phase 8 — Completed on 24 July 2026                         |
-| Next phase       | Phase 10 — Optimize the Storefront                           |
+| Previous phase   | Phase 9 — Completed on 24 July 2026                         |
+| Next phase       | Phase 11 — Harden Security                                   |
 | Last reviewed    | 24 July 2026                                                |
 
 ### Status Rules
@@ -528,10 +528,11 @@ Required only for Mode B.
 
 </details>
 
-<details open>
-<summary><strong>PHASE 9 — PROTECT AND RESET THE PUBLIC DEMO</strong> · In progress</summary>
+<details>
+<summary><strong>PHASE 9 — PROTECT AND RESET THE PUBLIC DEMO</strong> · Completed</summary>
 
-**Status:** In progress.
+**Status:** Completed on 24 July 2026. The six-hour scheduler hook is ready and
+will be activated against the isolated demo deployment during Phase 12.
 
 ### Architecture
 
@@ -543,6 +544,17 @@ The demo is not a tenant inside the production database. It is a separate deploy
 - outbound customer email suppressed or redirected to an approved sink;
 - demo-specific environment configuration;
 - no access to production secrets or data.
+
+### Current Progress
+
+- [x] Seed normal demo administrator and customer accounts with one-click sign-in.
+- [x] Seed the catalogue, shipping, customers, enquiries, inventory, and a completed order/payment.
+- [x] Display a persistent portfolio-demo banner.
+- [x] Centrally prevent live payments, external email, and cross-environment reset.
+- [x] Add an authenticated six-hour reset endpoint with an atomic database reseed.
+- [x] Remove isolated uploaded demo media after reset.
+- [x] Document separate portfolio-demo and customer deployment configuration.
+- [x] Complete the Phase 9 manual safety and reset tests.
 
 ### Deliverables
 
@@ -574,8 +586,21 @@ The demo is not a tenant inside the production database. It is a separate deploy
 
 </details>
 
-<details>
-<summary><strong>PHASE 10 — OPTIMIZE THE STOREFRONT</strong> · Upcoming</summary>
+<details open>
+<summary><strong>PHASE 10 — OPTIMIZE THE STOREFRONT</strong> · In progress</summary>
+
+### Current Progress
+
+- [x] Review metadata, canonical URLs, sitemap, robots, and private-route indexing.
+- [x] Add Organization, WebSite, and Product structured data.
+- [x] Add Search Console verification configuration and release instructions.
+- [x] Review responsive image sizing, optimization, priority, and layout stability.
+- [x] Review Framer Motion scope, animation cost, and reduced-motion behavior.
+- [x] Add a keyboard skip link and accessible storefront loading feedback.
+- [x] Replace catalogue filter document reloads with pending client navigation.
+- [x] Approve a PII-safe analytics event boundary; keep analytics disabled for now.
+- [ ] Complete mobile/desktop manual accessibility and responsive tests.
+- [ ] Record deployed Lighthouse and Search Console evidence during Phase 12.
 
 ### Deliverables
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -16,6 +16,7 @@ type ProductImageViewerProps = Readonly<{
 export function ProductImageViewer({ images }: ProductImageViewerProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const hasMultiple = images.length > 1;
   const activeImage = images[activeIndex] ?? images[0];
@@ -52,10 +53,13 @@ export function ProductImageViewer({ images }: ProductImageViewerProps) {
         <AnimatePresence initial={false} mode="popLayout">
           <motion.div
             key={activeImage.url}
-            initial={{ opacity: 0 }}
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.28, ease: "easeOut" }}
+            exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+            transition={{
+              duration: prefersReducedMotion ? 0 : 0.28,
+              ease: "easeOut",
+            }}
             className="absolute inset-0"
           >
             <Image

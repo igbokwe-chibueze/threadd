@@ -23,7 +23,9 @@ export default async function PublicInformationLayout({
         isSignedIn={Boolean(session)}
         unreadMessageCount={unreadMessageCount}
       />
-      {children}
+      <div id="main-content" tabIndex={-1}>
+        {children}
+      </div>
       <SiteFooter />
     </div>
   );

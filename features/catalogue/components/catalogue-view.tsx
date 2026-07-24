@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CatalogueFilterForm } from "@/features/catalogue/components/catalogue-filter-form";
 import { ProductCard } from "@/features/catalogue/components/product-card";
 import {
   getCatalogueFacets,
@@ -67,76 +68,13 @@ export async function CatalogueView({
       </section>
 
       <section className="px-5 py-8 sm:px-10 lg:px-14">
-        <form
-          action=""
-          className="grid gap-3 border-b border-black/20 pb-8 sm:grid-cols-2 lg:grid-cols-6"
-        >
-          {preserve
-            ? Object.entries(preserve).map(([key, value]) =>
-                value ? (
-                  <input key={key} type="hidden" name={key} value={value} />
-                ) : null,
-              )
-            : null}
-          <label className="grid gap-2 text-[0.58rem] font-bold tracking-[0.14em] uppercase lg:col-span-2">
-            Search
-            <input
-              type="search"
-              name="q"
-              defaultValue={filters.query}
-              placeholder="Name, category, or SKU"
-              className="h-11 border border-black/25 bg-transparent px-3 text-sm font-normal tracking-normal normal-case outline-none focus:border-black"
-            />
-          </label>
-          <FilterSelect
-            label="Category"
-            name="category"
-            value={filters.category}
-            options={facets.categories.map((item) => [item.slug, item.name])}
-          />
-          <FilterSelect
-            label="Size"
-            name="size"
-            value={filters.size}
-            options={facets.sizes.map((item) => [item, item])}
-          />
-          <FilterSelect
-            label="Colour"
-            name="colour"
-            value={filters.colour}
-            options={facets.colours.map((item) => [item, item])}
-          />
-          <FilterSelect
-            label="Sort"
-            name="sort"
-            value={filters.sort}
-            options={[
-              ["featured", "Featured"],
-              ["newest", "Newest"],
-              ["price-asc", "Price: low to high"],
-              ["price-desc", "Price: high to low"],
-              ["name", "Name"],
-            ]}
-          />
-          <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-6 lg:justify-end">
-            <button
-              type="submit"
-              className="h-11 bg-[#171713] px-6 text-[0.62rem] font-bold tracking-[0.16em] text-white uppercase"
-            >
-              Apply filters
-            </button>
-            <Link
-              href={
-                preserve?.collection
-                  ? `/collections/${preserve.collection}`
-                  : "/shop"
-              }
-              className="grid h-11 place-items-center border border-black/25 px-5 text-[0.62rem] font-bold tracking-[0.16em] uppercase"
-            >
-              Clear
-            </Link>
-          </div>
-        </form>
+        <CatalogueFilterForm
+          filters={filters}
+          preserve={preserve}
+          categories={facets.categories.map((item) => [item.slug, item.name])}
+          sizes={facets.sizes.map((item) => [item, item])}
+          colours={facets.colours.map((item) => [item, item])}
+        />
 
         {products.length ? (
           <div className="grid gap-x-5 gap-y-12 pt-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -185,32 +123,5 @@ export async function CatalogueView({
         ) : null}
       </section>
     </>
-  );
-}
-
-type FilterSelectProps = Readonly<{
-  label: string;
-  name: string;
-  value?: string;
-  options: readonly (readonly [string, string])[];
-}>;
-
-function FilterSelect({ label, name, value, options }: FilterSelectProps) {
-  return (
-    <label className="grid gap-2 text-[0.58rem] font-bold tracking-[0.14em] uppercase">
-      {label}
-      <select
-        name={name}
-        defaultValue={value ?? ""}
-        className="h-11 border border-black/25 bg-transparent px-2 text-sm font-normal tracking-normal normal-case outline-none focus:border-black"
-      >
-        <option value="">All</option>
-        {options.map(([optionValue, optionLabel]) => (
-          <option key={optionValue} value={optionValue}>
-            {optionLabel}
-          </option>
-        ))}
-      </select>
-    </label>
   );
 }

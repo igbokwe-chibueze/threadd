@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { StructuredData } from "@/components/seo/structured-data";
 import { formatNaira } from "@/features/catalogue/format";
 import { ProductImageViewer } from "@/features/catalogue/components/product-image-viewer";
 import {
@@ -35,11 +36,14 @@ export async function generateMetadata({
   return {
     title: product.seoTitle ?? product.name,
     description: product.seoDescription ?? product.shortDescription,
-    openGraph: image
-      ? {
-          images: [{ url: image.url, alt: image.altText }],
-        }
-      : undefined,
+    alternates: { canonical: `/products/${product.slug}` },
+    openGraph: {
+      type: "website",
+      title: product.seoTitle ?? product.name,
+      description: product.seoDescription ?? product.shortDescription,
+      url: `/products/${product.slug}`,
+      images: image ? [{ url: image.url, alt: image.altText }] : undefined,
+    },
   };
 }
 
@@ -70,9 +74,44 @@ export default async function ProductPage({ params }: ProductPageProps) {
     appUrl: process.env.APP_URL,
     phoneNumber: process.env.WHATSAPP_PHONE_NUMBER,
   });
+  const baseUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(
+    /\/$/,
+    "",
+  );
+  const prices = product.variants.length
+    ? product.variants.map(
+        (variant) =>
+          Number(product.basePrice) + Number(variant.priceAdjustment ?? 0),
+      )
+    : [Number(product.basePrice)];
 
   return (
     <div className="grid lg:grid-cols-[1.45fr_1fr]">
+      <StructuredData
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: product.description,
+          sku: product.variants[0]?.sku,
+          image: product.images.map(
+            (productImage) => new URL(productImage.url, baseUrl).href,
+          ),
+          category: product.category.name,
+          brand: { "@type": "Brand", name: "THREADD" },
+          offers: {
+            "@type": "AggregateOffer",
+            url: `${baseUrl}/products/${product.slug}`,
+            priceCurrency: "NGN",
+            lowPrice: Math.min(...prices),
+            highPrice: Math.max(...prices),
+            offerCount: product.variants.length,
+            availability: available.length
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+          },
+        }}
+      />
       {image ? (
         <ProductImageViewer images={product.images} />
       ) : (

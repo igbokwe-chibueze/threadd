@@ -28,6 +28,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+body.demo-deployment {
+  padding-bottom: 1.25rem;
+}
+
 button,
 a {
   -webkit-tap-highlight-color: transparent;

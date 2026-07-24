@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Delivery",
   description:
     "THREADD delivery zones and initial shipping fees across Nigeria.",
+  alternates: { canonical: "/delivery" },
 };
 
 export default function DeliveryPage() {

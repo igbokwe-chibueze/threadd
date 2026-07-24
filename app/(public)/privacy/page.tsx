@@ -5,6 +5,7 @@ import { EditorialPage } from "@/components/layout/editorial-page";
 export const metadata: Metadata = {
   title: "Privacy",
   description: "How the THREADD demonstration handles personal information.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

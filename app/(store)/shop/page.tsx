@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   title: "Shop",
   description:
     "Shop THREADD's unisex collection of considered layers, tops, and trousers.",
+  alternates: { canonical: "/shop" },
+  openGraph: {
+    title: "Shop THREADD",
+    description:
+      "Shop THREADD's unisex collection of considered layers, tops, and trousers.",
+    url: "/shop",
+  },
 };
 
 type ShopPageProps = Readonly<{
