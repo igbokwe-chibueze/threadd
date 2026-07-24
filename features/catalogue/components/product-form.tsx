@@ -102,7 +102,6 @@ export function ProductForm({
       ref={formRef}
       action={formAction}
       className="mt-10 grid gap-8"
-      encType="multipart/form-data"
     >
       {state.error ? (
         <p

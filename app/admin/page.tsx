@@ -77,7 +77,7 @@ export default async function AdminPage() {
               </>
             );
             const className =
-              "group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-t border-white/20 py-5";
+              "group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-t border-white/20 px-2 py-5 transition-colors hover:border-[#d7ff3f] hover:bg-white/[0.04]";
 
             const href =
               name === "Catalogue"

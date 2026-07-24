@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { Wordmark } from "@/components/brand/wordmark";
+import { SignOutButton } from "@/features/auth/components/sign-out-button";
 
 const navigation = [
   { label: "Shop", href: "/shop" },
@@ -145,12 +146,24 @@ export function SiteHeader({
               {cartQuantity}
             </span>
           </Link>
-          <Link
-            href="/sign-in"
-            className="hidden rounded-full border border-current/40 px-4 py-2 text-[0.62rem] font-semibold tracking-[0.18em] uppercase transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f] sm:inline-flex"
-          >
-            Sign in
-          </Link>
+          {isSignedIn ? (
+            <>
+              <Link
+                href="/account"
+                className="hidden rounded-full border border-current/40 px-4 py-2 text-[0.62rem] font-semibold tracking-[0.18em] uppercase transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f] sm:inline-flex"
+              >
+                Account
+              </Link>
+              <SignOutButton className="hidden md:inline-flex" />
+            </>
+          ) : (
+            <Link
+              href="/sign-in"
+              className="hidden rounded-full border border-current/40 px-4 py-2 text-[0.62rem] font-semibold tracking-[0.18em] uppercase transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f] sm:inline-flex"
+            >
+              Sign in
+            </Link>
+          )}
           <button
             type="button"
             aria-label="Open navigation"
@@ -196,7 +209,11 @@ export function SiteHeader({
               .map((item, index) => (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={
+                    item.href === "/sign-in" && isSignedIn
+                      ? "/account"
+                      : item.href
+                  }
                   onClick={() => setIsOpen(false)}
                   className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b border-black/25 py-5"
                 >
@@ -204,7 +221,9 @@ export function SiteHeader({
                     0{index + 1}
                   </span>
                   <span className="text-4xl font-medium tracking-[-0.06em]">
-                    {item.label}
+                    {item.href === "/sign-in" && isSignedIn
+                      ? "Account"
+                      : item.label}
                     {item.href === "/cart" ? ` (${cartQuantity})` : ""}
                     {item.href === "/demo-outbox" && unreadMessageCount
                       ? ` (${unreadMessageCount})`
@@ -220,9 +239,12 @@ export function SiteHeader({
               ))}
           </nav>
 
-          <p className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase">
-            Lagos / Nigeria / Everywhere
-          </p>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase">
+              Lagos / Nigeria / Everywhere
+            </p>
+            {isSignedIn ? <SignOutButton /> : null}
+          </div>
         </div>
       </dialog>
     </>

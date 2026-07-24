@@ -5,7 +5,9 @@ import { useState } from "react";
 
 import { authClient } from "@/lib/auth/client";
 
-export function SignOutButton() {
+export function SignOutButton({
+  className = "",
+}: Readonly<{ className?: string }>) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
 
@@ -21,7 +23,7 @@ export function SignOutButton() {
       type="button"
       onClick={signOut}
       disabled={isPending}
-      className="rounded-full border border-current/25 px-4 py-2 text-[0.65rem] font-bold tracking-[0.16em] uppercase disabled:opacity-50"
+      className={`rounded-full border border-current/25 px-4 py-2 text-[0.65rem] font-bold tracking-[0.16em] uppercase transition-colors hover:border-[#d7ff3f] hover:bg-[#d7ff3f] hover:text-[#171713] disabled:cursor-wait disabled:opacity-50 ${className}`}
     >
       {isPending ? "Leaving…" : "Sign out"}
     </button>

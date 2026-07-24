@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 
 import { DemoBanner } from "@/components/layout/demo-banner";
+import { NavigationFeedback } from "@/components/layout/navigation-feedback";
 import { isDemoDeployment } from "@/features/demo/policy";
 
 import "./globals.css";
@@ -66,6 +68,9 @@ export default function RootLayout({
             : "flex min-h-full flex-col"
         }
       >
+        <Suspense fallback={null}>
+          <NavigationFeedback />
+        </Suspense>
         {children}
         {showDemoBanner ? <DemoBanner placement="bottom" /> : null}
       </body>

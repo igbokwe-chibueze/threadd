@@ -113,6 +113,28 @@ test("demo administrator enters the studio", async ({ page }) => {
   await expect(page).toHaveURL(/\/admin$/);
 });
 
+test("demo administrator opens a catalogue product editor", async ({
+  page,
+}) => {
+  await page.goto("/sign-in");
+  await page.getByRole("button", { name: /enter the studio/i }).click();
+  await expect(page).toHaveURL(/\/admin$/, { timeout: 20_000 });
+
+  await page.getByRole("link", { name: /catalogue/i }).click();
+  await expect(page).toHaveURL(/\/admin\/catalogue$/);
+
+  const editLink = page.getByRole("link", { name: /edit/i }).first();
+  await expect(editLink).toHaveAttribute(
+    "href",
+    /^\/admin\/catalogue\/[^/]+\/edit$/,
+  );
+  await editLink.click();
+
+  await expect(
+    page.getByRole("heading", { name: /edit the piece/i }),
+  ).toBeVisible({ timeout: 20_000 });
+});
+
 test("password reset is delivered only to the private Demo Outbox", async ({
   page,
 }) => {

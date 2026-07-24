@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { PendingLink } from "@/components/ui/pending-link";
 import { requireRole } from "@/features/auth/authorization";
 import { formatNaira } from "@/features/catalogue/format";
 import { db } from "@/lib/db/client";
@@ -25,12 +26,13 @@ export default async function AdminCataloguePage() {
         <Link href="/admin" className="text-sm font-bold uppercase">
           THREADD / Studio
         </Link>
-        <Link
+        <PendingLink
           href="/admin/catalogue/new"
-          className="bg-[#d7ff3f] px-5 py-3 text-[0.62rem] font-bold tracking-[0.16em] text-black uppercase"
+          pendingLabel="Opening form…"
+          className="min-w-32 bg-[#d7ff3f] px-5 py-3 text-center text-[0.62rem] font-bold tracking-[0.16em] text-black uppercase hover:bg-white"
         >
           New product
-        </Link>
+        </PendingLink>
       </header>
       <section className="py-14">
         <p className="text-[0.62rem] font-bold tracking-[0.2em] text-[#d7ff3f] uppercase">
@@ -55,7 +57,10 @@ export default async function AdminCataloguePage() {
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} className="border-b border-white/15">
+                <tr
+                  key={product.id}
+                  className="border-b border-white/15 transition-colors hover:bg-white/[0.04]"
+                >
                   <td className="py-5 font-medium">
                     {product.name}
                     <span className="mt-1 block text-xs text-white/35">
@@ -72,12 +77,13 @@ export default async function AdminCataloguePage() {
                   </td>
                   <td>{formatNaira(Number(product.basePrice))}</td>
                   <td className="text-right">
-                    <Link
+                    <PendingLink
                       href={`/admin/catalogue/${product.id}/edit`}
-                      className="text-[#d7ff3f]"
+                      pendingLabel="Opening editor…"
+                      className="inline-flex min-w-24 justify-end text-[#d7ff3f] hover:underline hover:underline-offset-4"
                     >
                       Edit →
-                    </Link>
+                    </PendingLink>
                   </td>
                 </tr>
               ))}

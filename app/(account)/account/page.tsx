@@ -52,6 +52,12 @@ export default async function AccountPage() {
           </h1>
           <nav className="mt-10 grid max-w-sm border-t border-black/20">
             <Link
+              href="/shop"
+              className="flex justify-between border-b border-black/20 py-4 text-sm"
+            >
+              Continue shopping <span>Shop →</span>
+            </Link>
+            <Link
               href="/cart"
               className="flex justify-between border-b border-black/20 py-4 text-sm"
             >

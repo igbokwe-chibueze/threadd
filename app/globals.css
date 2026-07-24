@@ -37,6 +37,26 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+:where(a[href], button:not(:disabled), summary) {
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    opacity 160ms ease;
+}
+
+:where(a[href], button:not(:disabled), summary):focus-visible {
+  outline: 2px solid #d7ff3f;
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(a[href], button:not(:disabled), summary):hover {
+    opacity: 0.78;
+  }
+}
+
 dialog::backdrop {
   background: rgb(0 0 0 / 45%);
   backdrop-filter: blur(8px);
