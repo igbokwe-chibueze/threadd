@@ -7,11 +7,11 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 5 — Inventory Controls                                |
-| Phase status     | In progress                                                  |
-| Previous phase   | Phase 4 — Completed on 23 July 2026                         |
-| Next phase       | Phase 6A — Product Enquiries                                |
-| Last reviewed    | 23 July 2026                                                |
+| Current phase    | Phase 6B — Customer Accounts and Cart                       |
+| Phase status     | Ready                                                         |
+| Previous phase   | Phase 6A — Completed on 24 July 2026                        |
+| Next phase       | Phase 7 — Checkout, Payments, and Orders                     |
+| Last reviewed    | 24 July 2026                                                |
 
 ### Status Rules
 
@@ -303,10 +303,10 @@ All must pass.
 
 </details>
 
-<details open>
-<summary><strong>PHASE 5 — CONTROL INVENTORY</strong> · In progress</summary>
+<details>
+<summary><strong>PHASE 5 — CONTROL INVENTORY</strong> · Completed</summary>
 
-**Status:** In progress.
+**Status:** Completed on 24 July 2026.
 
 ### Current Progress
 
@@ -334,7 +334,18 @@ All must pass.
 </details>
 
 <details>
-<summary><strong>PHASE 6A — HANDLE PRODUCT ENQUIRIES</strong> · Upcoming</summary>
+<summary><strong>PHASE 6A — HANDLE PRODUCT ENQUIRIES</strong> · Completed</summary>
+
+**Status:** Completed on 24 July 2026.
+
+### Current Progress
+
+- [x] Add enquiry, status-history, and internal-note records.
+- [x] Build general and product-specific public enquiry forms.
+- [x] Add safe WhatsApp product links and abuse controls.
+- [x] Build the protected administrator enquiry inbox.
+- [x] Deliver customer and administrator messages through Demo Outbox.
+- [x] Verify validation, throttling, rendering, and delivery-failure rules.
 
 This phase completes Mode A.
 
@@ -367,8 +378,10 @@ This phase completes Mode A.
 
 </details>
 
-<details>
-<summary><strong>PHASE 6B — BUILD CUSTOMER ACCOUNTS AND CART</strong> · Upcoming</summary>
+<details open>
+<summary><strong>PHASE 6B — BUILD CUSTOMER ACCOUNTS AND CART</strong> · Ready</summary>
+
+**Status:** Ready to begin.
 
 This phase is required only for Mode B.
 

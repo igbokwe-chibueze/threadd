@@ -8,6 +8,9 @@ import {
   getPublicProduct,
   getPublicProductSlugs,
 } from "@/features/catalogue/queries";
+import { getCurrentSession } from "@/features/auth/authorization";
+import { EnquiryForm } from "@/features/enquiries/components/enquiry-form";
+import { createProductWhatsAppUrl } from "@/features/enquiries/whatsapp";
 
 type ProductPageProps = Readonly<{
   params: Promise<{ slug: string }>;
@@ -40,6 +43,7 @@ export async function generateMetadata({
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
+  const session = await getCurrentSession();
   const product = await getPublicProduct((await params).slug);
 
   if (!product) {
@@ -59,6 +63,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const available = product.variants.filter(
     (variant) => variant.inventoryQuantity > 0,
   );
+  const whatsappUrl = createProductWhatsAppUrl({
+    name: product.name,
+    slug: product.slug,
+    appUrl: process.env.APP_URL,
+    phoneNumber: process.env.WHATSAPP_PHONE_NUMBER,
+  });
 
   return (
     <div className="grid lg:grid-cols-[1.45fr_1fr]">
@@ -134,6 +144,36 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {available.length
               ? `${available.length} variants ready. Cart and checkout arrive in PHASE 6B.`
               : "This piece is currently sold out."}
+          </div>
+
+          <div className="mt-10 border-t border-black/20 pt-8">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="text-[0.58rem] font-bold tracking-[0.16em] uppercase">
+                  Need to know more?
+                </p>
+                <h2 className="mt-2 text-2xl font-medium tracking-[-0.035em]">
+                  Ask about this piece.
+                </h2>
+              </div>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="border border-black/25 px-4 py-3 text-[0.6rem] font-bold tracking-[0.13em] uppercase"
+              >
+                Ask on WhatsApp ↗
+              </a>
+            </div>
+            <div className="mt-7">
+              <EnquiryForm
+                kind="PRODUCT"
+                productId={product.id}
+                productName={product.name}
+                defaultName={session?.user.name}
+                defaultEmail={session?.user.email}
+              />
+            </div>
           </div>
         </div>
 

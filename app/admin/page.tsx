@@ -16,6 +16,7 @@ export const metadata = {
 const modules = [
   ["Catalogue", "Products, categories, collections"],
   ["Inventory", "Variant stock and movement history"],
+  ["Enquiries", "Customer questions, notes, and follow-up"],
   ["Orders", "Payment and fulfilment workflow"],
   ["Customers", "Profiles, history, and support"],
 ] as const;
@@ -81,7 +82,9 @@ export default async function AdminPage() {
                 ? "/admin/catalogue"
                 : name === "Inventory"
                   ? "/admin/inventory"
-                  : null;
+                  : name === "Enquiries"
+                    ? "/admin/enquiries"
+                    : null;
 
             return href ? (
               <Link key={name} href={href} className={className}>
