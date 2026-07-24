@@ -67,6 +67,160 @@ dialog::backdrop {
   color: #171713;
 }
 
+.threadd-loading-wordmark {
+  position: relative;
+  display: inline-block;
+  animation: threadd-wordmark-breathe 2.4s ease-in-out infinite;
+}
+
+.threadd-loading-wordmark::after {
+  position: absolute;
+  inset: 0;
+  color: #d7ff3f;
+  content: attr(data-wordmark);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(0);
+  animation: threadd-wordmark-shift 3.6s steps(1, end) infinite;
+}
+
+.threadd-loading-captions {
+  position: relative;
+  height: 1rem;
+  overflow: hidden;
+}
+
+.threadd-loading-captions span {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(0.35rem);
+  animation: threadd-caption-cycle 6s ease-in-out infinite;
+}
+
+.threadd-loading-captions span:nth-child(2) {
+  animation-delay: 2s;
+}
+
+.threadd-loading-captions span:nth-child(3) {
+  animation-delay: 4s;
+}
+
+.threadd-loading-thread {
+  position: relative;
+  height: 1px;
+  overflow: visible;
+  background: rgb(255 255 255 / 12%);
+}
+
+.threadd-loading-thread::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 100%;
+  background: #d7ff3f;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: threadd-draw-thread 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.threadd-loading-thread span {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 9999px;
+  background: #d7ff3f;
+  box-shadow: 0 0 0.7rem rgb(215 255 63 / 75%);
+  transform: translate(-50%, -50%);
+  animation: threadd-thread-needle 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes threadd-draw-thread {
+  0% {
+    opacity: 0.25;
+    transform: scaleX(0);
+  }
+  65%,
+  82% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes threadd-thread-needle {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  65%,
+  82% {
+    left: 100%;
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes threadd-caption-cycle {
+  0% {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+  10%,
+  27% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  33%,
+  100% {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+}
+
+@keyframes threadd-wordmark-breathe {
+  0%,
+  100% {
+    opacity: 0.86;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes threadd-wordmark-shift {
+  0%,
+  72%,
+  76%,
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  73% {
+    opacity: 0.5;
+    transform: translateX(2px);
+  }
+  74% {
+    opacity: 0.3;
+    transform: translateX(-1px);
+  }
+  75% {
+    opacity: 0.45;
+    transform: translateX(1px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -79,5 +233,25 @@ dialog::backdrop {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .threadd-loading-wordmark {
+    opacity: 1;
+  }
+
+  .threadd-loading-wordmark::after,
+  .threadd-loading-captions span:not(:first-child),
+  .threadd-loading-thread span {
+    display: none;
+  }
+
+  .threadd-loading-captions span:first-child {
+    opacity: 1;
+    transform: none;
+  }
+
+  .threadd-loading-thread::before {
+    opacity: 0.65;
+    transform: scaleX(1);
   }
 }
