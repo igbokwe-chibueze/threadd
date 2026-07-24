@@ -7,10 +7,10 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 6B — Customer Accounts and Cart                       |
+| Current phase    | Phase 7 — Checkout, Payments, and Orders                     |
 | Phase status     | Ready                                                         |
-| Previous phase   | Phase 6A — Completed on 24 July 2026                        |
-| Next phase       | Phase 7 — Checkout, Payments, and Orders                     |
+| Previous phase   | Phase 6B — Completed on 24 July 2026                        |
+| Next phase       | Phase 8 — Deliver Notifications Reliably                     |
 | Last reviewed    | 24 July 2026                                                |
 
 ### Status Rules
@@ -378,10 +378,19 @@ This phase completes Mode A.
 
 </details>
 
-<details open>
-<summary><strong>PHASE 6B — BUILD CUSTOMER ACCOUNTS AND CART</strong> · Ready</summary>
+<details>
+<summary><strong>PHASE 6B — BUILD CUSTOMER ACCOUNTS AND CART</strong> · Completed</summary>
 
-**Status:** Ready to begin.
+**Status:** Completed on 24 July 2026.
+
+### Current Progress
+
+- [x] Add customer address and persistent cart records.
+- [x] Build server-authoritative guest and customer cart operations.
+- [x] Add product variant selection and cart feedback.
+- [x] Build the responsive cart summary and checkout entry.
+- [x] Build customer profile and saved-address management.
+- [x] Verify ownership, price, availability, and stock rules.
 
 This phase is required only for Mode B.
 
@@ -404,8 +413,10 @@ This phase is required only for Mode B.
 
 </details>
 
-<details>
-<summary><strong>PHASE 7 — CHECKOUT, PAYMENTS, AND ORDERS</strong> · Upcoming</summary>
+<details open>
+<summary><strong>PHASE 7 — CHECKOUT, PAYMENTS, AND ORDERS</strong> · Ready</summary>
+
+**Status:** Ready to begin.
 
 Required only for Mode B.
 

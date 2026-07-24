@@ -9,14 +9,19 @@ const navigation = [
   { label: "Shop", href: "/shop" },
   { label: "About", href: "/about" },
   { label: "Delivery", href: "/delivery" },
+  { label: "Cart", href: "/cart" },
   { label: "Account", href: "/sign-in" },
 ] as const;
 
 type SiteHeaderProps = Readonly<{
   appearance?: "overlay" | "solid";
+  cartQuantity?: number;
 }>;
 
-export function SiteHeader({ appearance = "overlay" }: SiteHeaderProps) {
+export function SiteHeader({
+  appearance = "overlay",
+  cartQuantity = 0,
+}: SiteHeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const isSolid = appearance === "solid";
@@ -66,6 +71,18 @@ export function SiteHeader({ appearance = "overlay" }: SiteHeaderProps) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Link
+            href="/cart"
+            className="rounded-full border border-current/40 px-4 py-2 text-[0.62rem] font-semibold tracking-[0.18em] uppercase transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f]"
+          >
+            Cart
+            <span
+              className="ml-2 inline-grid min-w-5 place-items-center rounded-full bg-[#d7ff3f] px-1 text-[0.55rem] text-[#171713]"
+              aria-label={`${cartQuantity} items in cart`}
+            >
+              {cartQuantity}
+            </span>
+          </Link>
           <Link
             href="/sign-in"
             className="hidden rounded-full border border-current/40 px-4 py-2 text-[0.62rem] font-semibold tracking-[0.18em] uppercase transition-colors hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f] sm:inline-flex"
@@ -124,6 +141,7 @@ export function SiteHeader({ appearance = "overlay" }: SiteHeaderProps) {
                 </span>
                 <span className="text-4xl font-medium tracking-[-0.06em]">
                   {item.label}
+                  {item.href === "/cart" ? ` (${cartQuantity})` : ""}
                 </span>
                 <span
                   aria-hidden="true"

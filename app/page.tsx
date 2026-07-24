@@ -4,11 +4,14 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Reveal } from "@/components/motion/reveal";
+import { getCurrentCartQuantity } from "@/features/cart/service";
 
-export default function Home() {
+export default async function Home() {
+  const cartQuantity = await getCurrentCartQuantity();
+
   return (
     <div className="min-h-screen bg-[#ece8df] text-[#171713]">
-      <SiteHeader />
+      <SiteHeader cartQuantity={cartQuantity} />
 
       <main>
         <section className="relative isolate min-h-[100svh] overflow-hidden bg-[#373632]">

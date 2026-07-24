@@ -11,6 +11,7 @@ import {
 import { getCurrentSession } from "@/features/auth/authorization";
 import { EnquiryForm } from "@/features/enquiries/components/enquiry-form";
 import { createProductWhatsAppUrl } from "@/features/enquiries/whatsapp";
+import { AddToCartForm } from "@/features/cart/components/add-to-cart-form";
 
 type ProductPageProps = Readonly<{
   params: Promise<{ slug: string }>;
@@ -142,9 +143,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           <div className="mt-10 bg-[#171713] px-5 py-4 text-sm text-white">
             {available.length
-              ? `${available.length} variants ready. Cart and checkout arrive in PHASE 6B.`
+              ? `${available.length} variants currently available.`
               : "This piece is currently sold out."}
           </div>
+          {available.length ? (
+            <AddToCartForm
+              variants={product.variants.map((variant) => ({
+                id: variant.id,
+                size: variant.size,
+                colour: variant.colour,
+                inventoryQuantity: variant.inventoryQuantity,
+              }))}
+            />
+          ) : null}
 
           <div className="mt-10 border-t border-black/20 pt-8">
             <div className="flex flex-wrap items-end justify-between gap-4">
