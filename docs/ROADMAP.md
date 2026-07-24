@@ -480,6 +480,17 @@ Required only for Mode B.
 
 **Status:** In progress.
 
+### Current Progress
+
+- [x] Keep notification producers behind a typed provider-independent service.
+- [x] Store customer and guest previews in a private Demo Outbox.
+- [x] Add customer navbar access, unread counts, read state, and text downloads.
+- [x] Add a separate role-protected administrator notification outbox.
+- [x] Protect guest previews with hashed, short-lived access tokens.
+- [x] Add configurable administrator recipients and bounded provider retries.
+- [x] Verify plain-text safety, access predicates, provider swapping, and retry limits.
+- [ ] Complete customer, guest, and administrator manual privacy tests.
+
 ### Deliverables
 
 - Define a typed email-provider interface that is independent of Resend and the demo implementation.

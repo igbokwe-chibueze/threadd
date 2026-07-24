@@ -1,31 +1,14 @@
 import "server-only";
 
+import {
+  buildEmailViewerWhere,
+  type EmailViewer,
+} from "@/features/email/access-policy";
 import { db } from "@/lib/db/client";
-import { hashEmailPreviewToken } from "@/lib/email/preview-access";
-
-type EmailViewer = Readonly<{
-  userId?: string;
-  previewToken?: string;
-}>;
-
-function viewerWhere(viewer: EmailViewer) {
-  if (viewer.userId) {
-    return { recipientUserId: viewer.userId };
-  }
-
-  if (viewer.previewToken) {
-    return {
-      previewTokenHash: hashEmailPreviewToken(viewer.previewToken),
-      previewExpiresAt: { gt: new Date() },
-    };
-  }
-
-  return { id: "__no-access__" };
-}
 
 export async function getAccessibleEmailMessages(viewer: EmailViewer) {
   return db.emailMessage.findMany({
-    where: viewerWhere(viewer),
+    where: buildEmailViewerWhere(viewer),
     orderBy: { createdAt: "desc" },
     take: 20,
   });
@@ -42,6 +25,40 @@ export async function getUnreadEmailMessageCount(userId?: string) {
   });
 }
 
+export async function getAdminEmailMessages(
+  userId: string,
+  recipientEmail: string,
+) {
+  return db.emailMessage.findMany({
+    where: {
+      kind: "ADMIN_NOTIFICATION",
+      OR: [
+        { recipientUserId: userId },
+        { recipientEmail: recipientEmail.toLowerCase() },
+      ],
+    },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+}
+
+export async function getAdminEmailMessage(
+  id: string,
+  userId: string,
+  recipientEmail: string,
+) {
+  return db.emailMessage.findFirst({
+    where: {
+      id,
+      kind: "ADMIN_NOTIFICATION",
+      OR: [
+        { recipientUserId: userId },
+        { recipientEmail: recipientEmail.toLowerCase() },
+      ],
+    },
+  });
+}
+
 export async function getAccessibleEmailMessage(
   id: string,
   viewer: EmailViewer,
@@ -49,7 +66,7 @@ export async function getAccessibleEmailMessage(
   return db.emailMessage.findFirst({
     where: {
       id,
-      ...viewerWhere(viewer),
+      ...buildEmailViewerWhere(viewer),
     },
   });
 }

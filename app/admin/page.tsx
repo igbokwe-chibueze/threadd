@@ -19,6 +19,7 @@ const modules = [
   ["Enquiries", "Customer questions, notes, and follow-up"],
   ["Orders", "Payment and fulfilment workflow"],
   ["Shipping", "Nigeria delivery zones and fees"],
+  ["Notifications", "Private administrator demo outbox"],
   ["Customers", "Profiles, history, and support"],
 ] as const;
 
@@ -89,7 +90,9 @@ export default async function AdminPage() {
                       ? "/admin/orders"
                       : name === "Shipping"
                         ? "/admin/shipping"
-                        : null;
+                        : name === "Notifications"
+                          ? "/admin/outbox"
+                          : null;
 
             return href ? (
               <Link key={name} href={href} className={className}>
