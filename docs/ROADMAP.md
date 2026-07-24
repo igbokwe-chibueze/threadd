@@ -178,7 +178,7 @@ All must pass.
 - [x] Customer, administrator, and super-administrator roles defined.
 - [x] Server-owned role fields and server-side authorization guards implemented.
 - [x] Demo customer and administrator credential accounts seeded.
-- [x] Sign-in, customer account, and administrator studio shells implemented.
+- [x] Sign-in, customer account, and administrator area shells implemented.
 - [x] Customer-to-admin authorization boundary verified by an end-to-end test.
 - [x] Add password reset and email verification through the Demo Outbox.
 - [x] Add the secure super-administrator bootstrap flow.
@@ -629,6 +629,18 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
 
 <details open>
 <summary><strong>PHASE 11 — HARDEN SECURITY</strong> · In progress</summary>
+
+### Current Progress
+
+- [x] Add and test explicit browser security headers, including CSP,
+  clickjacking, MIME-sniffing, referrer, permissions, and production transport
+  controls.
+- [x] Harden Better Auth trusted origins, session lifetime, cookie attributes,
+  production secret requirements, and production URL validation.
+- [x] Start the evidence-backed audit record in `SECURITY_EVIDENCE.md`.
+- [ ] Complete the remaining authorization, payment, upload, rate-limit,
+  dependency, secret, logging/privacy, recovery, and deployment-configuration
+  reviews.
 
 ### Deliverables
 

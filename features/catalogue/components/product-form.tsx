@@ -98,11 +98,7 @@ export function ProductForm({
   }, [selectedFiles, state.field, state.submissionId]);
 
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      className="mt-10 grid gap-8"
-    >
+    <form ref={formRef} action={formAction} className="mt-10 grid gap-8">
       {state.error ? (
         <p
           role="alert"
@@ -212,7 +208,7 @@ export function ProductForm({
             <option value="ACTIVE">Published</option>
           </select>
           <span className={help}>
-            Drafts stay inside Studio. Published products appear in the shop.
+            Drafts stay inside Admin. Published products appear in the shop.
           </span>
         </label>
       </div>
@@ -395,7 +391,7 @@ export function ProductForm({
         {product ? (
           <p className="mt-3 border-l-2 border-[#d7ff3f] pl-3 text-xs leading-5 text-white/65">
             Existing stock numbers are shown for reference but cannot be changed
-            here. Use Studio → Inventory for every stock adjustment so the
+            here. Use Admin → Inventory for every stock adjustment so the
             movement history remains complete. Stock is used here only when you
             add a brand-new SKU.
           </p>

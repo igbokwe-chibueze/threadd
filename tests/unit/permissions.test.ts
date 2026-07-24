@@ -6,7 +6,7 @@ import {
 } from "@/features/auth/permissions";
 
 describe("authentication permissions", () => {
-  it("allows normal administrators into the studio without owner controls", () => {
+  it("allows normal administrators into admin without owner controls", () => {
     expect(canAccessAdmin("ADMIN")).toBe(true);
     expect(canManageAdministrators("ADMIN")).toBe(false);
   });

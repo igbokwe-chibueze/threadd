@@ -6,7 +6,7 @@ import { ProductForm } from "@/features/catalogue/components/product-form";
 import { db } from "@/lib/db/client";
 
 export const metadata = {
-  title: "New product / Studio",
+  title: "New product / Admin",
   robots: { index: false },
 };
 

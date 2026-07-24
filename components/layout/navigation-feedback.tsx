@@ -8,8 +8,7 @@ export function NavigationFeedback() {
   const searchParams = useSearchParams();
   const [destinationUrl, setDestinationUrl] = useState<string | null>(null);
   const currentUrl = `${pathname}${searchParams.size ? `?${searchParams}` : ""}`;
-  const isNavigating =
-    destinationUrl !== null && destinationUrl !== currentUrl;
+  const isNavigating = destinationUrl !== null && destinationUrl !== currentUrl;
 
   useEffect(() => {
     function beginNavigation(event: MouseEvent) {

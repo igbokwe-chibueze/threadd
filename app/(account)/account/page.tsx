@@ -11,7 +11,11 @@ import {
   ProfileForm,
 } from "@/features/account/components/account-forms";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
-import { getCurrentSession } from "@/features/auth/authorization";
+import {
+  canAccessAdmin,
+  getCurrentSession,
+} from "@/features/auth/authorization";
+import type { UserRole } from "@/generated/prisma/enums";
 import { db } from "@/lib/db/client";
 
 export const metadata = {
@@ -40,7 +44,17 @@ export default async function AccountPage() {
         <Link href="/" className="text-sm font-bold uppercase">
           THREADD / Account
         </Link>
-        <SignOutButton />
+        <div className="flex items-center gap-3">
+          {canAccessAdmin(session.user.role as UserRole) ? (
+            <Link
+              href="/admin"
+              className="rounded-full border border-black/40 px-4 py-2 text-[0.58rem] font-bold tracking-[0.12em] uppercase transition-colors hover:border-black hover:bg-[#171713] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#171713]"
+            >
+              Go to admin
+            </Link>
+          ) : null}
+          <SignOutButton />
+        </div>
       </header>
       <section className="grid gap-12 py-14 lg:grid-cols-[0.8fr_1.2fr]">
         <div>

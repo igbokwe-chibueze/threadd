@@ -24,6 +24,52 @@ const serverEnvironmentSchema = z
   })
   .superRefine((environment, context) => {
     if (
+      environment.APP_ENV === "production" &&
+      new URL(environment.APP_URL).protocol !== "https:"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["APP_URL"],
+        message: "Production application URLs must use HTTPS.",
+      });
+    }
+
+    if (
+      environment.APP_ENV === "production" &&
+      new URL(environment.BETTER_AUTH_URL).protocol !== "https:"
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["BETTER_AUTH_URL"],
+        message: "Production authentication URLs must use HTTPS.",
+      });
+    }
+
+    if (
+      environment.APP_ENV === "production" &&
+      new URL(environment.APP_URL).origin !==
+        new URL(environment.BETTER_AUTH_URL).origin
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["BETTER_AUTH_URL"],
+        message:
+          "Production authentication and application URLs must share an origin.",
+      });
+    }
+
+    if (
+      environment.APP_ENV === "production" &&
+      !environment.BETTER_AUTH_SECRET
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["BETTER_AUTH_SECRET"],
+        message: "Production requires a Better Auth secret.",
+      });
+    }
+
+    if (
       environment.DEPLOYMENT_MODE === "portfolio_demo" &&
       !environment.DEMO_MODE
     ) {

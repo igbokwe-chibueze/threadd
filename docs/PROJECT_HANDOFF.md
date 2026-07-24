@@ -91,6 +91,17 @@ checking boxes. The phase includes:
 - backup/recovery and environment configuration;
 - demo reset authorization, target isolation, and credential review.
 
+The first Phase 11 slice is implemented in the current working tree:
+
+- browser security headers now include a static-compatible CSP and
+  production-only HSTS/upgrade enforcement;
+- Better Auth now has explicit trusted origins, session expiry/refresh,
+  `HttpOnly`/`SameSite`/production `Secure` cookie attributes;
+- production environment validation requires HTTPS, matching app/auth origins,
+  and an authentication secret;
+- [`SECURITY_EVIDENCE.md`](./SECURITY_EVIDENCE.md) records the evidence and the
+  remaining low-risk CSP nonce tradeoff.
+
 Exit requirements:
 
 - zero open critical findings;

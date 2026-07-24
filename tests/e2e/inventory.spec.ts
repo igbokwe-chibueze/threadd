@@ -48,7 +48,7 @@ test("admin adjustments are guarded, recorded, and audited", async ({
 }) => {
   test.setTimeout(90_000);
   await page.goto("/sign-in");
-  await page.getByRole("button", { name: /enter the studio/i }).click();
+  await page.getByRole("button", { name: /enter admin/i }).click();
   await expect(page).toHaveURL(/\/admin$/, { timeout: 20_000 });
   await page.goto("/admin/inventory");
   await page.evaluate(() => {

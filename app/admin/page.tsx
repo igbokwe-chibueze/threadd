@@ -9,7 +9,7 @@ import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import type { UserRole } from "@/generated/prisma/enums";
 
 export const metadata = {
-  title: "Studio",
+  title: "Admin",
   robots: { index: false, follow: false },
 };
 
@@ -37,11 +37,17 @@ export default async function AdminPage() {
   return (
     <main className="min-h-screen bg-[#171713] px-5 py-6 text-[#f4f0e7] sm:px-10 lg:px-14">
       <header className="flex items-center justify-between border-b border-white/20 pb-5">
-        <p className="text-sm font-bold uppercase">THREADD / Studio</p>
+        <p className="text-sm font-bold uppercase">THREADD / Admin</p>
         <div className="flex items-center gap-3">
           <span className="hidden rounded-full bg-[#d7ff3f] px-3 py-2 text-[0.58rem] font-bold tracking-[0.12em] text-[#171713] uppercase sm:block">
             Demo mode
           </span>
+          <Link
+            href="/shop"
+            className="rounded-full border border-white/40 px-4 py-2 text-[0.58rem] font-bold tracking-[0.12em] uppercase transition-colors hover:border-[#d7ff3f] hover:bg-[#d7ff3f] hover:text-[#171713] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7ff3f]"
+          >
+            View shop
+          </Link>
           <SignOutButton />
         </div>
       </header>

@@ -24,7 +24,7 @@ const demoAccounts: readonly DemoAccount[] = [
     destination: "/account",
   },
   {
-    label: "Enter the studio",
+    label: "Enter admin",
     description: "Explore catalogue, inventory, customers, and orders.",
     email: "admin@demo.threadd.store",
     password: "DemoAdmin123!",

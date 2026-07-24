@@ -6,7 +6,7 @@ import { formatNaira } from "@/features/catalogue/format";
 import { db } from "@/lib/db/client";
 
 export const metadata = {
-  title: "Catalogue / Studio",
+  title: "Catalogue / Admin",
   robots: { index: false },
 };
 
@@ -24,7 +24,7 @@ export default async function AdminCataloguePage() {
     <main className="min-h-screen bg-[#171713] px-5 py-8 text-[#f4f0e7] sm:px-10 lg:px-14">
       <header className="flex items-center justify-between border-b border-white/20 pb-5">
         <Link href="/admin" className="text-sm font-bold uppercase">
-          THREADD / Studio
+          THREADD / Admin
         </Link>
         <PendingLink
           href="/admin/catalogue/new"

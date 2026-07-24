@@ -61,9 +61,9 @@ DemoShopper123!
 
 ## Test the administrator account
 
-1. On `/sign-in`, select **Enter the studio**.
+1. On `/sign-in`, select **Enter admin**.
 2. Confirm you arrive at `/admin`.
-3. Confirm the dark THREADD Studio screen shows Catalogue, Inventory, Orders,
+3. Confirm the dark THREADD Admin screen shows Catalogue, Inventory, Orders,
    and Customers.
 4. Select **Catalogue**, then **New product**.
 5. Create a draft with two or more JPEG, PNG, or WebP photos under 4 MB each
@@ -73,13 +73,13 @@ DemoShopper123!
    TEST-TEE-BLK-M | M | Black | #171713 | 5 | 0
    ```
 
-6. Confirm the product appears in Studio but not on `/shop`. Edit it once to
+6. Confirm the product appears in Admin but not on `/shop`. Edit it once to
    append another photo, then try the replacement option and confirm the
    selected photos replace the previous gallery.
 7. Edit it, change **Visibility** to **Published**, save, and confirm it appears
    on `/shop` and opens at its product URL.
 8. Edit it again and archive it. Confirm it disappears from the public shop
-   but remains visible as `ARCHIVED` in Studio.
+   but remains visible as `ARCHIVED` in Admin.
 9. Try a negative stock number or duplicate size/colour combination and
    confirm the server refuses to save it.
 10. Try uploading a text file or an image larger than 4 MB and confirm it is
@@ -95,7 +95,7 @@ DemoAdmin123!
 
 ## Test Phase 5 inventory controls
 
-1. Sign in with **Enter the studio**, select **Inventory**, and confirm the
+1. Sign in with **Enter admin**, select **Inventory**, and confirm the
    total-unit, low-stock, and sold-out summaries appear.
 2. Search for `TH-ET02-1-M` and confirm the matching variant appears without
    scrolling through the full catalogue. Clear the search.

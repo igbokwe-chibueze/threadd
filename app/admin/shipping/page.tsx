@@ -23,7 +23,7 @@ export default async function ShippingPage() {
     <main className="min-h-screen bg-[#171713] px-5 py-8 text-[#f4f0e7] sm:px-10 lg:px-14">
       <header className="flex justify-between border-b border-white/20 pb-5">
         <Link href="/admin" className="text-sm font-bold uppercase">
-          THREADD / Studio
+          THREADD / Admin
         </Link>
         <Link href="/admin/orders" className="text-xs text-[#d7ff3f]">
           Orders →

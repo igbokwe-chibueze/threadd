@@ -46,4 +46,23 @@ describe("server environment", () => {
       }),
     ).toThrowError(/Portfolio demo deployments must enable demo mode/);
   });
+
+  it("requires HTTPS, matching origins, and an auth secret in production", () => {
+    expect(() =>
+      parseServerEnvironment({
+        APP_ENV: "production",
+        APP_URL: "http://shop.example.com",
+        BETTER_AUTH_URL: "https://auth.example.com",
+      }),
+    ).toThrowError();
+
+    expect(() =>
+      parseServerEnvironment({
+        APP_ENV: "production",
+        APP_URL: "https://shop.example.com",
+        BETTER_AUTH_URL: "https://shop.example.com",
+        BETTER_AUTH_SECRET: "a-production-secret-with-at-least-32-characters",
+      }),
+    ).not.toThrow();
+  });
 });

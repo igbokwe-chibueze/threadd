@@ -45,6 +45,6 @@ ${context}
 Message:
 ${details.message}
 
-Open the THREADD Studio enquiry inbox to review and update it.`,
+Open the THREADD Admin enquiry inbox to review and update it.`,
   };
 }

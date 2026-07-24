@@ -121,7 +121,8 @@ export default async function Home() {
             <div className="mt-12 grid gap-6 border-t border-black/20 pt-6 text-sm leading-6 text-black/65 sm:grid-cols-2">
               <p>
                 THREADD is taking shape as a complete fashion store: catalogue,
-                customer experience, checkout, and a working studio behind it.
+                customer experience, checkout, and a working admin area behind
+                it.
               </p>
               <p>
                 This first screen establishes the visual language. The full

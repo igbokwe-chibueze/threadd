@@ -17,6 +17,9 @@ import {
 export const auth = betterAuth({
   appName: "THREADD",
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+  trustedOrigins: [
+    new URL(process.env.BETTER_AUTH_URL ?? "http://localhost:3000").origin,
+  ],
   secret: getAuthSecret(),
   database: prismaAdapter(db, {
     provider: "postgresql",
@@ -67,6 +70,8 @@ export const auth = betterAuth({
     },
   },
   session: {
+    expiresIn: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
     cookieCache: {
       enabled: false,
     },
@@ -91,6 +96,12 @@ export const auth = betterAuth({
   advanced: {
     cookiePrefix: "threadd",
     useSecureCookies: process.env.NODE_ENV === "production",
+    defaultCookieAttributes: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    },
   },
   plugins: [nextCookies()],
 });

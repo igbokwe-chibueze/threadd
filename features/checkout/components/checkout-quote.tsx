@@ -101,7 +101,7 @@ export function CheckoutSummary({
         </div>
       </div>
       <p className="mt-6 bg-[#171713] p-4 text-xs leading-5 text-white/65">
-        Delivery is calculated from the active Studio zone for your selected
+        Delivery is calculated from the active Admin zone for your selected
         Nigerian state. The same amount is recalculated on the server.
       </p>
     </aside>

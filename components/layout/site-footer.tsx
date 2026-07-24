@@ -26,7 +26,7 @@ export function SiteFooter() {
             ["Returns", "/returns"],
             ["Privacy", "/privacy"],
             ["Terms", "/terms"],
-            ["Account / Studio", "/sign-in"],
+            ["Account / Admin", "/sign-in"],
           ].map(([label, href], index) => (
             <Link
               key={label}

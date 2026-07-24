@@ -27,7 +27,7 @@ export default async function AdminOutboxPage() {
     <main className="min-h-screen bg-[#171713] px-5 py-6 text-[#f4f0e7] sm:px-10 lg:px-14">
       <header className="flex items-center justify-between border-b border-white/20 pb-5">
         <Link href="/admin" className="text-sm font-bold uppercase">
-          THREADD / Studio
+          THREADD / Admin
         </Link>
         <span className="rounded-full bg-[#d7ff3f] px-3 py-1.5 text-[0.58rem] font-bold tracking-[0.15em] text-[#171713] uppercase">
           Admin only

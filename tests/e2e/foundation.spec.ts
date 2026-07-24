@@ -99,25 +99,40 @@ test("demo customer signs in without admin access", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /good to see you/i }),
   ).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole("link", { name: "Go to admin" })).toHaveCount(0);
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/account$/);
 });
 
-test("demo administrator enters the studio", async ({ page }) => {
+test("demo administrator enters the admin area", async ({ page }) => {
   await page.goto("/sign-in");
-  await page.getByRole("button", { name: /enter the studio/i }).click();
+  await page.getByRole("button", { name: /enter admin/i }).click();
 
   await expect(
     page.getByRole("heading", { name: /the collection starts here/i }),
   ).toBeVisible({ timeout: 20_000 });
   await expect(page).toHaveURL(/\/admin$/);
+
+  const shopLink = page.getByRole("link", { name: "View shop" });
+  await expect(shopLink).toHaveAttribute("href", "/shop");
+  await shopLink.click();
+  await expect(page).toHaveURL(/\/shop$/, { timeout: 20_000 });
+  await expect(
+    page.getByRole("heading", { name: /the full study/i }),
+  ).toBeVisible();
+
+  await page.goto("/account");
+  const adminLink = page.getByRole("link", { name: "Go to admin" });
+  await expect(adminLink).toHaveAttribute("href", "/admin");
+  await adminLink.click();
+  await expect(page).toHaveURL(/\/admin$/, { timeout: 20_000 });
 });
 
 test("demo administrator opens a catalogue product editor", async ({
   page,
 }) => {
   await page.goto("/sign-in");
-  await page.getByRole("button", { name: /enter the studio/i }).click();
+  await page.getByRole("button", { name: /enter admin/i }).click();
   await expect(page).toHaveURL(/\/admin$/, { timeout: 20_000 });
 
   await page.getByRole("link", { name: /catalogue/i }).click();
@@ -189,7 +204,7 @@ test("signing out revokes access to the authenticated session", async ({
   page,
 }) => {
   await page.goto("/sign-in");
-  await page.getByRole("button", { name: /enter the studio/i }).click();
+  await page.getByRole("button", { name: /enter admin/i }).click();
   await expect(page).toHaveURL(/\/admin$/, { timeout: 20_000 });
 
   await page.getByRole("button", { name: /sign out/i }).click();

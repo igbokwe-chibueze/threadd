@@ -9,7 +9,7 @@ import { formatNaira } from "@/features/catalogue/format";
 import type { UserRole } from "@/generated/prisma/enums";
 import { db } from "@/lib/db/client";
 
-export const metadata = { title: "Orders / Studio", robots: { index: false } };
+export const metadata = { title: "Orders / Admin", robots: { index: false } };
 
 export default async function AdminOrdersPage() {
   const session = await getCurrentSession();
@@ -30,7 +30,7 @@ export default async function AdminOrdersPage() {
     <main className="min-h-screen bg-[#171713] px-5 py-8 text-[#f4f0e7] sm:px-10 lg:px-14">
       <header className="flex justify-between border-b border-white/20 pb-5">
         <Link href="/admin" className="text-sm font-bold uppercase">
-          THREADD / Studio
+          THREADD / Admin
         </Link>
         <span className="text-xs text-[#d7ff3f]">Orders</span>
       </header>

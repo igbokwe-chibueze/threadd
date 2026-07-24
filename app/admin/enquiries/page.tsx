@@ -15,7 +15,7 @@ import type {
 import { db } from "@/lib/db/client";
 
 export const metadata = {
-  title: "Enquiries / Studio",
+  title: "Enquiries / Admin",
   robots: { index: false },
 };
 const PAGE_SIZE = 25;
@@ -87,7 +87,7 @@ export default async function EnquiriesPage({ searchParams }: Props) {
     <main className="min-h-screen bg-[#171713] px-5 py-8 text-[#f4f0e7] sm:px-10 lg:px-14">
       <header className="flex items-center justify-between border-b border-white/20 pb-5">
         <Link href="/admin" className="text-sm font-bold uppercase">
-          THREADD / Studio
+          THREADD / Admin
         </Link>
         <span className="text-[0.62rem] font-bold tracking-[0.16em] text-[#d7ff3f] uppercase">
           Enquiry inbox

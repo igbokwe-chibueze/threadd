@@ -22,7 +22,7 @@ import type { UserRole } from "@/generated/prisma/enums";
 import { db } from "@/lib/db/client";
 
 export const metadata = {
-  title: "Inventory / Studio",
+  title: "Inventory / Admin",
   robots: { index: false },
 };
 
@@ -87,7 +87,7 @@ export default async function InventoryPage({
     <main className="min-h-screen bg-[#171713] px-5 py-8 text-[#f4f0e7] sm:px-10 lg:px-14">
       <header className="flex items-center justify-between border-b border-white/20 pb-5">
         <Link href="/admin" className="text-sm font-bold uppercase">
-          THREADD / Studio
+          THREADD / Admin
         </Link>
         <Link
           href="/admin/catalogue"

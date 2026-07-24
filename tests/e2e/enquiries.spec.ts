@@ -44,7 +44,7 @@ test("guest enquiry reaches the protected admin workflow", async ({ page }) => {
   enquiryId = result.rows[0].id;
 
   await page.goto("/sign-in");
-  await page.getByRole("button", { name: /enter the studio/i }).click();
+  await page.getByRole("button", { name: /enter admin/i }).click();
   await expect(page).toHaveURL(/\/admin$/, { timeout: 20_000 });
   await page.goto("/admin/enquiries");
   await page.getByPlaceholder(/search name, email/i).fill(email);
