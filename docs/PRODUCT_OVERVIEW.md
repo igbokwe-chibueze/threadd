@@ -4,7 +4,9 @@
 
 This document defines the product to be built for Xtamaliy, a clothing brand that needs a modern, mobile-first website for presenting products, managing inventory, receiving customer enquiries, and optionally processing online payments.
 
-It is written as the primary product reference for Codex and any developer working on the project. Where a requirement is unclear, implementation must follow this document and record assumptions rather than silently inventing business rules.
+It is the primary product reference for developers working on the project.
+Where a requirement is unclear, implementation must follow this document and
+record assumptions rather than silently inventing business rules.
 
 ## 2. Product Vision
 

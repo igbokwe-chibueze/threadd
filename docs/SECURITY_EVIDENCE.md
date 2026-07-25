@@ -11,8 +11,8 @@ remain open until they are exercised against the isolated HTTPS deployment.
 - Environment reviewed: local source and automated test environment.
 - Application state: Phase 12 complete; final production revision `45f7a31`
   plus a Vercel environment-only redeployment for Search Console verification.
-- Reviewer: Codex-assisted repository review; release sign-off remains the
-  project owner's responsibility.
+- Reviewer: technical repository review; release sign-off remains the project
+  owner's responsibility.
 - Source revision: final documented portfolio release.
 
 ## Browser and transport controls

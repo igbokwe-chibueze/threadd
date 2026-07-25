@@ -33,7 +33,9 @@ not reopen or extend the completed product roadmap.
 
 ## 1. Roadmap Purpose
 
-This roadmap breaks THREADD into implementation phases that Codex can execute incrementally. Each phase must end with working, reviewable software. Do not begin a later phase while critical defects from the current phase remain unresolved.
+This roadmap breaks THREADD into incremental implementation phases. Each phase
+must end with working, reviewable software. Do not begin a later phase while
+critical defects from the current phase remain unresolved.
 
 THREADD will launch as a full ecommerce store. The application must still preserve a configuration-controlled catalogue mode so checkout can be safely disabled without duplicating the codebase:
 
@@ -79,7 +81,7 @@ The MVP may defer exhaustive test coverage, live email, advanced refund automati
 
 For every phase:
 
-1. Review `PRODUCT_OVERVIEW.md`, `AGENTS.md`, and `SECURITY_AUDIT.md`.
+1. Review `PRODUCT_OVERVIEW.md` and `SECURITY_AUDIT.md`.
 2. Create or update a short implementation plan.
 3. Work in small, testable changes.
 4. Run formatting, linting, type checking, tests, and production build.

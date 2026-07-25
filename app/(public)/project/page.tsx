@@ -33,21 +33,26 @@ const sections = [
   },
   {
     number: "05",
+    title: "Payment gateway infrastructure",
+    body: "THREADD uses a provider-separated payment architecture with Paystack in test mode. The important engineering is gateway-independent: server-calculated totals, pending orders, unique references, direct provider verification, authenticated webhooks, idempotent settlement, and inventory reconciliation. The same boundaries can support internationally familiar gateways such as Stripe or PayPal without redesigning the commerce domain.",
+  },
+  {
+    number: "06",
     title: "Security and privacy",
     body: "Protected routes perform server-side authorization, public inputs are schema-validated and rate-limited, logs redact sensitive values, uploads are restricted and stored through Cloudinary, private routes are excluded from indexing, and the public demo contains fictional disposable data only.",
   },
   {
-    number: "06",
+    number: "07",
     title: "Operations",
     body: "Vercel hosts the application over HTTPS, Prisma Postgres stores isolated demo data, Cloudinary holds catalogue media, GitHub Actions performs health checks and canonical resets, and Vercel logs capture privacy-safe operational events. Google Search Console and the dynamic sitemap complete the public search setup.",
   },
   {
-    number: "07",
+    number: "08",
     title: "Quality",
     body: "The release gate covers formatting, linting, strict TypeScript, Prisma validation, unit and integration tests, Playwright browser journeys, committed-secret scanning, and a production build. Deployed Lighthouse reviews informed accessibility, landmark, contrast, metadata, and layout-shift improvements.",
   },
   {
-    number: "08",
+    number: "09",
     title: "How to explore",
     body: "Browse the collection, inspect variants, add products to the cart, sign in with either demo identity, complete a test checkout, review the private Demo Outbox, or enter Admin to manage catalogue, inventory, enquiries, shipping, and orders. Every visitor action is temporary.",
   },

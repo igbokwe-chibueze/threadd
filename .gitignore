@@ -44,3 +44,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local-only project operation and agent continuity files
+/AGENTS.md
+/docs/PROJECT_HANDOFF.md

@@ -128,6 +128,21 @@ THREADD relies on independently verified callbacks in the hosted showcase while
 retaining automated webhook-security coverage. A client deployment must use an
 isolated Paystack integration and verify real signed webhook delivery.
 
+### Payment gateway infrastructure
+
+Paystack is the gateway selected for THREADD's Nigerian demo environment, but
+the commerce domain is deliberately separated from provider-specific SDK and
+API behavior. The application creates and prices the order before contacting a
+gateway, gives each payment a unique reference, verifies the transaction
+directly with the provider, authenticates asynchronous notifications, and
+settles payment, inventory, and confirmation effects idempotently.
+
+This architecture is transferable to internationally familiar gateways such as
+Stripe or PayPal. Adapting the application requires a new provider adapter,
+environment validation, callback and webhook implementation, and gateway-
+specific verification tests—not a rewrite of catalogue, cart, order, inventory,
+account, or administration workflows.
+
 ## Security and privacy model
 
 - Better Auth owns password hashing, sessions, cookies, and recovery tokens;
@@ -309,7 +324,6 @@ The step-by-step transition is documented in
 
 - [Product overview](docs/PRODUCT_OVERVIEW.md)
 - [Roadmap](docs/ROADMAP.md)
-- [Project handoff](docs/PROJECT_HANDOFF.md)
 - [Manual testing](docs/MANUAL_TESTING.md)
 - [Payments](docs/PAYMENTS.md)
 - [Storefront quality](docs/STOREFRONT_QUALITY.md)
