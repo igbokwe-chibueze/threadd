@@ -11,18 +11,46 @@ Before launch, the deployment owner records these values in the hosting
 provider's encrypted environment:
 
 - `MONITORING_OWNER`: the active person or team receiving production alerts;
+- `RECOVERY_STRATEGY`: `canonical_reseed` for the disposable portfolio demo or
+  `managed_backup` for a customer deployment.
+
+Managed-backup deployments also record:
+
 - `BACKUP_PROVIDER`: the managed PostgreSQL backup service;
-- `BACKUP_RETENTION_DAYS`: the configured retention period approved for that
-  merchant and environment;
-- `LAST_RESTORE_TEST_AT`: ISO timestamp of the latest successful isolated
-  restore exercise.
+- `BACKUP_RETENTION_DAYS`: the approved retention period;
+- `LAST_RESTORE_TEST_AT`: ISO timestamp of the latest successful restore test.
 
 `npm run deployment:check` validates that the operational record exists along
 with the application's HTTPS, authentication, database TLS, demo-isolation,
 email, and storage configuration. The script does not prove provider settings;
 screenshots or provider audit records must accompany release sign-off.
 
+## Free portfolio-demo recovery
+
+The Prisma Free plan does not provide automated snapshots. THREADD explicitly
+accepts this limitation only for the public portfolio demo because visitor
+accounts, orders, catalogue changes, and uploads are disclosed as disposable
+and reset every six hours.
+
+The recoverable source of truth is:
+
+- committed Prisma migrations;
+- the idempotent canonical seed;
+- repository-owned seed images;
+- encrypted deployment configuration recorded outside the repository.
+
+If the demo database is lost, create another isolated free database, apply
+`npm run db:deploy`, run `npm exec prisma db seed`, update Vercel's identical
+`DATABASE_URL` and `DEMO_DATABASE_URL`, redeploy, and run health, sign-in,
+catalogue, checkout, media, and reset checks. Visitor-created data and
+Cloudinary uploads are intentionally not recovered.
+
+This is disaster recreation, not a database backup. It must never be selected
+for a customer deployment.
+
 ## Backup requirements
+
+These requirements apply to `managed_backup` customer deployments:
 
 - Use provider-managed encrypted PostgreSQL backups with point-in-time recovery
   where available.
@@ -38,6 +66,8 @@ screenshots or provider audit records must accompany release sign-off.
   than silently choosing one in application code.
 
 ## Controlled restore exercise
+
+This exercise applies to `managed_backup` deployments:
 
 1. Create a new isolated recovery database with no public application attached.
 2. Restore the selected provider snapshot into that database.
@@ -75,7 +105,9 @@ screenshots or provider audit records must accompany release sign-off.
 
 ## Recovery failure and escalation
 
-- Treat an unavailable or unverified backup as a release blocker.
+- Treat an unavailable or unverified backup as a customer-release blocker.
+- For the portfolio demo, treat missing migrations, seed assets, or a failed
+  recreation check as the equivalent release blocker.
 - Escalate suspected data loss or credential compromise to the monitoring owner
   and provider support contacts immediately.
 - Preserve audit evidence and rotate affected credentials using

@@ -97,9 +97,10 @@ schedule in `vercel.json`. After confirming a Pro plan, add:
 
 The current Hobby-compatible implementation is
 `.github/workflows/demo-reset.yml`, scheduled at minute 17 every six hours.
-GitHub contains the matching encrypted `THREADD_DEMO_RESET_SECRET`, but
-scheduled execution begins only after the workflow is explicitly published to
-the default branch.
+GitHub contains the matching encrypted `THREADD_DEMO_RESET_SECRET`. The
+workflow is published on `main`; manual run `30152744808` completed
+successfully in 24 seconds on 25 July 2026, confirming the health preflight,
+authenticated reset, and canonical-state response.
 
 Official references:
 

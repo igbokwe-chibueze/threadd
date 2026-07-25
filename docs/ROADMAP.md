@@ -664,8 +664,16 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
   authenticated reset cleanup, rate-limit cleanup, and seed restoration.
 - [x] Implement a least-privilege six-hour GitHub Actions scheduler and
   configure its encrypted reset secret.
-- [ ] Publish the scheduler workflow; configure monitoring/backup evidence,
-  alerts, retention, and a controlled restore in the deployed environment.
+- [x] Publish the scheduler workflow and verify a successful authenticated
+  manual run from `main`.
+- [x] Record the free-tier portfolio recovery decision and enforce
+  canonical-reseed recovery only for disposable demo mode while retaining
+  managed-backup requirements for customer mode.
+- [x] Record the zero-cost portfolio monitoring policy: GitHub's scheduled
+  health/reset failure notification, Vercel runtime logs, and the named
+  repository owner.
+- [ ] Re-run the production preflight after these changes are published and
+  verify the resulting Vercel deployment.
 
 ### Deliverables
 

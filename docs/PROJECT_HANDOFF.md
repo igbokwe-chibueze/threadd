@@ -124,8 +124,10 @@ The first Phase 11 slice is implemented in the current working tree:
   production database URLs require `sslmode=verify-full`; the exact managed
   Prisma's exact direct/pooled managed hosts may retain their provider-issued
   `sslmode=require`.
-  `npm run deployment:check` fails closed until monitoring ownership, backup
-  retention, and a completed restore exercise are recorded;
+  `npm run deployment:check` requires monitoring ownership and applies a
+  mode-specific recovery policy: the disposable portfolio demo may use
+  canonical migration-and-reseed recovery, while customer mode fails closed
+  without managed retention and completed restore evidence;
 - Cloudinary is the selected Vercel-compatible catalogue provider. The
   server-only adapter validates images, strips profiles, stores provider IDs,
   limits deletion to the configured folder, cleans failed/replaced uploads,
@@ -144,9 +146,17 @@ The first Phase 11 slice is implemented in the current working tree:
   function pool. Both address the same database and retain the canonical seed;
 - reset now clears database-backed rate limits, has an explicit 180-second
   function allowance, and passed deployed database/media restoration;
-- a least-privilege six-hour GitHub Actions reset workflow is ready locally,
-  and its encrypted repository secret is configured. It is not scheduled until
-  the workflow is explicitly published to the default branch;
+- the least-privilege six-hour GitHub Actions reset workflow is published on
+  `main`, its encrypted repository secret is configured, and manual run
+  `30152744808` succeeded in 24 seconds on 25 July 2026;
+- Prisma Free provides no automated backups. The portfolio owner explicitly
+  selected a zero-cost policy: disposable demo state is recreated from
+  migrations, canonical seed code, and repository images. This exception does
+  not apply to customer deployments;
+- zero-cost portfolio monitoring uses the six-hour GitHub health/reset job and
+  its failure notifications, with Vercel runtime logs for diagnosis.
+  `igbokwe-chibueze` is the recorded monitoring owner. Customer deployments
+  still require merchant-approved alerting and retention;
 - [`RECOVERY_RUNBOOK.md`](./RECOVERY_RUNBOOK.md) defines isolated restore,
   migration, rollback, media consistency, and incident escalation procedures;
 - [`SECURITY_EVIDENCE.md`](./SECURITY_EVIDENCE.md) records the evidence and the

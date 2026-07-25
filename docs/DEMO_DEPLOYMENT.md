@@ -97,13 +97,30 @@ Both the public portfolio demo and a future customer deployment must set:
 ```dotenv
 APP_ENV=production
 MONITORING_OWNER=<active alert recipient>
+RECOVERY_STRATEGY=<canonical_reseed-or-managed_backup>
+```
+
+The free, disposable portfolio demo uses:
+
+```dotenv
+RECOVERY_STRATEGY=canonical_reseed
+```
+
+It does not claim automated backup retention. Recovery recreates the database
+from committed migrations and the canonical seed, then reconnects Vercel.
+
+A future customer deployment must instead set:
+
+```dotenv
+RECOVERY_STRATEGY=managed_backup
 BACKUP_PROVIDER=<managed PostgreSQL backup provider>
 BACKUP_RETENTION_DAYS=<approved positive whole number>
 LAST_RESTORE_TEST_AT=<ISO timestamp of successful isolated restore>
 ```
 
-Production `DATABASE_URL` must use `sslmode=verify-full`. With the target
-deployment's exact encrypted environment loaded, run:
+Ordinary production `DATABASE_URL` values must use `sslmode=verify-full`;
+provider-issued Prisma Postgres direct/pooled hosts use their documented TLS
+mode. With the target deployment's exact encrypted environment loaded, run:
 
 ```text
 npm run deployment:check

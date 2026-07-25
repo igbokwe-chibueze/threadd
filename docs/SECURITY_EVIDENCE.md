@@ -484,7 +484,8 @@ automatic breaking remediation was applied.
 | Safe operator correlation | `/api/health`; structured logger | Database readiness failures return a random request ID and a generic 503 response; the same ID appears in the protected server log. |
 | Privacy disclosure | `/privacy` | The implementation-stage policy now describes operational logging exclusions and identifies merchant/legal approval of retention and privacy-request handling as a launch requirement. |
 | Production database TLS and pooling | `lib/env/schema.ts`; `lib/db/client.ts` | Production requires `verify-full` generally, permits Prisma's issued mode only on its exact direct/pooled hosts, uses `pooled.db.prisma.io` on Vercel, and caps each function pool at one connection. |
-| Deployment preflight | `scripts/operations/check-deployment-readiness.ts` | Reuses application environment validation and fails unless production mode, non-local deployment, monitoring ownership, managed backup retention, and a past restore-test timestamp are recorded. It prints control state only. |
+| Deployment preflight | `scripts/operations/check-deployment-readiness.ts`; `lib/env/deployment-readiness.ts` | Requires production mode and monitoring ownership. Only disposable portfolio mode may select canonical reseeding; customer mode requires managed retention and past restore evidence. It prints control state only. |
+| Automated demo reset | `.github/workflows/demo-reset.yml`; GitHub Actions run `30152744808` | Least-privilege six-hour workflow is published on `main`; encrypted bearer authentication, health preflight, canonical-response validation, and the first manual run succeeded. |
 | Migration/rollback procedure | `package.json`; `docs/RECOVERY_RUNBOOK.md` | Production migration uses `prisma migrate deploy`; restore testing, media consistency, rollback limits, and incident escalation are documented. |
 
 No external monitoring or backup product was added: provider selection changes
@@ -530,9 +531,17 @@ configuration and verification in Phase 12.
   error event in the isolated HTTPS environment.
 - Owner: THREADD deployment owner
 - Target date: Before Phase 12 release sign-off
-- Status: Open; release-blocking
+- Status: Portfolio-demo risk accepted; remains release-blocking for customer
+  deployment
 - Verification evidence: `npm run deployment:check` provides the configuration
   gate; provider dashboard evidence and alert receipt remain required.
+
+Portfolio-demo disposition (25 July 2026): risk accepted for the free,
+disposable showcase. `igbokwe-chibueze` is the monitoring owner; GitHub run
+`30152744808` proves the six-hour health/reset workflow can execute, workflow
+failure notifications provide the zero-cost alert, and Vercel runtime logs are
+available for diagnosis. The finding remains release-blocking for customer
+mode, which requires approved retention, access, and alert-delivery evidence.
 
 ### SEC-011-018 — Backup retention and restoration are not provider-verified
 
@@ -551,9 +560,14 @@ configuration and verification in Phase 12.
   restore preflight variables.
 - Owner: THREADD deployment owner
 - Target date: Before Phase 12 release sign-off
-- Status: Open; release-blocking
-- Verification evidence: runbook and fail-closed configuration check are
-  implemented; actual provider restore evidence remains required.
+- Status: Portfolio-demo risk accepted; remains release-blocking for customer
+  deployment
+- Verification evidence: Prisma Free dashboard evidence confirms automated
+  backups are unavailable. `lib/env/deployment-readiness.ts` and
+  `tests/unit/deployment-readiness.test.ts` confine canonical reseeding to the
+  disposable portfolio mode and retain managed-backup/restore requirements for
+  customer mode. The runbook records recreation steps and intentional loss of
+  visitor-created state.
 
 ## Remaining evidence for this audit area
 

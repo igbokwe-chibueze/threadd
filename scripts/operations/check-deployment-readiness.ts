@@ -2,8 +2,10 @@
  * THREADD deployment preflight
  *
  * This script validates controls that application startup alone cannot prove:
- * an operator has named the monitoring recipient, configured backup retention,
- * and recorded a completed restore exercise. It never prints environment
+ * an operator has named the monitoring recipient and recorded the correct
+ * recovery controls for the deployment mode. Disposable portfolio demos may
+ * use canonical migration-and-reseed recovery; customer deployments still
+ * require managed retention and restore evidence. It never prints environment
  * values because those values can contain infrastructure names or credentials.
  *
  * Usage:
@@ -16,30 +18,10 @@
 import { loadEnvConfig } from "@next/env";
 import { z } from "zod";
 
+import { parseDeploymentReadiness } from "../../lib/env/deployment-readiness";
 import { parseServerEnvironment } from "../../lib/env/schema";
 
 loadEnvConfig(process.cwd());
-
-const operationalReadinessSchema = z.object({
-  APP_ENV: z.literal("production", {
-    error: "Deployment preflight must run with APP_ENV=production.",
-  }),
-  DEPLOYMENT_MODE: z.enum(["portfolio_demo", "customer"], {
-    error: "Deployment preflight cannot approve a local deployment.",
-  }),
-  MONITORING_OWNER: z.string().trim().min(1, {
-    error: "Name the active monitoring owner.",
-  }),
-  BACKUP_PROVIDER: z.string().trim().min(1, {
-    error: "Record the managed database backup provider.",
-  }),
-  BACKUP_RETENTION_DAYS: z.coerce.number().int().positive({
-    error: "Backup retention must be a positive whole number of days.",
-  }),
-  LAST_RESTORE_TEST_AT: z.iso.datetime({
-    error: "Record the latest successful restore test as an ISO timestamp.",
-  }),
-});
 
 function fail(message: string): never {
   console.error(`Deployment preflight failed: ${message}`);
@@ -54,12 +36,7 @@ try {
    */
   parseServerEnvironment(process.env);
 
-  const readiness = operationalReadinessSchema.parse(process.env);
-  const restoreTestAt = new Date(readiness.LAST_RESTORE_TEST_AT);
-
-  if (restoreTestAt.getTime() > Date.now()) {
-    fail("LAST_RESTORE_TEST_AT cannot be in the future.");
-  }
+  const readiness = parseDeploymentReadiness(process.env);
 
   /*
    * Output only control state, never values. Provider names, owner identities,
@@ -72,8 +49,9 @@ try {
       `Mode: ${readiness.DEPLOYMENT_MODE}.`,
       "HTTPS/auth/database isolation: validated.",
       "Monitoring ownership: recorded.",
-      "Backup retention: recorded.",
-      "Restore exercise: recorded.",
+      readiness.RECOVERY_STRATEGY === "canonical_reseed"
+        ? "Recovery: canonical migrations and seed selected for disposable demo."
+        : "Recovery: managed backup retention and restore exercise recorded.",
     ].join(" "),
   );
 } catch (error) {

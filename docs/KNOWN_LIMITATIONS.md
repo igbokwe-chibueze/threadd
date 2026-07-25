@@ -39,15 +39,28 @@ renewed approval.
 ## Deployment-dependent security evidence
 
 The application now emits privacy-safe structured events, exposes a minimal
-database readiness probe, requires strict production database TLS (with an
-exact-host exception for Prisma's provider-issued managed URL), and includes an
-executable deployment preflight. Source review cannot select or prove a
-hosting monitoring sink, log access/retention, alert delivery, database backup
-retention, media recovery, or a successful isolated restore.
+database readiness probe, requires strict production database TLS (with exact
+host exceptions for Prisma's provider-issued managed URLs), and includes an
+executable deployment preflight.
+
+The Prisma Free plan provides no automated database backups. This is explicitly
+accepted only for the disposable portfolio demo: recovery recreates canonical
+state from migrations, seed code, and repository assets, while visitor-created
+data is intentionally lost. Customer mode still fails preflight without managed
+backup retention and successful restore evidence.
+
+Source review still cannot prove hosting log access/retention, alert delivery,
+or customer-deployment backup and media recovery controls.
+
+For the free portfolio demo, the owner accepts GitHub's six-hour workflow
+failure notification as the availability/reset alert and Vercel's included
+runtime logs as the diagnostic record. There is no paid continuous monitoring,
+guaranteed log retention, or recovery of visitor-created data. Those
+limitations remain unacceptable for customer mode.
 
 The six-hour GitHub Actions reset workflow and encrypted repository secret are
-ready, but the workflow must be explicitly published before GitHub schedules
-it.
+active. Manual run `30152744808` succeeded on 25 July 2026; subsequent
+scheduled-run history should remain part of routine operational review.
 
 Those items remain release-blocking until the deployment owner records provider
 evidence and passes the controlled procedures in `RECOVERY_RUNBOOK.md`.
