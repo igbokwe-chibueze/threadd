@@ -708,6 +708,23 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
 
 **Status:** Started on 25 July 2026.
 
+### Current Progress
+
+- [x] Deploy the isolated portfolio database, Cloudinary folder, HTTPS Vercel
+  origin, canonical seed/accounts, and six-hour reset workflow.
+- [x] Complete the local setup/release index, customer-adaptation guide,
+  portfolio case study, and evidence-backed release checklist.
+- [x] Measure the initial deployed Lighthouse baseline for home, shop, and a
+  representative product at mobile and desktop profiles.
+- [x] Prepare fixes for the cached sitemap, missing store `main` landmark,
+  streamed-content layout shift, and reported secondary-text contrast.
+- [x] Add a demo-only, secret-protected controlled monitoring event that runs
+  only during a manually dispatched reset workflow.
+- [ ] Publish the Phase 12 release slice and verify Vercel, GitHub CI, dynamic
+  sitemap, final Lighthouse results, and the controlled runtime-log event.
+- [ ] Record Google Search Console verification/sitemap submission and Paystack
+  test webhook delivery evidence.
+
 ### Deliverables
 
 - Hosted demo database.

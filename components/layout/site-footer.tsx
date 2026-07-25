@@ -34,13 +34,13 @@ export function SiteFooter() {
               className="flex items-center justify-between border-t border-white/20 py-4 transition-colors hover:text-[#d7ff3f]"
             >
               <span>{label}</span>
-              <span className="text-[0.6rem] text-white/45">0{index + 1}</span>
+              <span className="text-[0.6rem] text-white/60">0{index + 1}</span>
             </Link>
           ))}
         </nav>
       </div>
 
-      <div className="flex flex-col gap-3 pt-6 text-[0.58rem] font-semibold tracking-[0.16em] text-white/45 uppercase sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 pt-6 text-[0.58rem] font-semibold tracking-[0.16em] text-white/60 uppercase sm:flex-row sm:items-center sm:justify-between">
         <p>© 2026 THREADD</p>
         <p>Built in Lagos / Demo collection</p>
       </div>

@@ -205,6 +205,36 @@ Phase 12 releases and documents THREADD:
 
 Do not report Lighthouse or Search Console as verified from localhost.
 
+Current Phase 12 release work in the working tree:
+
+- `README.md` now links the public demo, complete local database setup, release
+  records, demo boundaries, adaptation guide, and case study;
+- `CUSTOMER_ADAPTATION.md` documents fresh customer infrastructure, branding,
+  seed replacement, Cloudinary, payment/email providers, shipping/policy
+  decisions, demo removal, and the stricter customer release gate;
+- `PORTFOLIO_CASE_STUDY.md` records the problem, visual system, architecture,
+  workflows, security decisions, resettable demo, and verification approach;
+- `RELEASE_CHECKLIST.md` separates completed evidence, prepared fixes, accepted
+  portfolio-only risks, and provider/owner-dependent sign-off;
+- an initial six-report deployed Lighthouse baseline is recorded in
+  `STOREFRONT_QUALITY.md`. It exposed a cached sitemap, missing store `main`
+  landmark, streamed-content footer shift, and low-contrast secondary labels;
+- the sitemap is now dynamic so admin/reset catalogue changes cannot remain
+  absent from crawler output; store content reserves viewport height inside a
+  semantic `main`, and the reported public contrast failures are corrected;
+- `/api/demo/monitoring-test` reuses the complete reset safety policy and emits
+  one fixed privacy-safe error event. The GitHub reset workflow calls it only
+  for manual dispatches, leaving scheduled runs quiet;
+- the new endpoint rejects unauthenticated callers in E2E coverage. The local
+  release suite passed except for one existing shop-loading assertion that
+  exceeded its five-second default once; its explicit 20-second loading budget
+  passed on focused rerun.
+
+Remaining release evidence requires publishing this slice, rerunning deployed
+Lighthouse and sitemap checks, manually dispatching the reset to confirm the
+controlled Vercel log event, and recording Search Console plus Paystack test
+webhook dashboard evidence.
+
 ## Useful Documents
 
 - [`MANUAL_TESTING.md`](./MANUAL_TESTING.md) — established manual journeys.

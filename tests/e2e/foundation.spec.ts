@@ -37,6 +37,17 @@ test("Vercel-style demo reset GET requires its bearer secret", async ({
   });
 });
 
+test("controlled monitoring probe requires its bearer secret", async ({
+  request,
+}) => {
+  const response = await request.post("/api/demo/monitoring-test");
+
+  expect(response.status()).toBe(403);
+  await expect(response.json()).resolves.toEqual({
+    error: "Monitoring test was refused by the deployment safety policy.",
+  });
+});
+
 test("renders the THREADD foundation", async ({ page }) => {
   await page.goto("/");
 
@@ -156,7 +167,7 @@ test("demo administrator enters the admin area", async ({ page }) => {
   await expect(page).toHaveURL(/\/shop$/, { timeout: 20_000 });
   await expect(
     page.getByRole("heading", { name: /the full study/i }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 20_000 });
 
   await page.goto("/account");
   const adminLink = page.getByRole("link", { name: "Go to admin" });

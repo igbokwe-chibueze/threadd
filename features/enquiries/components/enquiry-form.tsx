@@ -94,7 +94,7 @@ export function EnquiryForm(props: Props) {
         </label>
       </div>
       <label className="text-[0.6rem] font-bold tracking-[0.15em] uppercase">
-        Phone <span className="font-normal text-black/40">(optional)</span>
+        Phone <span className="font-normal text-black/60">(optional)</span>
         <input
           className={inputClass}
           name="phone"

@@ -40,6 +40,40 @@ jobs:
             --max-time 60 \
             https://threadd-smoky.vercel.app/api/health
 
+      - name: Emit controlled monitoring test
+        # Scheduled resets should stay quiet. A manual release/recovery run
+        # emits one known, privacy-safe error event so the operator can confirm
+        # delivery in Vercel runtime logs without installing a paid service.
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          THREADD_DEMO_RESET_SECRET: ${{ secrets.THREADD_DEMO_RESET_SECRET }}
+        run: |
+          set -euo pipefail
+
+          response="$(
+            curl \
+              --fail-with-body \
+              --silent \
+              --show-error \
+              --max-time 60 \
+              --request POST \
+              --header "Authorization: Bearer ${THREADD_DEMO_RESET_SECRET}" \
+              https://threadd-smoky.vercel.app/api/demo/monitoring-test
+          )"
+
+          # The endpoint returns no diagnostic context. Validate the fixed
+          # acknowledgement without printing secrets or hosted log contents.
+          MONITORING_RESPONSE="${response}" node <<'NODE'
+          const result = JSON.parse(process.env.MONITORING_RESPONSE ?? "{}");
+
+          if (result.status !== "recorded") {
+            throw new Error("Monitoring endpoint did not confirm the test event.");
+          }
+
+          console.log("Controlled monitoring test event recorded.");
+          NODE
+
       - name: Invoke authenticated canonical reset
         shell: bash
         env:

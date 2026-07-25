@@ -54,3 +54,31 @@ Run Lighthouse against the deployed production build at mobile and desktop
 sizes for `/`, `/shop`, and one representative `/products/[slug]` route.
 Record Performance, Accessibility, Best Practices, and SEO results during
 Phase 12 because localhost development metrics are not release evidence.
+
+### Initial deployed baseline — 25 July 2026
+
+Measured against `https://threadd-smoky.vercel.app` before the Phase 12
+landmark, layout-reservation, contrast, and dynamic-sitemap fixes:
+
+| Route | Profile | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `/` | Mobile | 93 | 96 | 100 | 100 | 3.0 s | 0 | 90 ms |
+| `/shop` | Mobile | 69 | 95 | 100 | 100 | 1.5 s | 0.351 | 490 ms |
+| `/products/serein-knot-gown` | Mobile | 63 | 95 | 100 | 92 | 3.1 s | 0.351 | 460 ms |
+| `/` | Desktop | 99 | 96 | 100 | 100 | 0.9 s | 0 | 0 ms |
+| `/shop` | Desktop | 81 | 95 | 100 | 100 | 0.8 s | 0.371 | 0 ms |
+| `/products/serein-knot-gown` | Desktop | 79 | 95 | 100 | 92 | 0.8 s | 0.344 | 0 ms |
+
+The audit attributed the large shop/product CLS to the footer moving while
+streamed route content resolved. It also reported the store wrapper as lacking
+a `main` landmark and identified low-contrast secondary labels. The prepared
+fix gives the store content a semantic main landmark with a viewport-based
+minimum height and raises the affected text contrast. The product description
+is present in the deployed HTML; its isolated SEO miss will be checked again
+after the corrected deployment rather than assumed fixed.
+
+Lighthouse generated all six JSON reports successfully. On Windows, five runs
+returned an `EPERM` warning only while Lighthouse attempted to delete its
+temporary Chrome profile after writing the report. The scores above were parsed
+from the completed report files. Final release evidence requires a clean
+post-deployment rerun.

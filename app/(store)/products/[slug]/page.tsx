@@ -227,7 +227,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
 
-        <p className="border-t border-black/20 pt-5 text-xs leading-5 text-black/45">
+        <p className="border-t border-black/20 pt-5 text-xs leading-5 text-black/60">
           Delivery available throughout Nigeria. Final fees are calculated from
           the destination state at checkout.
         </p>

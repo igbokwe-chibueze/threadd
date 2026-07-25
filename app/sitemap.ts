@@ -2,6 +2,15 @@ import type { MetadataRoute } from "next";
 
 import { db } from "@/lib/db/client";
 
+/*
+ * Catalogue state can change through administrator actions and the external
+ * canonical demo reset. Metadata routes are cached by default in Next.js, so a
+ * cached sitemap could omit a newly restored product even while its public page
+ * is already live. This small catalogue is safe to query on each crawler
+ * request and must always describe the committed database state.
+ */
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.APP_URL ?? "http://localhost:3000";
   const [products, collections] = await Promise.all([
