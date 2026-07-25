@@ -8,9 +8,9 @@ THREADD is a single-store, unisex Nigerian fashion ecommerce portfolio demo.
 It is not multi-tenant. The code should remain realistic enough to adapt for a
 real customer without rewriting its core commerce architecture.
 
-The canonical plan is [`ROADMAP.md`](./ROADMAP.md). Phases 0–10 are complete.
-The active phase is **Phase 11 — Harden Security**. Phase 12 is the final
-release, deployment, and documentation phase.
+The canonical plan is [`ROADMAP.md`](./ROADMAP.md). Phases 0–11 are complete.
+The active phase is **Phase 12 — Release and Document THREADD**, the final
+roadmap phase.
 
 Before changing code, also read:
 
@@ -74,7 +74,7 @@ Before changing code, also read:
 - Phase 10 loading treatment: THREADD wordmark, animated drawn thread/needle,
   rotating captions, and a static reduced-motion alternative.
 
-## Current Work — Phase 11
+## Completed Phase — Phase 11
 
 Work through every applicable item in
 [`SECURITY_AUDIT.md`](./SECURITY_AUDIT.md), recording evidence rather than only
@@ -91,7 +91,7 @@ checking boxes. The phase includes:
 - backup/recovery and environment configuration;
 - demo reset authorization, target isolation, and credential review.
 
-The first Phase 11 slice is implemented in the current working tree:
+Phase 11 security hardening is complete:
 
 - browser security headers now include a static-compatible CSP and
   production-only HSTS/upgrade enforcement;
@@ -160,10 +160,17 @@ The first Phase 11 slice is implemented in the current working tree:
 - GitHub Quality and E2E jobs provision separate ephemeral PostgreSQL 16
   service databases, apply committed migrations, and seed canonical test data.
   CI never receives or mutates the public portfolio database URL;
+- Vercel production builds now run the deployment preflight with the real
+  encrypted environment before Next.js builds. Commit `35ab347` passed that
+  hosted gate, deployed successfully, and returned 200 for the home, shop,
+  sign-in, and database-health routes. Required browser security headers were
+  present and an unauthenticated reset remained forbidden with 403;
+- GitHub Quality run `30155086768` passed for the same closing revision,
+  including the isolated quality and browser-test jobs;
 - [`RECOVERY_RUNBOOK.md`](./RECOVERY_RUNBOOK.md) defines isolated restore,
   migration, rollback, media consistency, and incident escalation procedures;
-- [`SECURITY_EVIDENCE.md`](./SECURITY_EVIDENCE.md) records the evidence and the
-  remaining deployed CSP, managed-media, monitoring, and recovery evidence.
+- [`SECURITY_EVIDENCE.md`](./SECURITY_EVIDENCE.md) records the completed
+  portfolio-demo evidence and customer-mode accepted risks.
 
 Exit requirements:
 
@@ -177,7 +184,7 @@ Known dependency advisories and their current treatment are recorded in
 [`KNOWN_LIMITATIONS.md`](./KNOWN_LIMITATIONS.md). Never run
 `npm audit fix --force`.
 
-## Remaining Phase — Phase 12
+## Current Work — Phase 12
 
 Phase 12 releases and documents THREADD:
 

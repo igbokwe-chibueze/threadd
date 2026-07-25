@@ -7,11 +7,11 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 11 — Harden Security                                   |
-| Phase status     | In progress                                                   |
-| Previous phase   | Phase 10 — Completed on 24 July 2026                        |
-| Next phase       | Phase 12 — Release and Document THREADD                     |
-| Last reviewed    | 25 July 2026                                                |
+| Current phase    | Phase 12 — Release and Document THREADD                      |
+| Phase status     | In progress                                                  |
+| Previous phase   | Phase 11 — Completed on 25 July 2026                         |
+| Next phase       | None — Phase 12 is the final roadmap phase                   |
+| Last reviewed    | 25 July 2026                                                 |
 
 ### Status Rules
 
@@ -627,8 +627,10 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
 
 </details>
 
-<details open>
-<summary><strong>PHASE 11 — HARDEN SECURITY</strong> · In progress</summary>
+<details>
+<summary><strong>PHASE 11 — HARDEN SECURITY</strong> · Completed</summary>
+
+**Status:** Completed on 25 July 2026.
 
 ### Current Progress
 
@@ -672,7 +674,7 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
 - [x] Record the zero-cost portfolio monitoring policy: GitHub's scheduled
   health/reset failure notification, Vercel runtime logs, and the named
   repository owner.
-- [ ] Re-run the production preflight after these changes are published and
+- [x] Re-run the production preflight after these changes are published and
   verify the resulting Vercel deployment.
 
 ### Deliverables
@@ -701,8 +703,10 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
 
 </details>
 
-<details>
-<summary><strong>PHASE 12 — RELEASE AND DOCUMENT THREADD</strong> · Upcoming</summary>
+<details open>
+<summary><strong>PHASE 12 — RELEASE AND DOCUMENT THREADD</strong> · In progress</summary>
+
+**Status:** Started on 25 July 2026.
 
 ### Deliverables
 
