@@ -9,11 +9,11 @@ remain open until they are exercised against the isolated HTTPS deployment.
 ## Audit scope and environment
 
 - Environment reviewed: local source and automated test environment.
-- Application state: Phase 11 in progress; no deployment identifier yet.
+- Application state: Phase 12 complete; final production revision `45f7a31`
+  plus a Vercel environment-only redeployment for Search Console verification.
 - Reviewer: Codex-assisted repository review; release sign-off remains the
   project owner's responsibility.
-- Source revision: working tree for the 24 July 2026 Phase 11 browser/session
-  hardening slice.
+- Source revision: final documented portfolio release.
 
 ## Browser and transport controls
 
@@ -25,7 +25,7 @@ remain open until they are exercised against the isolated HTTPS deployment.
 | Referrer leakage | `Referrer-Policy: strict-origin-when-cross-origin` | Verified by unit test. |
 | Browser capabilities | Permissions Policy disables camera, microphone, geolocation, and browsing topics | Verified by unit test. |
 | Cross-window isolation | `Cross-Origin-Opener-Policy: same-origin` | Verified by unit test. |
-| HTTPS transport | Production-only HSTS and CSP `upgrade-insecure-requests`; production environment URLs must use HTTPS | Configuration verified by unit test. Deployed response verification remains open for Phase 12. |
+| HTTPS transport | Production-only HSTS and CSP `upgrade-insecure-requests`; production environment URLs must use HTTPS | Configuration verified by unit test; HSTS and the remaining security headers were observed on the deployed HTTPS origin during Phase 12. |
 
 The CSP uses Next.js's documented static-rendering-compatible policy. It retains
 `'unsafe-inline'` for scripts and styles because Next.js emits inline bootstrap
@@ -131,7 +131,8 @@ remain deployment work tracked in SEC-011-006.
 - Remediation: Reassess nonce-based dynamic rendering or stable hash-based CSP
   after measuring the deployment performance/cost tradeoff.
 - Owner: THREADD project
-- Status: Open; planned review during Phase 12 deployment hardening
+- Status: Open; accepted for the isolated portfolio demo and subject to
+  reassessment before a customer production launch
 - Verification evidence: `components/seo/structured-data.tsx` escapes JSON-LD;
   repository search found no other `dangerouslySetInnerHTML` use.
 
@@ -324,8 +325,12 @@ remain deployment work tracked in SEC-011-006.
 - A provider call and database transaction cannot be atomic. A PENDING or
   FAILED refund claim after a network/process interruption must be reconciled
   against the provider dashboard before an operator attempts another refund.
-- Paystack live webhook delivery, signature verification, retries, and refund
-  events must be exercised against the isolated HTTPS deployment in Phase 12.
+- The portfolio demo shares a Paystack test integration whose single dashboard
+  webhook remains assigned to another demo application. The owner accepted
+  callback verification plus automated signed/forged/replay/idempotency
+  coverage for this disposable showcase. A customer deployment must use an
+  isolated integration and exercise signed delivery, retries, and refund events
+  against its HTTPS origin before release.
 - OPay remains disabled pending confirmed merchant capability. Its existing
   callback signature and verification boundary remain covered by unit tests,
   but live provider behavior is not represented as verified.
@@ -390,7 +395,8 @@ that can disable production throttles.
 - Target date: Before customer production launch
 - Status: Open; accepted for the isolated portfolio demo, release-blocking for
   customer deployment
-- Verification evidence: deployed edge-control test remains Phase 12 work.
+- Verification evidence: no paid edge-control exercise was added to the free
+  portfolio deployment; this remains release-blocking for customer mode.
 
 ## Dependency, supply-chain, and secret controls
 

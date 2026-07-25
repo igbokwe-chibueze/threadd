@@ -8,9 +8,8 @@ THREADD is a single-store, unisex Nigerian fashion ecommerce portfolio demo.
 It is not multi-tenant. The code should remain realistic enough to adapt for a
 real customer without rewriting its core commerce architecture.
 
-The canonical plan is [`ROADMAP.md`](./ROADMAP.md). Phases 0–11 are complete.
-The active phase is **Phase 12 — Release and Document THREADD**, the final
-roadmap phase.
+The canonical plan is [`ROADMAP.md`](./ROADMAP.md). Phases 0–12 are complete;
+there is no active roadmap phase.
 
 Before changing code, also read:
 
@@ -190,7 +189,7 @@ Known dependency advisories and their current treatment are recorded in
 [`KNOWN_LIMITATIONS.md`](./KNOWN_LIMITATIONS.md). Never run
 `npm audit fix --force`.
 
-## Current Work — Phase 12
+## Completed Work — Phase 12
 
 Phase 12 releases and documents THREADD:
 
@@ -238,9 +237,15 @@ published the three remaining catalogue contrast corrections. Vercel reports
 success; shop, sitemap, and health smoke checks pass; and focused Lighthouse
 audits score `/shop` 100 accessibility on mobile and desktop.
 
-Remaining owner evidence is limited to Google Search Console
-verification/sitemap submission and the Paystack test webhook
-registration/delivery record.
+The final URL-prefix property is verified in Google Search Console and its
+deployed sitemap was submitted successfully. The deployment owner accepted a
+portfolio-only Paystack exception because the shared test integration's single
+webhook is already assigned to another demo application. THREADD retains
+server-side callback verification and automated webhook security/idempotency
+coverage; any customer deployment must use an isolated integration and record
+real signed webhook delivery and retry evidence.
+
+Phase 12 and the full roadmap are complete as of 25 July 2026.
 
 ## Useful Documents
 

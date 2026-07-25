@@ -26,13 +26,13 @@ Customer release requirements are intentionally stricter and are documented in
 | Check | Status | Evidence or remaining action |
 | --- | --- | --- |
 | Production build | Passed | Vercel reports success for final contrast revision `45f7a31`; deployed shop, sitemap, and health routes return 200. |
-| Quality and browser journeys | Passed for latest published revision | GitHub Quality/E2E and local suite: formatting, lint, strict types, 72 unit tests, 21 Playwright tests, secret scan, and production build. Re-run after the current release fixes are published. |
+| Quality and browser journeys | Passed | GitHub Quality/E2E and final local suite: formatting, lint, strict types, 72 unit tests, 22 Playwright tests, secret scan, and production build. |
 | Public smoke tests | Passed | Home, shop, Serein product, sitemap, robots, and health returned 200. |
 | Demo banner and credentials | Passed | Demo banner is present in portfolio mode; seeded convenience accounts use normal Better Auth credentials and server authorization. |
 | Outbound email safety | Passed | Demo mode is locked to the private Demo Outbox; arbitrary outbound delivery is disabled. |
 | Live payment prevention | Passed | Portfolio policy requires Paystack test keys and disables OPay. |
 | Payment behaviour | Passed in automated/test flows | Successful and failed test payments, amount/reference checks, duplicate/delayed events, inventory idempotency, and refund rules are covered by tests and prior hosted Paystack test checkout. |
-| Paystack webhook registration/retry receipt | Pending provider evidence | Confirm `/api/payments/webhook` in the Paystack test dashboard and retain a successful signed delivery/retry record. |
+| Paystack webhook registration/retry receipt | Portfolio risk accepted | The account's single test webhook remains assigned to another demo application. THREADD retains independently verified callbacks plus automated signed, forged, duplicate, delayed, and idempotency coverage. A customer deployment must use an isolated Paystack integration and record real signed delivery/retry evidence. |
 | Security headers and reset authorization | Passed | CSP, HSTS, MIME, referrer, and permissions headers observed; unauthenticated reset returned 403. |
 | No real customer data | Passed | Canonical state contains fictional demo records only and resets visitor changes. |
 
@@ -42,7 +42,7 @@ Customer release requirements are intentionally stricter and are documented in
 | --- | --- | --- |
 | Robots | Passed | Deployed `robots.txt` returns 200, references the canonical sitemap, and blocks private/admin areas. |
 | Dynamic sitemap | Passed | The deployed sitemap is dynamic, uses HTTPS, and contains `/products/serein-knot-gown` after canonical reset. |
-| Search Console | Pending owner setup | Add the free Google verification token to Vercel, verify the final origin, and submit `/sitemap.xml`. |
+| Search Console | Passed | The URL-prefix property for `https://threadd-smoky.vercel.app/` was verified through the deployed metadata token and `/sitemap.xml` was submitted successfully. |
 | Lighthouse baseline | Passed | Six post-deployment measurements are recorded in `STOREFRONT_QUALITY.md`; layout shift and landmark issues are resolved. Final focused `/shop` accessibility scored 100 on mobile and desktop after the contrast revision. |
 
 ## Documentation
@@ -55,9 +55,8 @@ Customer release requirements are intentionally stricter and are documented in
 | Customer adaptation | Passed | `CUSTOMER_ADAPTATION.md`. |
 | Portfolio case study | Passed | `PORTFOLIO_CASE_STUDY.md`. |
 
-## Final owner-dependent actions
+## Final disposition
 
-Phase 12 cannot be signed off until:
-
-1. Google Search Console verification and sitemap submission are completed;
-2. Paystack test webhook registration/delivery evidence is confirmed.
+Phase 12 is signed off for the isolated, resettable portfolio demo. The
+Paystack webhook exception, free-tier recovery limits, and monitoring limits
+must not be carried into a customer deployment.

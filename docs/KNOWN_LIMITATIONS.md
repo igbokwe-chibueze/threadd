@@ -62,5 +62,15 @@ The six-hour GitHub Actions reset workflow and encrypted repository secret are
 active. Manual run `30152744808` succeeded on 25 July 2026; subsequent
 scheduled-run history should remain part of routine operational review.
 
-Those items remain release-blocking until the deployment owner records provider
+The portfolio demo shares a Paystack test integration with other showcase
+applications. Paystack provides one dashboard webhook URL for that integration,
+and it remains assigned to another demo rather than being redirected to
+THREADD. THREADD still verifies the browser callback directly with Paystack,
+and automated tests cover signed, forged, duplicate, delayed, and out-of-order
+webhook behavior. This exception is accepted only for the disposable portfolio
+demo; a customer deployment requires isolated Paystack credentials and real
+signed webhook delivery/retry evidence.
+
+Those items are accepted for the isolated portfolio demo and remain
+release-blocking for customer mode until the deployment owner records provider
 evidence and passes the controlled procedures in `RECOVERY_RUNBOOK.md`.

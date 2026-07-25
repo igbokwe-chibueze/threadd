@@ -7,9 +7,9 @@
 | Product          | THREADD, a single-store unisex fashion ecommerce experience |
 | Delivery mode    | Full commerce, including catalogue and enquiry features     |
 | Immediate target | Two-day portfolio MVP                                       |
-| Current phase    | Phase 12 — Release and Document THREADD                      |
-| Phase status     | In progress                                                  |
-| Previous phase   | Phase 11 — Completed on 25 July 2026                         |
+| Current phase    | None — roadmap complete                                      |
+| Phase status     | Phase 12 completed on 25 July 2026                           |
+| Previous phase   | Phase 12 — Completed on 25 July 2026                         |
 | Next phase       | None — Phase 12 is the final roadmap phase                   |
 | Last reviewed    | 25 July 2026                                                 |
 
@@ -703,10 +703,10 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
 
 </details>
 
-<details open>
-<summary><strong>PHASE 12 — RELEASE AND DOCUMENT THREADD</strong> · In progress</summary>
+<details>
+<summary><strong>PHASE 12 — RELEASE AND DOCUMENT THREADD</strong> · Completed 25 July 2026</summary>
 
-**Status:** Started on 25 July 2026.
+**Status:** Completed on 25 July 2026.
 
 ### Current Progress
 
@@ -724,8 +724,12 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
   final-candidate Lighthouse results, and the controlled runtime-log event.
 - [x] Publish the final catalogue contrast adjustment and rerun the focused
   `/shop` accessibility audit.
-- [ ] Record Google Search Console verification/sitemap submission and Paystack
-  test webhook delivery evidence.
+- [x] Verify the final URL-prefix property in Google Search Console and submit
+  the deployed sitemap.
+- [x] Record the portfolio-only Paystack webhook exception: the shared test
+  integration retains another demo application's single dashboard webhook;
+  THREADD uses callback verification and tested webhook security, while a
+  customer deployment still requires its own signed delivery evidence.
 
 ### Deliverables
 
