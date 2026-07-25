@@ -55,7 +55,7 @@ export function HeroCarousel() {
         </motion.div>
       </AnimatePresence>
       <div
-        className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-2 sm:bottom-6"
+        className="absolute right-0 bottom-4 left-0 z-20 flex justify-center gap-2 sm:bottom-6"
         aria-label="Campaign image selection"
       >
         {slides.map((slide, index) => (
