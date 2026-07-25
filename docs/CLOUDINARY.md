@@ -67,18 +67,17 @@ secure provider identity, and deleted the probe successfully. The script is
 extensively commented, never prints credentials, and fails if cleanup is not
 confirmed.
 
-Remaining browser/reset verification:
+`npm run deployment:media-check` also passed against the deployed application:
+the seeded administrator appended an image, replaced the gallery, confirmed
+the replaced provider object was deleted, invoked the authenticated canonical
+reset, confirmed the replacement object was deleted, and verified that the
+repository seed gallery was restored.
+
+Remaining provider-governance verification:
 
 1. Confirm the API key is restricted to the intended Cloudinary product
    environment where the account supports scoped keys.
-2. Upload a catalogue image through the protected administrator form.
-3. Verify it is stored under `threadd/portfolio-demo`, has no original filename
-   or EXIF profile, and renders through Next.js optimization.
-4. Replace that image and confirm the former public ID is removed or marked
-   deleted.
-5. Run the demo reset and confirm visitor-created Cloudinary assets are removed
-   while repository seed images remain.
-6. Record Cloudinary backup/retention settings together with the database
+2. Record Cloudinary backup/retention settings together with the database
    restore evidence.
 
 Official references:

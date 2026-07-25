@@ -17,6 +17,7 @@
     "security:secrets": "node scripts/security/scan-committed-secrets.mjs",
     "deployment:check": "tsx scripts/operations/check-deployment-readiness.ts",
     "cloudinary:check": "tsx scripts/operations/check-cloudinary.ts",
+    "deployment:media-check": "tsx scripts/operations/verify-deployed-media.ts",
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",
     "db:migrate": "prisma migrate dev",

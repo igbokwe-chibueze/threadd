@@ -43,10 +43,12 @@ resettable portfolio database. `DATABASE_URL` and `DEMO_DATABASE_URL` contain
 the same provider-issued connection string so the reset safety guard cannot
 target a different datasource. The canonical seeded records are retained.
 
-Prisma's managed `db.prisma.io` connection currently specifies
-`sslmode=require` and failed when rewritten to `verify-full`. THREADD permits
-that mode only for the exact managed hostname; all other production PostgreSQL
-hosts still require `verify-full`.
+Local migration/admin tooling retains Prisma's direct `db.prisma.io` endpoint.
+Vercel application and reset traffic use the provider-recommended
+`pooled.db.prisma.io` endpoint with one local `pg` connection per function.
+Both provider hosts specify `sslmode=require` and failed when rewritten to
+`verify-full`; THREADD permits that mode only for those exact managed
+hostnames. All other production PostgreSQL hosts still require `verify-full`.
 
 Monitoring ownership, backup provider/retention, and successful restore
 evidence remain required before Phase 11/12 release sign-off.
@@ -92,6 +94,12 @@ schedule in `vercel.json`. After confirming a Pro plan, add:
   ]
 }
 ```
+
+The current Hobby-compatible implementation is
+`.github/workflows/demo-reset.yml`, scheduled at minute 17 every six hours.
+GitHub contains the matching encrypted `THREADD_DEMO_RESET_SECRET`, but
+scheduled execution begins only after the workflow is explicitly published to
+the default branch.
 
 Official references:
 

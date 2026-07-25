@@ -9,6 +9,14 @@ import { logger } from "@/lib/logging/logger";
 
 export const runtime = "nodejs";
 
+/*
+ * Reset performs one serializable truncate-and-reseed transaction against the
+ * managed demo database, followed by provider media cleanup. Give the function
+ * enough execution time for a cold Prisma connection and the documented
+ * 120-second transaction timeout; deployment-plan limits remain authoritative.
+ */
+export const maxDuration = 180;
+
 async function resetDemo(request: Request): Promise<NextResponse> {
   const authorization = request.headers.get("authorization");
   const providedSecret = authorization?.startsWith("Bearer ")

@@ -109,6 +109,14 @@ describe("server environment", () => {
       parseServerEnvironment({
         ...productionEnvironment,
         DATABASE_URL:
+          "postgresql://app:secret@pooled.db.prisma.io/shop?sslmode=require",
+      }),
+    ).not.toThrow();
+
+    expect(() =>
+      parseServerEnvironment({
+        ...productionEnvironment,
+        DATABASE_URL:
           "postgresql://app:secret@not-db.prisma.io/shop?sslmode=require",
       }),
     ).toThrowError(/sslmode=verify-full/);

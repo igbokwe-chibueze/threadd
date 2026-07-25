@@ -1,0 +1,88 @@
+name: Reset portfolio demo
+
+on:
+  # Run every six hours at minute 17. Avoiding minute zero reduces the chance
+  # of GitHub's globally busy top-of-hour scheduling window delaying the job.
+  schedule:
+    - cron: "17 */6 * * *"
+
+  # Keep a manual recovery control in the Actions UI. It uses the identical
+  # authenticated endpoint and does not introduce a less-protected reset path.
+  workflow_dispatch:
+
+concurrency:
+  # A delayed scheduled run must not overlap with a manual or later scheduled
+  # reset. The application also retains its PostgreSQL advisory lock as the
+  # authoritative database-level concurrency boundary.
+  group: threadd-portfolio-demo-reset
+  cancel-in-progress: false
+
+permissions:
+  # The workflow only invokes an HTTPS endpoint. It does not need repository,
+  # package, issue, deployment, or identity-token write permissions.
+  contents: read
+
+jobs:
+  reset:
+    name: Restore canonical seed state
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check deployed health
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --max-time 60 \
+            https://threadd-smoky.vercel.app/api/health
+
+      - name: Invoke authenticated canonical reset
+        shell: bash
+        env:
+          # GitHub masks this encrypted repository secret in runner logs. The
+          # application compares it with DEMO_RESET_SECRET on the server.
+          THREADD_DEMO_RESET_SECRET: ${{ secrets.THREADD_DEMO_RESET_SECRET }}
+        run: |
+          set -euo pipefail
+
+          # Reset is transactionally idempotent. Retry temporary HTTP/network
+          # failures while keeping the total request window below the workflow
+          # timeout. curl never prints the bearer token.
+          response="$(
+            curl \
+              --fail-with-body \
+              --silent \
+              --show-error \
+              --retry 2 \
+              --retry-delay 5 \
+              --retry-all-errors \
+              --max-time 240 \
+              --request POST \
+              --header "Authorization: Bearer ${THREADD_DEMO_RESET_SECRET}" \
+              https://threadd-smoky.vercel.app/api/demo/reset
+          )"
+
+          # Validate the safe response rather than treating any 2xx body as a
+          # successful reset. No customer or credential data is printed.
+          RESET_RESPONSE="${response}" node <<'NODE'
+          const result = JSON.parse(process.env.RESET_RESPONSE ?? "{}");
+          const canonical = result.canonicalState;
+
+          if (
+            typeof result.completedAt !== "string" ||
+            !canonical ||
+            canonical.demoUsers !== 2 ||
+            typeof canonical.products !== "number" ||
+            canonical.products < 1
+          ) {
+            throw new Error("Reset response did not confirm canonical state.");
+          }
+
+          console.log(
+            `Canonical demo restored at ${result.completedAt}; ${canonical.products} products available.`,
+          );
+          NODE

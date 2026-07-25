@@ -44,6 +44,10 @@ Where instructions conflict, security and explicit product requirements take pri
 - Do not silently weaken validation, authorization, tests, or security controls.
 - Do not add a third-party service without documenting why it is needed, what data it receives, and how it is configured.
 - Never claim a feature is complete unless linting, type checking, relevant tests, and production build pass.
+- Do not stage files, create commits, push changes, create or switch branches, or
+  open pull requests unless the user explicitly requests the specific Git
+  publishing action. Leave completed changes in the working tree for the user
+  to review, stage, commit, and push by default.
 
 ## 3. Project Stack
 

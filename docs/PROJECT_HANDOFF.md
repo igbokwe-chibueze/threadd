@@ -122,23 +122,31 @@ The first Phase 11 slice is implemented in the current working tree:
   concrete URLs, contact details, messages, and stacks are excluded;
 - `/api/health` supplies a no-store database readiness probe. Ordinary
   production database URLs require `sslmode=verify-full`; the exact managed
-  `db.prisma.io` host may retain its provider-issued `sslmode=require`.
+  Prisma's exact direct/pooled managed hosts may retain their provider-issued
+  `sslmode=require`.
   `npm run deployment:check` fails closed until monitoring ownership, backup
   retention, and a completed restore exercise are recorded;
 - Cloudinary is the selected Vercel-compatible catalogue provider. The
   server-only adapter validates images, strips profiles, stores provider IDs,
   limits deletion to the configured folder, cleans failed/replaced uploads,
   and participates in demo reset. Encrypted credentials are configured in
-  Vercel, and a reversible live upload/delete probe passed;
+  Vercel. Both the reversible provider probe and deployed admin
+  append/replace/reset lifecycle passed;
 - the workspace is linked to Vercel project
   `chibueze-igbokwes-projects/threadd`, with GitHub connected and safe
   production variables plus generated reset/authentication secrets configured.
   Production is live at `https://threadd-smoky.vercel.app`; health, home, shop,
   and sign-in returned 200, unauthenticated reset returned 403, and the
   expected CSP/HSTS/referrer/MIME headers were observed;
-- the existing Prisma Postgres project (`db.prisma.io`) is confirmed as the
-  isolated, disposable public-demo database. Vercel uses that same datasource,
-  retaining the canonical seeded data visitors are periodically reset to;
+- the existing Prisma Postgres project is confirmed as the isolated,
+  disposable public-demo database. Local migration tooling uses its direct
+  host; Vercel uses the provider's pooled serverless host with a one-connection
+  function pool. Both address the same database and retain the canonical seed;
+- reset now clears database-backed rate limits, has an explicit 180-second
+  function allowance, and passed deployed database/media restoration;
+- a least-privilege six-hour GitHub Actions reset workflow is ready locally,
+  and its encrypted repository secret is configured. It is not scheduled until
+  the workflow is explicitly published to the default branch;
 - [`RECOVERY_RUNBOOK.md`](./RECOVERY_RUNBOOK.md) defines isolated restore,
   migration, rollback, media consistency, and incident escalation procedures;
 - [`SECURITY_EVIDENCE.md`](./SECURITY_EVIDENCE.md) records the evidence and the

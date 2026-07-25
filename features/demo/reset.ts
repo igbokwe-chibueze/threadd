@@ -50,7 +50,8 @@ export async function resetDemoDatabase(): Promise<DemoResetResult> {
 
       await transaction.$executeRaw`
         TRUNCATE TABLE
-          "EmailMessage", "Session", "Account", "Verification", "AuditLog",
+          "EmailMessage", "Session", "Account", "Verification", "RateLimit",
+          "AuditLog",
           "ProductCollection", "ProductImage", "CartItem", "OrderItem",
           "PaymentEvent", "OrderStatusHistory", "CancellationRequest",
           "ReturnRequest", "Refund", "Payment", "InventoryMovement",

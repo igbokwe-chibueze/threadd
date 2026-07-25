@@ -15,7 +15,19 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({ connectionString });
+  const adapter = new PrismaPg({
+    connectionString,
+
+    /*
+     * Every Vercel function instance owns a separate node-postgres pool.
+     * THREADD uses Prisma Postgres' external pooled endpoint in production, and
+     * one local connection per function prevents a burst of instances from
+     * multiplying the provider connection demand. Local tooling keeps pg's
+     * ordinary capacity for migrations, seeding, and development.
+     */
+    max: process.env.VERCEL ? 1 : 10,
+    connectionTimeoutMillis: 15_000,
+  });
 
   return new PrismaClient({
     adapter,

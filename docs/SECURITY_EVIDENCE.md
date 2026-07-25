@@ -69,7 +69,7 @@ The complete current boundary inventory is recorded in
 | Resource limits | Four MB per file, six files per product, 6000 pixels per axis, and 36 million pixels total | Byte and decompression-risk limits are enforced before storage. The Server Action request limit is 25 MB, sufficient for six files at the individual maximum plus form fields. |
 | Object naming | `features/catalogue/media-storage.ts` | Original filenames are discarded; a server-generated UUID and allowlisted extension form the stored name. Exclusive creation prevents overwriting an existing object. |
 | Local adapter isolation | `lib/env/schema.ts`; `features/demo/reset.ts` | Local writes are confined to `public/uploads/catalogue`; customer environment validation requires the managed-provider selection, while demo reset removes only database-recorded paths inside that resolved prefix. |
-| Upload credentials | Current local adapter | No media credentials exist in the current browser or server configuration. A future managed adapter must keep credentials server-only and use least-privilege access. |
+| Upload credentials | Vercel encrypted environment; `features/catalogue/media-storage.ts` | Cloudinary credentials remain server-only. Direct and deployed protected upload/delete checks passed without exposing credential values. |
 
 The local adapter is retained for development and the disposable portfolio
 demo. It is not durable customer storage. A managed provider has deliberately
@@ -148,14 +148,15 @@ remain deployment work tracked in SEC-011-006.
   verification.
 - Likelihood: Low while the current locked major version remains installed.
 - Remediation: Use `sslmode=verify-full` for ordinary deployments. Prisma's
-  managed `db.prisma.io` endpoint currently rejects that rewrite, so retain its
-  provider-issued mode only while the current driver treats it as a strict
-  alias; re-evaluate provider compatibility before upgrading to `pg` 9.
+  managed direct/pooled endpoints currently reject that rewrite, so retain
+  their provider-issued mode only while the current driver treats it as a
+  strict alias; re-evaluate provider compatibility before upgrading to `pg` 9.
 - Owner: THREADD project
 - Status: Accepted low-risk compatibility exception; dependency upgrade gate
   remains open
 - Verification evidence: `lib/env/schema.ts` limits `sslmode=require` to the
-  exact `db.prisma.io` hostname and requires `verify-full` elsewhere;
+  exact `db.prisma.io`/`pooled.db.prisma.io` hostnames and requires
+  `verify-full` elsewhere;
   `tests/unit/environment.test.ts` covers the managed exception, accepted
   strict mode, and lookalike-host rejection. Vercel build connected
   successfully with the provider-issued URL on 25 July 2026.
@@ -224,16 +225,17 @@ remain deployment work tracked in SEC-011-006.
   Cloudinary credentials to Vercel and exercise the live provider boundary.
 - Owner: THREADD deployment owner
 - Target date: Before the first customer production deployment
-- Status: Credentials and direct live upload/delete verified; protected
-  browser replacement and demo-reset cleanup remain release-blocking
+- Status: Closed
 - Verification evidence: `features/catalogue/media-storage.ts`,
   `features/demo/reset.ts`, migration
   `20260725014000_add_product_image_storage_identity`,
   `tests/unit/catalogue-media-storage.test.ts`, and
   `tests/unit/environment.test.ts`, and
-  `scripts/operations/check-cloudinary.ts`. Vercel credentials are encrypted;
-  the live probe uploaded into the isolated folder and was deleted on 25 July
-  2026.
+  `scripts/operations/check-cloudinary.ts` plus
+  `scripts/operations/verify-deployed-media.ts`. Vercel credentials are
+  encrypted; direct and protected-browser upload/replacement/reset deletion
+  passed on 25 July 2026.
+- Date closed: 25 July 2026
 
 ### SEC-011-007 — Paystack webhook settlement trusted signed event fields
 
@@ -481,7 +483,7 @@ automatic breaking remediation was applied.
 | Authorization monitoring | `features/auth/authorization.ts` | Anonymous and wrong-role mutation/API boundary failures create warning events without user identity, cookie, email, or credential data. Page redirects remain expected navigation and avoid noisy error capture. |
 | Safe operator correlation | `/api/health`; structured logger | Database readiness failures return a random request ID and a generic 503 response; the same ID appears in the protected server log. |
 | Privacy disclosure | `/privacy` | The implementation-stage policy now describes operational logging exclusions and identifies merchant/legal approval of retention and privacy-request handling as a launch requirement. |
-| Production database TLS | `lib/env/schema.ts` | Production refuses missing/non-PostgreSQL URLs, requires `verify-full` generally, and permits Prisma's provider-issued `require` mode only on the exact `db.prisma.io` host. |
+| Production database TLS and pooling | `lib/env/schema.ts`; `lib/db/client.ts` | Production requires `verify-full` generally, permits Prisma's issued mode only on its exact direct/pooled hosts, uses `pooled.db.prisma.io` on Vercel, and caps each function pool at one connection. |
 | Deployment preflight | `scripts/operations/check-deployment-readiness.ts` | Reuses application environment validation and fails unless production mode, non-local deployment, monitoring ownership, managed backup retention, and a past restore-test timestamp are recorded. It prints control state only. |
 | Migration/rollback procedure | `package.json`; `docs/RECOVERY_RUNBOOK.md` | Production migration uses `prisma migrate deploy`; restore testing, media consistency, rollback limits, and incident escalation are documented. |
 
@@ -559,9 +561,6 @@ configuration and verification in Phase 12.
   browser.
 - Decide whether the nonce/dynamic-rendering tradeoff is justified after
   deployed performance measurement.
-- Verify Cloudinary metadata removal, protected folder-scoped replacement, and
-  demo-reset cleanup through the deployed application. Direct credential,
-  upload, and deletion verification has passed.
 - Configure protected monitoring retention/access and verify an alert reaches
   the active owner.
 - Confirm managed backup settings and complete an isolated database/media

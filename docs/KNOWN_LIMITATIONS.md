@@ -20,8 +20,8 @@ Current treatment:
 - catalogue uploads are administrator-only and now enforce binary format, byte,
   dimension, and pixel limits before the Next.js image pipeline sees them;
 - Cloudinary now provides the managed transformation/storage adapter; encrypted
-  credentials and a live upload/deletion probe are verified. Protected browser
-  replacement and full demo-reset media cleanup remain pending;
+  credentials, direct provider probing, protected browser replacement, and
+  full demo-reset media cleanup are verified;
 - review the advisories when a newer stable Next.js release is published;
 - do not run `npm audit fix --force`.
 
@@ -44,6 +44,10 @@ exact-host exception for Prisma's provider-issued managed URL), and includes an
 executable deployment preflight. Source review cannot select or prove a
 hosting monitoring sink, log access/retention, alert delivery, database backup
 retention, media recovery, or a successful isolated restore.
+
+The six-hour GitHub Actions reset workflow and encrypted repository secret are
+ready, but the workflow must be explicitly published before GitHub schedules
+it.
 
 Those items remain release-blocking until the deployment owner records provider
 evidence and passes the controlled procedures in `RECOVERY_RUNBOOK.md`.

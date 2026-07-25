@@ -660,9 +660,12 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
   upload/deletion probe.
 - [x] Deploy to Vercel and verify health, public routes, reset authorization,
   and production security headers.
-- [ ] Verify protected browser upload/replacement and reset cleanup; configure
-  monitoring/backup evidence, alerts, retention, and a controlled restore in
-  the deployed environment.
+- [x] Verify protected deployed upload/replacement, folder-scoped deletion,
+  authenticated reset cleanup, rate-limit cleanup, and seed restoration.
+- [x] Implement a least-privilege six-hour GitHub Actions scheduler and
+  configure its encrypted reset secret.
+- [ ] Publish the scheduler workflow; configure monitoring/backup evidence,
+  alerts, retention, and a controlled restore in the deployed environment.
 
 ### Deliverables
 

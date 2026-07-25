@@ -85,9 +85,9 @@ const serverEnvironmentSchema = z
     /*
      * Ordinary PostgreSQL connections must verify both the certificate and
      * hostname explicitly. Prisma Postgres is a managed proxy exception: its
-     * provider-issued db.prisma.io URL currently uses sslmode=require and
-     * rejects a client-side rewrite to verify-full. Keep that exception scoped
-     * to the exact managed hostname instead of weakening arbitrary database
+     * provider-issued direct and pooled URLs currently use sslmode=require and
+     * reject a client-side rewrite to verify-full. Keep that exception scoped
+     * to the exact managed hostnames instead of weakening arbitrary database
      * connections.
      */
     if (environment.APP_ENV === "production") {
@@ -104,8 +104,10 @@ const serverEnvironmentSchema = z
             databaseUrl.protocol,
           );
           const sslMode = databaseUrl.searchParams.get("sslmode");
-          const isManagedPrismaPostgres =
-            databaseUrl.hostname === "db.prisma.io";
+          const isManagedPrismaPostgres = [
+            "db.prisma.io",
+            "pooled.db.prisma.io",
+          ].includes(databaseUrl.hostname);
           const hasApprovedSslMode =
             sslMode === "verify-full" ||
             (isManagedPrismaPostgres && sslMode === "require");
@@ -115,7 +117,7 @@ const serverEnvironmentSchema = z
               code: "custom",
               path: ["DATABASE_URL"],
               message:
-                "Production PostgreSQL connections must use sslmode=verify-full; provider-issued db.prisma.io URLs may use sslmode=require.",
+                "Production PostgreSQL connections must use sslmode=verify-full; provider-issued Prisma Postgres hosts may use sslmode=require.",
             });
           }
         } catch {
