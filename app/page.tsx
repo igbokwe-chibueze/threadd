@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { HeroCarousel } from "@/components/home/hero-carousel";
 import { Reveal } from "@/components/motion/reveal";
 import { StructuredData } from "@/components/seo/structured-data";
 import { getCurrentSession } from "@/features/auth/authorization";
@@ -52,14 +53,7 @@ export default async function Home() {
 
       <main id="main-content" tabIndex={-1}>
         <section className="relative isolate min-h-[100svh] overflow-hidden bg-[#373632]">
-          <Image
-            src="/images/campaign/threadd-hero-01.png"
-            alt="Two models wearing THREADD's neutral unisex tailoring"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-[66%_center]"
-          />
+          <HeroCarousel />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(20,20,18,.82)_0%,rgba(20,20,18,.48)_34%,rgba(20,20,18,.02)_70%)]" />
 
           <div className="relative z-10 flex min-h-[100svh] max-w-[105rem] flex-col justify-end px-5 pt-32 pb-8 sm:px-10 sm:pb-12 lg:px-14">
@@ -69,12 +63,15 @@ export default async function Home() {
                 Debut study 001
               </p>
               <h1
-                aria-label="THREADD"
+                aria-label="THREADD by Igbokwe Chibueze"
                 className="max-w-5xl text-[clamp(4.2rem,13vw,12rem)] leading-[0.72] font-semibold tracking-[-0.085em] text-[#f4f0e7] uppercase"
               >
                 Thread
-                <span className="block pl-[0.32em] text-[#d7ff3f] italic">
-                  D
+                <span className="flex items-end gap-7 pl-[0.32em] sm:gap-10">
+                  <span className="text-[#d7ff3f] italic">D</span>
+                  <span className="mb-[0.8em] text-[0.58rem] leading-none font-semibold tracking-[0.24em] text-white/70 not-italic">
+                    By Igbokwe Chibueze
+                  </span>
                 </span>
               </h1>
             </Reveal>
@@ -101,6 +98,57 @@ export default async function Home() {
           <p className="absolute right-4 bottom-1/2 hidden origin-bottom-right rotate-90 text-[0.58rem] font-medium tracking-[0.25em] text-white/60 uppercase xl:block">
             Modern uniform / edition 2026
           </p>
+        </section>
+
+        <section className="border-y border-black/20 px-5 py-20 sm:px-10 lg:px-14 lg:py-28">
+          <Reveal>
+            <div className="mb-10 flex items-end justify-between gap-8">
+              <div>
+                <p className="text-[0.62rem] font-bold tracking-[0.24em] uppercase">
+                  Study 001 / In frame
+                </p>
+                <h2 className="mt-4 max-w-3xl text-4xl leading-[0.92] font-medium tracking-[-0.055em] sm:text-6xl">
+                  A wardrobe built around the person.
+                </h2>
+              </div>
+              <p className="hidden max-w-xs text-right text-xs leading-5 text-black/60 md:block">
+                Structure and softness meet in pieces made to move between
+                identities, occasions, and seasons.
+              </p>
+            </div>
+          </Reveal>
+          <div className="grid gap-5 md:grid-cols-2">
+            {[
+              {
+                src: "/images/campaign/threadd-editorial-01.png",
+                alt: "Model in a sculptural charcoal coat and fluid ivory trousers",
+                label: "Form / 01",
+              },
+              {
+                src: "/images/campaign/threadd-editorial-02.png",
+                alt: "Model in an ivory longline vest and wide charcoal trousers",
+                label: "Function / 02",
+              },
+            ].map((image, index) => (
+              <Reveal key={image.src} delay={index * 0.08}>
+                <figure>
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#d8d2c8]">
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-700 ease-out hover:scale-[1.015]"
+                    />
+                  </div>
+                  <figcaption className="mt-3 flex items-center justify-between text-[0.58rem] font-semibold tracking-[0.18em] uppercase">
+                    <span>{image.label}</span>
+                    <span className="text-black/60">THREADD / Lagos</span>
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
         </section>
 
         <section

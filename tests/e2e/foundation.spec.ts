@@ -67,6 +67,9 @@ test("mobile navigation opens, navigates, and closes accessibly", async ({
   const navigation = page.getByRole("dialog", { name: /THREADD navigation/i });
   await expect(navigation).toBeVisible();
   await expect(navigation.getByRole("link", { name: /about/i })).toBeVisible();
+  await expect(
+    navigation.getByRole("link", { name: /sign in/i }),
+  ).toBeVisible();
 
   await page.keyboard.press("Escape");
   await expect(navigation).not.toBeVisible();
@@ -82,12 +85,35 @@ test("public information pages are reachable from the storefront", async ({
     ["/returns", /a considered way back/i],
     ["/privacy", /only what the store needs/i],
     ["/terms", /the useful boundaries/i],
+    ["/project", /inside the build/i],
   ] as const;
 
   for (const [path, heading] of pages) {
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(heading);
   }
+});
+
+test("demo credentials can be inspected and placed into the sign-in form", async ({
+  page,
+}) => {
+  await page.goto("/sign-in");
+  await page
+    .getByRole("button", { name: /view and copy demo login details/i })
+    .click();
+
+  const dialog = page.getByRole("dialog", { name: /demo login details/i });
+  await expect(dialog).toBeVisible();
+  await dialog
+    .locator("article")
+    .filter({ hasText: "Customer" })
+    .getByRole("button", { name: /use these details/i })
+    .click();
+
+  await expect(page.getByLabel(/email address/i)).toHaveValue(
+    "customer@demo.threadd.store",
+  );
+  await expect(page.getByLabel(/^password$/i)).toHaveValue("DemoShopper123!");
 });
 
 test("public layouts avoid horizontal overflow at representative sizes", async ({

@@ -5,6 +5,10 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { PasswordField } from "@/components/ui/password-field";
+import {
+  DemoCredentialsDialog,
+  type DemoCredential,
+} from "@/features/auth/components/demo-credentials-dialog";
 import { authClient } from "@/lib/auth/client";
 
 type DemoAccount = Readonly<{
@@ -36,6 +40,8 @@ export function SignInForm({ returnTo = "/account" }: { returnTo?: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pendingAccount, setPendingAccount] = useState<string | null>(null);
+  const [selectedCredential, setSelectedCredential] =
+    useState<DemoCredential | null>(null);
 
   async function signIn(
     email: string,
@@ -112,6 +118,10 @@ export function SignInForm({ returnTo = "/account" }: { returnTo?: string }) {
           </button>
         ))}
       </div>
+      <DemoCredentialsDialog
+        accounts={demoAccounts}
+        onUse={setSelectedCredential}
+      />
 
       <div className="my-8 flex items-center gap-4">
         <span className="h-px flex-1 bg-black/15" />
@@ -129,14 +139,18 @@ export function SignInForm({ returnTo = "/account" }: { returnTo?: string }) {
             type="email"
             autoComplete="email"
             required
+            defaultValue={selectedCredential?.email}
+            key={`email-${selectedCredential?.email ?? "empty"}`}
             className="h-12 border border-black/25 bg-transparent px-3 text-base font-normal tracking-normal normal-case outline-none focus:border-black"
           />
         </label>
         <PasswordField
+          key={`password-${selectedCredential?.email ?? "empty"}`}
           label="Password"
           name="password"
           autoComplete="current-password"
           minLength={10}
+          defaultValue={selectedCredential?.password}
         />
 
         {error ? (

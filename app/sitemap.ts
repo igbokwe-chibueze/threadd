@@ -44,6 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/returns",
     "/privacy",
     "/terms",
+    "/project",
   ].map((path) => ({
     url: `${baseUrl}${path}`,
     changeFrequency:

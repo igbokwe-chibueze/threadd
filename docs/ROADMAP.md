@@ -20,6 +20,14 @@
 - Only one phase may be marked as the primary active phase. Later-phase discovery may happen early, but implementation must not bypass an unmet quality gate.
 - A phase is complete only when its deliverables, tests, documentation, and exit criteria are satisfied.
 - Each phase is an expandable `<details>` section. Completed phases should default to collapsed; the active phase should remain open.
+
+### Post-roadmap portfolio polish
+
+After Phase 12 sign-off, the final presentation pass adds creator attribution,
+more original campaign imagery, a reduced-motion-safe hero carousel, corrected
+mobile sign-in navigation, copyable demo credentials, a logo-derived favicon,
+a comprehensive README, and a public in-site technical project tour. This does
+not reopen or extend the completed product roadmap.
 - At the end of every task, report the current phase, completed work, remaining exit criteria, and next intended task.
 - `Xtamaliy` is a legacy project name. All new product copy, code, configuration, and documentation must use `THREADD`.
 

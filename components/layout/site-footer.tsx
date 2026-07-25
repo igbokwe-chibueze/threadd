@@ -26,6 +26,7 @@ export function SiteFooter() {
             ["Returns", "/returns"],
             ["Privacy", "/privacy"],
             ["Terms", "/terms"],
+            ["Inside the build", "/project"],
             ["Account / Admin", "/sign-in"],
           ].map(([label, href], index) => (
             <Link
@@ -42,7 +43,17 @@ export function SiteFooter() {
 
       <div className="flex flex-col gap-3 pt-6 text-[0.58rem] font-semibold tracking-[0.16em] text-white/60 uppercase sm:flex-row sm:items-center sm:justify-between">
         <p>© 2026 THREADD</p>
-        <p>Built in Lagos / Demo collection</p>
+        <p>
+          Created by{" "}
+          <a
+            href="https://www.linkedin.com/in/chibueze-o-igbokwe/"
+            target="_blank"
+            rel="noreferrer"
+            className="text-white underline decoration-white/35 underline-offset-4 transition-colors hover:text-[#d7ff3f] focus-visible:outline-2 focus-visible:outline-offset-4"
+          >
+            Igbokwe Chibueze
+          </a>
+        </p>
       </div>
     </footer>
   );

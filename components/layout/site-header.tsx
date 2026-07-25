@@ -267,8 +267,10 @@ export function SiteHeader({
                           0{index + 1}
                         </span>
                         <span className="text-4xl font-medium tracking-[-0.06em]">
-                          {item.href === "/sign-in" && isSignedIn
-                            ? "Account"
+                          {item.href === "/sign-in"
+                            ? isSignedIn
+                              ? "Account"
+                              : "Sign in"
                             : item.label}
                           {item.href === "/cart" ? ` (${cartQuantity})` : ""}
                           {item.href === "/demo-outbox" && unreadMessageCount

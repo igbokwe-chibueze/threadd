@@ -7,6 +7,7 @@ type PasswordFieldProps = Readonly<{
   name: string;
   autoComplete: "current-password" | "new-password";
   minLength?: number;
+  defaultValue?: string;
 }>;
 
 export function PasswordField({
@@ -14,6 +15,7 @@ export function PasswordField({
   name,
   autoComplete,
   minLength,
+  defaultValue,
 }: PasswordFieldProps) {
   const id = useId();
   const [isVisible, setIsVisible] = useState(false);
@@ -34,6 +36,7 @@ export function PasswordField({
           autoComplete={autoComplete}
           required
           minLength={minLength}
+          defaultValue={defaultValue}
           className="h-12 w-full border border-black/25 bg-transparent px-3 pr-20 text-base font-normal tracking-normal normal-case outline-none focus:border-black"
         />
         <button

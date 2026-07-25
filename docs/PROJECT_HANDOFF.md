@@ -247,6 +247,13 @@ real signed webhook delivery and retry evidence.
 
 Phase 12 and the full roadmap are complete as of 25 July 2026.
 
+Post-roadmap portfolio polish adds an animated, reduced-motion-safe campaign
+carousel, two original editorial images, creator attribution, an in-site
+technical project tour, copyable demo credentials, a logo-derived generated app
+icon, a corrected mobile sign-in link, and a comprehensive client-facing
+README. These refinements do not change the established commerce, security, or
+reset architecture.
+
 ## Useful Documents
 
 - [`MANUAL_TESTING.md`](./MANUAL_TESTING.md) — established manual journeys.
