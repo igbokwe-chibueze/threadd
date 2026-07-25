@@ -1,17 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-
 type ErrorPageProps = Readonly<{
   error: Error & { digest?: string };
   reset: () => void;
 }>;
 
-export default function ErrorPage({ error, reset }: ErrorPageProps) {
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
-
+export default function ErrorPage({ reset }: ErrorPageProps) {
   return (
     <main className="grid min-h-screen place-items-center bg-[#171713] px-6 text-[#f4f0e7]">
       <div className="max-w-xl text-center">

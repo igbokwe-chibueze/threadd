@@ -303,8 +303,8 @@ export function ProductForm({
               className={`${field} ${hasError("images") ? fieldError : ""} file:mr-4 file:border-0 file:bg-[#d7ff3f] file:px-3 file:py-1 file:text-black`}
             />
             <span className="mt-2 block font-normal tracking-normal text-white/45 normal-case">
-              Select up to 6 JPEG, PNG, or WebP photos. Maximum 4 MB each. The
-              first photo becomes the catalogue cover.
+              Select up to 6 JPEG, PNG, or WebP photos. Maximum 4 MB and 6000 ×
+              6000 pixels each. The first photo becomes the catalogue cover.
             </span>
           </label>
           <Field

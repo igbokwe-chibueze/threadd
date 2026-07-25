@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { requireRole } from "@/features/auth/authorization";
+import { requireAdminPageSession } from "@/features/auth/authorization";
 import {
   archiveProductAction,
   updateProductAction,
@@ -19,7 +19,7 @@ export default async function EditProductPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireRole(["ADMIN", "SUPER_ADMIN"]);
+  await requireAdminPageSession();
   const { id } = await params;
   const [product, categories, collections] = await Promise.all([
     db.product.findUnique({

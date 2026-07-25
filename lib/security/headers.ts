@@ -8,7 +8,7 @@ export function buildSecurityHeaders(
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' blob: data:",
+    "img-src 'self' https://res.cloudinary.com blob: data:",
     "font-src 'self' data:",
     "connect-src 'self'",
     "object-src 'none'",

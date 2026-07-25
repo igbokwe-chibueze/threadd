@@ -1,0 +1,32 @@
+# Local dependency and framework build output can be several gigabytes. Vercel
+# installs dependencies and runs a fresh production build, so uploading these
+# directories is both unnecessary and unsafe.
+node_modules
+.next
+.next-e2e
+out
+build
+generated/prisma
+
+# Test runners generate reports, screenshots, traces, and coverage locally.
+# These are development evidence rather than production application inputs.
+coverage
+playwright-report
+test-results
+
+# Local configuration, provider metadata, and repository/agent state must never
+# be included in a deployment source archive.
+.env*
+!.env.example
+.vercel
+.git
+.agents
+.codex
+
+# Local compiler and debug artifacts are regenerated when needed.
+*.tsbuildinfo
+debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*

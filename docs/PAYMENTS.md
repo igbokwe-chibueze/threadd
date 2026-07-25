@@ -13,6 +13,17 @@ Paystack appears when `PAYSTACK_SECRET_KEY` contains a non-placeholder test or
 live secret. The browser is redirected to Paystack's hosted checkout. Payment
 success is accepted only after server-to-server verification.
 
+Paystack webhooks follow the same rule. THREADD first authenticates the exact
+raw request body with Paystack's SHA-512 HMAC, then independently queries
+Paystack using the database-owned reference. Only that verification response
+can drive the shared reference, amount, currency, stock, and order-state
+transition. Stored webhook evidence is limited to correlation fields and does
+not retain customer or payment-authorization metadata.
+
+Provider amounts are converted from database decimals to integer kobo using
+exact decimal-string arithmetic. JavaScript floating-point multiplication is
+not used at this boundary.
+
 ### OPay
 
 OPay appears only when all of the following values are present:
@@ -46,6 +57,14 @@ payment-status API before an order can become paid.
 
 The local demo adapter is available only when neither Paystack nor OPay is
 configured. It never moves money.
+
+## Refund idempotency
+
+THREADD creates the unique refund claim before contacting a provider. This
+ordering prevents two concurrent administrator requests from both issuing a
+refund before database uniqueness is evaluated. Ambiguous failed or interrupted
+provider requests are retained for manual reconciliation and are never retried
+automatically.
 
 ## Adding another provider
 

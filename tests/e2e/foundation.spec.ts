@@ -16,6 +16,27 @@ test.afterAll(async () => {
   await pool.end();
 });
 
+test("database readiness probe exposes no infrastructure details", async ({
+  request,
+}) => {
+  const response = await request.get("/api/health");
+
+  expect(response.status()).toBe(200);
+  expect(response.headers()["cache-control"]).toContain("no-store");
+  await expect(response.json()).resolves.toEqual({ status: "ok" });
+});
+
+test("Vercel-style demo reset GET requires its bearer secret", async ({
+  request,
+}) => {
+  const response = await request.get("/api/demo/reset");
+
+  expect(response.status()).toBe(403);
+  await expect(response.json()).resolves.toEqual({
+    error: "Demo reset was refused by the deployment safety policy.",
+  });
+});
+
 test("renders the THREADD foundation", async ({ page }) => {
   await page.goto("/");
 
@@ -100,8 +121,24 @@ test("demo customer signs in without admin access", async ({ page }) => {
     page.getByRole("heading", { name: /good to see you/i }),
   ).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole("link", { name: "Go to admin" })).toHaveCount(0);
-  await page.goto("/admin");
-  await expect(page).toHaveURL(/\/account$/);
+
+  /*
+   * Exercise every current top-level admin module directly. Checking only the
+   * dashboard would miss a future regression where a nested page can be loaded
+   * without crossing the shared server-side authorization boundary.
+   */
+  for (const path of [
+    "/admin",
+    "/admin/catalogue",
+    "/admin/inventory",
+    "/admin/enquiries",
+    "/admin/orders",
+    "/admin/shipping",
+    "/admin/outbox",
+  ]) {
+    await page.goto(path);
+    await expect(page).toHaveURL(/\/account$/);
+  }
 });
 
 test("demo administrator enters the admin area", async ({ page }) => {

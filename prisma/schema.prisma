@@ -212,6 +212,20 @@ model Verification {
   @@index([expiresAt])
 }
 
+/// Shared Better Auth rate-limit counters.
+///
+/// Database storage keeps authentication throttles consistent across multiple
+/// server instances. `lastRequest` is epoch milliseconds because that is the
+/// Better Auth adapter contract.
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@index([lastRequest])
+}
+
 model AuditLog {
   id            String       @id @default(cuid())
   actorId       String?
@@ -298,17 +312,20 @@ model ProductCollection {
 }
 
 model ProductImage {
-  id        String   @id @default(cuid())
-  productId String
-  url       String
-  altText   String
-  position  Int      @default(0)
-  width     Int?
-  height    Int?
-  createdAt DateTime @default(now())
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id              String   @id @default(cuid())
+  productId       String
+  url             String
+  altText         String
+  position        Int      @default(0)
+  width           Int?
+  height          Int?
+  storageProvider String?
+  storageKey      String?
+  createdAt       DateTime @default(now())
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId, position])
+  @@index([storageProvider, storageKey])
 }
 
 model ProductVariant {

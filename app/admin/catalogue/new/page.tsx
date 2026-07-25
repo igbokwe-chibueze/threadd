@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { requireRole } from "@/features/auth/authorization";
+import { requireAdminPageSession } from "@/features/auth/authorization";
 import { createProductAction } from "@/features/catalogue/admin-actions";
 import { ProductForm } from "@/features/catalogue/components/product-form";
 import { db } from "@/lib/db/client";
@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function NewProductPage() {
-  await requireRole(["ADMIN", "SUPER_ADMIN"]);
+  await requireAdminPageSession();
   const [categories, collections] = await Promise.all([
     db.category.findMany({
       orderBy: { name: "asc" },

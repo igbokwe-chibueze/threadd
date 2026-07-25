@@ -1,42 +1,34 @@
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHash } from "node:crypto";
 
 import { NextResponse } from "next/server";
 
 import { applySuccessfulPayment } from "@/features/orders/payment-processing";
-import type { PaymentVerification } from "@/features/payments/types";
+import {
+  hasValidPaystackSignature,
+  parsePaystackWebhook,
+} from "@/features/payments/paystack-webhook";
+import { getPaymentProvider } from "@/features/payments/provider";
 import { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db/client";
 import { sendOrderConfirmation } from "@/features/orders/notifications";
 
 export async function POST(request: Request) {
   const secret = process.env.PAYSTACK_SECRET_KEY;
-  if (!secret?.startsWith("sk_test_")) {
+  if (!secret?.startsWith("sk_") || secret.toLowerCase().includes("replace")) {
     return NextResponse.json({ error: "Webhook unavailable" }, { status: 503 });
   }
   const rawBody = await request.text();
   const supplied = request.headers.get("x-paystack-signature") ?? "";
-  const expected = createHmac("sha512", secret).update(rawBody).digest("hex");
-  const valid =
-    supplied.length === expected.length &&
-    timingSafeEqual(Buffer.from(supplied), Buffer.from(expected));
-  if (!valid) {
+  if (!hasValidPaystackSignature(rawBody, supplied, secret)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  const payload = JSON.parse(rawBody) as {
-    event: string;
-    data?: {
-      id?: number | string;
-      status?: string;
-      reference?: string;
-      amount?: number;
-      currency?: string;
-      channel?: string;
-      gateway_response?: string;
-      paid_at?: string;
-      transaction_reference?: string;
-    };
-  };
+  let payload;
+  try {
+    payload = parsePaystackWebhook(rawBody);
+  } catch {
+    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  }
   const fingerprint = createHash("sha256").update(rawBody).digest("hex");
   const existing = await db.paymentEvent.findUnique({ where: { fingerprint } });
   if (existing?.processedAt) return NextResponse.json({ received: true });
@@ -52,20 +44,19 @@ export async function POST(request: Request) {
     },
   });
   if (payload.event === "charge.success" && payload.data?.reference) {
-    const verification: PaymentVerification = {
-      reference: payload.data.reference,
-      status: payload.data.status === "success" ? "success" : "pending",
-      amountKobo: payload.data.amount ?? 0,
-      currency: payload.data.currency ?? "",
-      transactionId: payload.data.id ? String(payload.data.id) : undefined,
-      channel: payload.data.channel,
-      gatewayResponse: payload.data.gateway_response,
-      paidAt: payload.data.paid_at ? new Date(payload.data.paid_at) : undefined,
-    };
     const payment = await db.payment.findUnique({
-      where: { reference: verification.reference },
+      where: { reference: payload.data.reference },
     });
-    if (payment) {
+    if (payment?.provider === "paystack") {
+      /*
+       * The HMAC authenticates that Paystack sent the event; it does not make
+       * every event field authoritative. Verify server-to-server and let the
+       * shared transition compare reference, amount, and currency with the
+       * database-owned payment before changing stock or order state.
+       */
+      const verification = await getPaymentProvider("paystack").verify(
+        payment.reference,
+      );
       const order = await applySuccessfulPayment(verification);
       await sendOrderConfirmation(order.id);
       await db.paymentEvent.update({

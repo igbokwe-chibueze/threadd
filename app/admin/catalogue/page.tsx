@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { PendingLink } from "@/components/ui/pending-link";
-import { requireRole } from "@/features/auth/authorization";
+import { requireAdminPageSession } from "@/features/auth/authorization";
 import { formatNaira } from "@/features/catalogue/format";
 import { db } from "@/lib/db/client";
 
@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function AdminCataloguePage() {
-  await requireRole(["ADMIN", "SUPER_ADMIN"]);
+  await requireAdminPageSession();
   const products = await db.product.findMany({
     orderBy: { updatedAt: "desc" },
     include: {

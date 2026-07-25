@@ -10,12 +10,21 @@ import {
   EMAIL_PREVIEW_TTL_SECONDS,
 } from "@/lib/email/preview-access";
 import { db } from "@/lib/db/client";
+import { serverEnvironment } from "@/lib/env/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
+  /*
+   * Redirect destinations use the configured application origin rather than
+   * the request Host header. This prevents a forged Host/X-Forwarded-Host from
+   * turning the payment callback into an open redirect.
+   */
+  const applicationUrl = new URL(serverEnvironment.APP_URL);
   const reference = url.searchParams.get("reference");
   if (!reference) {
-    return NextResponse.redirect(new URL("/checkout?payment=missing", url));
+    return NextResponse.redirect(
+      new URL("/checkout?payment=missing", applicationUrl),
+    );
   }
   try {
     const payment = await db.payment.findUnique({ where: { reference } });
@@ -29,7 +38,7 @@ export async function GET(request: Request) {
     await sendOrderConfirmation(order.id, previewToken);
     revalidatePath("/", "layout");
     const response = NextResponse.redirect(
-      new URL(`/orders/${order.id}/confirmation`, url),
+      new URL(`/orders/${order.id}/confirmation`, applicationUrl),
     );
     if (previewToken) {
       response.cookies.set(EMAIL_PREVIEW_COOKIE, previewToken, {
@@ -42,6 +51,8 @@ export async function GET(request: Request) {
     }
     return response;
   } catch {
-    return NextResponse.redirect(new URL("/checkout?payment=failed", url));
+    return NextResponse.redirect(
+      new URL("/checkout?payment=failed", applicationUrl),
+    );
   }
 }

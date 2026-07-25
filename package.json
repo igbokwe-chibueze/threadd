@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "postinstall": "prisma generate",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
@@ -13,29 +14,32 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "security:secrets": "node scripts/security/scan-committed-secrets.mjs",
+    "deployment:check": "tsx scripts/operations/check-deployment-readiness.ts",
+    "cloudinary:check": "tsx scripts/operations/check-cloudinary.ts",
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:bootstrap-super-admin": "tsx prisma/bootstrap-super-admin.ts"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.6.25",
-    "@next/env": "^16.2.11",
     "@prisma/adapter-pg": "^7.9.0",
     "@prisma/client": "^7.9.0",
     "better-auth": "^1.6.25",
-    "dotenv": "^17.4.2",
+    "cloudinary": "^2.10.0",
     "framer-motion": "^12.42.2",
     "next": "16.2.11",
     "pg": "^8.22.0",
-    "prisma": "^7.9.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "server-only": "^0.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@next/env": "^16.2.11",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.1",
@@ -50,9 +54,17 @@
     "jsdom": "^29.1.1",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
+    "prisma": "^7.9.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",
     "typescript": "^5",
     "vitest": "^4.1.10"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.9.0": true,
+    "esbuild@0.28.1": true,
+    "prisma@7.9.0": true,
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true
   }
 }

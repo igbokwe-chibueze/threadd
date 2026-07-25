@@ -82,8 +82,9 @@ DemoShopper123!
    but remains visible as `ARCHIVED` in Admin.
 9. Try a negative stock number or duplicate size/colour combination and
    confirm the server refuses to save it.
-10. Try uploading a text file or an image larger than 4 MB and confirm it is
-    rejected.
+10. Try uploading a text file, an SVG, an image larger than 4 MB, and an image
+    wider or taller than 6000 pixels. Confirm each is rejected with a safe
+    message and no product is created.
 11. Select **Sign out**, then revisit `/admin` and confirm access is denied.
 
 Demo administrator credentials:
@@ -135,7 +136,6 @@ DemoAdmin123!
 
 ## Expected limitations
 
-Cart, checkout, Paystack, order history, advanced inventory movement history,
-and order management are not available yet. Product images use the demo's
-local media-storage adapter; production deployment will replace that adapter
-with managed object storage without changing catalogue workflows.
+Product images use the disposable demo's local media-storage adapter. Customer
+deployment validation refuses that adapter; an approved managed object/image
+provider with metadata stripping must be connected before a customer release.

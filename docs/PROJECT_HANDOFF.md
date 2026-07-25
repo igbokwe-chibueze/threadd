@@ -1,6 +1,6 @@
 # THREADD Project Handoff
 
-Last updated: 24 July 2026
+Last updated: 25 July 2026
 
 ## Start Here
 
@@ -99,8 +99,50 @@ The first Phase 11 slice is implemented in the current working tree:
   `HttpOnly`/`SameSite`/production `Secure` cookie attributes;
 - production environment validation requires HTTPS, matching app/auth origins,
   and an authentication secret;
+- `/admin/*` now has a shared server-side role boundary while page, action, and
+  route-handler checks remain independently enforced; the current inventory is
+  recorded in [`AUTHORIZATION_MATRIX.md`](./AUTHORIZATION_MATRIX.md);
+- catalogue uploads now parse the binary structure of JPEG, PNG, and WebP
+  images, enforce byte and pixel limits before storage, discard original
+  filenames, and refuse the local demo adapter in customer configuration;
+- Paystack webhooks now authenticate the raw body and independently re-verify
+  charge success server-to-server; stored event data is minimized, decimal
+  amounts convert to integer kobo without floating point, delayed success
+  events cannot replay refunded payments, and refund claims are persisted
+  before provider calls to prevent concurrent double refunds;
+- authentication throttles now use explicit endpoint rules and shared atomic
+  PostgreSQL counters; enquiry count-and-create is serializable, and repeated
+  pending-payment initialization has a shared cooldown;
+- dependency tooling is separated from the runtime tree, install scripts are
+  version-approved, registry signatures are verified, CI actions are
+  SHA-pinned, Dependabot is configured, and the path-only committed-history
+  secret scanner is part of CI;
+- logging now uses recursive privacy-safe structured events; Next.js server
+  errors and authorization denials use that boundary, while request contents,
+  concrete URLs, contact details, messages, and stacks are excluded;
+- `/api/health` supplies a no-store database readiness probe. Ordinary
+  production database URLs require `sslmode=verify-full`; the exact managed
+  `db.prisma.io` host may retain its provider-issued `sslmode=require`.
+  `npm run deployment:check` fails closed until monitoring ownership, backup
+  retention, and a completed restore exercise are recorded;
+- Cloudinary is the selected Vercel-compatible catalogue provider. The
+  server-only adapter validates images, strips profiles, stores provider IDs,
+  limits deletion to the configured folder, cleans failed/replaced uploads,
+  and participates in demo reset. Encrypted credentials are configured in
+  Vercel, and a reversible live upload/delete probe passed;
+- the workspace is linked to Vercel project
+  `chibueze-igbokwes-projects/threadd`, with GitHub connected and safe
+  production variables plus generated reset/authentication secrets configured.
+  Production is live at `https://threadd-smoky.vercel.app`; health, home, shop,
+  and sign-in returned 200, unauthenticated reset returned 403, and the
+  expected CSP/HSTS/referrer/MIME headers were observed;
+- the existing Prisma Postgres project (`db.prisma.io`) is confirmed as the
+  isolated, disposable public-demo database. Vercel uses that same datasource,
+  retaining the canonical seeded data visitors are periodically reset to;
+- [`RECOVERY_RUNBOOK.md`](./RECOVERY_RUNBOOK.md) defines isolated restore,
+  migration, rollback, media consistency, and incident escalation procedures;
 - [`SECURITY_EVIDENCE.md`](./SECURITY_EVIDENCE.md) records the evidence and the
-  remaining low-risk CSP nonce tradeoff.
+  remaining deployed CSP, managed-media, monitoring, and recovery evidence.
 
 Exit requirements:
 

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { requireRole } from "@/features/auth/authorization";
-import { getPaymentProvider } from "@/features/payments/provider";
+import { initiateFullRefund } from "@/features/orders/refunds";
 import { db } from "@/lib/db/client";
 
 export type OrderAdminState = { error?: string; success?: string };
@@ -120,10 +120,11 @@ export async function reviewCancellationAction(
     }
     const payment = order.payments[0];
     if (!payment) throw new Error("A successful payment was not found.");
-    const refundResult = await getPaymentProvider(payment.provider).refund(
-      payment.reference,
-      Math.round(Number(payment.amount) * 100),
-    );
+    const refund = await initiateFullRefund({
+      payment,
+      initiatedById: session.user.id,
+      reason: order.cancellation.reason,
+    });
     await db.$transaction(async (tx) => {
       for (const item of order.items) {
         if (!item.variantId) continue;
@@ -145,24 +146,10 @@ export async function reviewCancellationAction(
           },
         });
       }
-      await tx.refund.create({
-        data: {
-          orderId: order.id,
-          paymentId: payment.id,
-          initiatedById: session.user.id,
-          providerRefundId: refundResult.providerRefundId,
-          status:
-            refundResult.status === "processed" ? "PROCESSED" : "PROCESSING",
-          amount: payment.amount,
-          reason: order.cancellation!.reason,
-          processedAt:
-            refundResult.status === "processed" ? new Date() : undefined,
-        },
-      });
       await tx.payment.update({
         where: { id: payment.id },
         data: {
-          status: refundResult.status === "processed" ? "REFUNDED" : "SUCCESS",
+          status: refund.status === "PROCESSED" ? "REFUNDED" : "SUCCESS",
         },
       });
       await tx.cancellationRequest.update({
@@ -257,10 +244,11 @@ export async function progressReturnAction(
     const payment = order.payments[0];
     if (!payment) throw new Error("Successful payment not found.");
     const sellable = operation === "INSPECT_SELLABLE";
-    const refundResult = await getPaymentProvider(payment.provider).refund(
-      payment.reference,
-      Math.round(Number(payment.amount) * 100),
-    );
+    const refund = await initiateFullRefund({
+      payment,
+      initiatedById: session.user.id,
+      reason: request.reason,
+    });
     await db.$transaction(async (tx) => {
       if (sellable) {
         for (const item of order.items) {
@@ -293,24 +281,10 @@ export async function progressReturnAction(
           reviewReason: reviewReason || request.reviewReason,
         },
       });
-      await tx.refund.create({
-        data: {
-          orderId: order.id,
-          paymentId: payment.id,
-          initiatedById: session.user.id,
-          providerRefundId: refundResult.providerRefundId,
-          status:
-            refundResult.status === "processed" ? "PROCESSED" : "PROCESSING",
-          amount: payment.amount,
-          reason: request.reason,
-          processedAt:
-            refundResult.status === "processed" ? new Date() : undefined,
-        },
-      });
       await tx.payment.update({
         where: { id: payment.id },
         data: {
-          status: refundResult.status === "processed" ? "REFUNDED" : "SUCCESS",
+          status: refund.status === "PROCESSED" ? "REFUNDED" : "SUCCESS",
         },
       });
     });

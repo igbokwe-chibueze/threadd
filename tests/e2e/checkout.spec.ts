@@ -76,7 +76,9 @@ test("test checkout verifies payment and deducts stock exactly once", async ({
   const deliveryFee = formatNaira(zone.rows[0].fee);
   await expect(page.getByText("Delivery / Nigeria")).toBeVisible();
   await expect(page.getByText(deliveryFee)).toBeVisible();
-  await page.getByRole("button", { name: "Continue to test payment" }).click();
+  await page
+    .getByRole("button", { name: "Continue with Demo payment" })
+    .click();
   await expect(page.getByText("Simulate Paystack.")).toBeVisible();
   await expect(page.getByText("Products subtotal")).toBeVisible();
   await expect(page.getByText("Delivery / Nigeria")).toBeVisible();
@@ -106,7 +108,9 @@ test("test checkout verifies payment and deducts stock exactly once", async ({
   await expect(page.getByText("The thread is yours.")).toBeVisible({
     timeout: 20_000,
   });
-  await expect(page.locator('header a[href="/cart"]')).toContainText("0");
+  await expect(page.locator('header a[href="/cart"]:visible')).toContainText(
+    "0",
+  );
 
   await page.goto(testPaymentUrl);
   await page

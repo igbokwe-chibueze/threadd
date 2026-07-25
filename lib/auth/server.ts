@@ -5,10 +5,12 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 
 import { getAuthSecret } from "@/lib/auth/config";
+import { createAuthRateLimitPolicy } from "@/features/auth/rate-limit-policy";
 import { db } from "@/lib/db/client";
 import { getEmailPreviewToken } from "@/lib/email/preview-context";
 import { getPreviewTokenFromCookieHeader } from "@/lib/email/preview-access";
 import { emailService } from "@/lib/email/service";
+import { serverEnvironment } from "@/lib/env/server";
 import {
   createPasswordResetEmail,
   createVerificationEmail,
@@ -24,6 +26,18 @@ export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),
+  rateLimit: {
+    /*
+     * Authentication throttles are explicit rather than dependent on a
+     * library environment default. Database storage provides one atomic
+     * counter across horizontally scaled/serverless instances; process memory
+     * would give an attacker a fresh allowance on every instance or restart.
+     *
+     * Automated E2E uses APP_ENV=test and deterministic seeded accounts, so it
+     * bypasses throttling without adding a production-accessible switch.
+     */
+    ...createAuthRateLimitPolicy(serverEnvironment.APP_ENV === "test"),
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 10,

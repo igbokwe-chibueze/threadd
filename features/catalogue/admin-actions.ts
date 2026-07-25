@@ -5,7 +5,10 @@ import { redirect } from "next/navigation";
 import { ZodError } from "zod";
 
 import { requireRole } from "@/features/auth/authorization";
-import { storeCatalogueImage } from "@/features/catalogue/media-storage";
+import {
+  removeCatalogueImage,
+  storeCatalogueImage,
+} from "@/features/catalogue/media-storage";
 import {
   parseVariantRows,
   productInputSchema,
@@ -14,6 +17,7 @@ import type { ParsedVariant } from "@/features/catalogue/validation";
 import { Prisma } from "@/generated/prisma/client";
 import type { ProductStatus } from "@/generated/prisma/enums";
 import { db } from "@/lib/db/client";
+import { logger } from "@/lib/logging/logger";
 
 export type ProductFormState = {
   error?: string;
@@ -81,13 +85,44 @@ function readProductInput(formData: FormData) {
   });
 }
 
-type ResolvedImage = { url: string; altText: string };
+type ResolvedImage = {
+  url: string;
+  altText: string;
+  width?: number | null;
+  height?: number | null;
+  storageProvider?: string | null;
+  storageKey?: string | null;
+};
+
+async function cleanupStoredImages(
+  images: readonly {
+    storageProvider?: string | null;
+    storageKey?: string | null;
+  }[],
+) {
+  const removable = images.filter(
+    (
+      image,
+    ): image is ResolvedImage & {
+      storageProvider: "local_demo" | "cloudinary";
+      storageKey: string;
+    } =>
+      (image.storageProvider === "local_demo" ||
+        image.storageProvider === "cloudinary") &&
+      Boolean(image.storageKey),
+  );
+  const results = await Promise.allSettled(removable.map(removeCatalogueImage));
+  return results.filter((result) => result.status === "rejected").length;
+}
 
 async function resolveImages(
   formData: FormData,
   imageAlt: string,
   existingImages: ResolvedImage[] = [],
-) {
+): Promise<{
+  images: ResolvedImage[];
+  uploadedImages: ResolvedImage[];
+}> {
   const files = formData
     .getAll("images")
     .filter((value): value is File => value instanceof File && value.size > 0);
@@ -105,17 +140,33 @@ async function resolveImages(
     );
   }
 
-  const uploadedUrls = await Promise.all(files.map(storeCatalogueImage));
-  return [
-    ...retainedImages,
-    ...uploadedUrls.map((url, index) => ({
-      url,
-      altText:
-        uploadedUrls.length > 1
-          ? `${imageAlt} — view ${retainedImages.length + index + 1}`
-          : imageAlt,
-    })),
-  ];
+  /*
+   * Upload sequentially so a failure can deterministically clean every asset
+   * already created during this submission. With Promise.all, another upload
+   * could succeed after the first rejection and become an untracked orphan.
+   */
+  const uploaded = [];
+  try {
+    for (const file of files) {
+      uploaded.push(await storeCatalogueImage(file));
+    }
+  } catch (error) {
+    await cleanupStoredImages(uploaded);
+    throw error;
+  }
+
+  const uploadedImages = uploaded.map((image, index) => ({
+    ...image,
+    altText:
+      uploaded.length > 1
+        ? `${imageAlt} — view ${retainedImages.length + index + 1}`
+        : imageAlt,
+  }));
+
+  return {
+    images: [...retainedImages, ...uploadedImages],
+    uploadedImages,
+  };
 }
 
 function publicPaths(slug: string) {
@@ -205,7 +256,7 @@ function message(error: unknown) {
     return { error: error.message };
   }
 
-  console.error("Catalogue product save failed", error);
+  logger.error("Catalogue product save failed.", { error });
   return { error: "The product could not be saved. Please try again." };
 }
 
@@ -214,13 +265,16 @@ export async function createProductAction(
   formData: FormData,
 ): Promise<ProductFormState> {
   const values = readSubmittedValues(formData);
+  let uploadedImages: ResolvedImage[] = [];
   try {
     const session = await requireRole(allowedRoles);
     const input = readProductInput(formData);
     const variants = parseVariantRows(String(formData.get("variants") ?? ""));
     await assertSkusAvailable(variants);
     const { collectionId, imageAlt, ...productData } = input;
-    const images = await resolveImages(formData, imageAlt);
+    const resolvedImages = await resolveImages(formData, imageAlt);
+    const images = resolvedImages.images;
+    uploadedImages = resolvedImages.uploadedImages;
 
     const product = await db.$transaction(async (tx) => {
       const created = await tx.product.create({
@@ -263,6 +317,12 @@ export async function createProductAction(
 
     publicPaths(product.slug);
   } catch (error) {
+    const failedDeletions = await cleanupStoredImages(uploadedImages);
+    if (failedDeletions > 0) {
+      logger.warn("Failed catalogue creation left stored media to reconcile.", {
+        failedDeletions,
+      });
+    }
     return {
       ...message(error),
       values,
@@ -279,6 +339,7 @@ export async function updateProductAction(
   formData: FormData,
 ): Promise<ProductFormState> {
   const values = readSubmittedValues(formData);
+  let uploadedImages: ResolvedImage[] = [];
   try {
     const session = await requireRole(allowedRoles);
     const existing = await db.product.findUnique({
@@ -293,14 +354,20 @@ export async function updateProductAction(
     const variants = parseVariantRows(String(formData.get("variants") ?? ""));
     await assertSkusAvailable(variants, productId);
     const { collectionId, imageAlt, ...productData } = input;
-    const images = await resolveImages(
+    const resolvedImages = await resolveImages(
       formData,
       imageAlt,
       existing.images.map((image) => ({
         url: image.url,
         altText: image.altText,
+        width: image.width,
+        height: image.height,
+        storageProvider: image.storageProvider,
+        storageKey: image.storageKey,
       })),
     );
+    const images = resolvedImages.images;
+    uploadedImages = resolvedImages.uploadedImages;
 
     await db.$transaction(async (tx) => {
       await tx.productCollection.deleteMany({ where: { productId } });
@@ -377,9 +444,42 @@ export async function updateProductAction(
       });
     });
 
+    /*
+     * Database replacement succeeds before remote deletion. This ordering
+     * prevents a Cloudinary outage from removing the only copy while the
+     * product still references it. Deletion is restricted by the provider and
+     * configured folder prefix inside `removeCatalogueImage`.
+     */
+    const removedStoredImages = existing.images.filter(
+      (
+        image,
+      ): image is typeof image & {
+        storageProvider: "local_demo" | "cloudinary";
+        storageKey: string;
+      } =>
+        (image.storageProvider === "local_demo" ||
+          image.storageProvider === "cloudinary") &&
+        Boolean(image.storageKey) &&
+        !images.some((retained) => retained.url === image.url),
+    );
+    const failedDeletions = await cleanupStoredImages(removedStoredImages);
+    if (failedDeletions > 0) {
+      logger.warn("Replaced catalogue media could not be removed.", {
+        productId,
+        failedDeletions,
+      });
+    }
+
     publicPaths(existing.slug);
     publicPaths(input.slug);
   } catch (error) {
+    const failedDeletions = await cleanupStoredImages(uploadedImages);
+    if (failedDeletions > 0) {
+      logger.warn("Failed catalogue update left stored media to reconcile.", {
+        productId,
+        failedDeletions,
+      });
+    }
     return {
       ...message(error),
       values,

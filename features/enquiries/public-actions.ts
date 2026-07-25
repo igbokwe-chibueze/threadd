@@ -4,6 +4,7 @@ import { createHmac } from "node:crypto";
 
 import { cookies, headers } from "next/headers";
 
+import { Prisma } from "@/generated/prisma/client";
 import { getCurrentSession } from "@/features/auth/authorization";
 import {
   createAdminEnquiryEmail,
@@ -65,51 +66,94 @@ export async function submitEnquiryAction(
   const session = await getCurrentSession();
   const ipHash = await getRequestFingerprint();
   const cutoff = new Date(Date.now() - 60 * 60 * 1_000);
-  const [ipCount, emailCount] = await Promise.all([
-    db.enquiry.count({ where: { ipHash, createdAt: { gte: cutoff } } }),
-    db.enquiry.count({
-      where: { email: result.data.email, createdAt: { gte: cutoff } },
-    }),
-  ]);
+  /*
+   * Count and insertion share a serializable transaction. Keeping them
+   * separate would allow a burst of concurrent requests to observe the same
+   * stale count and all pass before any enquiry was inserted.
+   *
+   * PostgreSQL may cancel one participant to preserve serializability. Retry
+   * that transaction once; the second read then observes the winning insert.
+   */
+  const createRateLimitedEnquiry = () =>
+    db.$transaction(
+      async (tx) => {
+        const [ipCount, emailCount] = await Promise.all([
+          tx.enquiry.count({
+            where: { ipHash, createdAt: { gte: cutoff } },
+          }),
+          tx.enquiry.count({
+            where: { email: result.data.email, createdAt: { gte: cutoff } },
+          }),
+        ]);
 
-  if (ipCount >= 8 || emailCount >= 4) {
+        if (ipCount >= 8 || emailCount >= 4) {
+          return { outcome: "RATE_LIMITED" as const };
+        }
+
+        const product =
+          result.data.kind === "PRODUCT"
+            ? await tx.product.findFirst({
+                where: { id: result.data.productId, status: "ACTIVE" },
+                select: { id: true, name: true, slug: true },
+              })
+            : null;
+
+        if (result.data.kind === "PRODUCT" && !product) {
+          return { outcome: "PRODUCT_UNAVAILABLE" as const };
+        }
+
+        const enquiry = await tx.enquiry.create({
+          data: {
+            kind: result.data.kind,
+            name: result.data.name,
+            email: result.data.email,
+            phone: result.data.phone,
+            message: result.data.message,
+            productId: product?.id,
+            customerId: session?.user.id,
+            ipHash,
+            statusHistory: {
+              create: { toStatus: "NEW", reason: "Enquiry received" },
+            },
+          },
+          select: { id: true },
+        });
+        return { outcome: "CREATED" as const, enquiry, product };
+      },
+      {
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        maxWait: 5_000,
+        timeout: 10_000,
+      },
+    );
+
+  let stored;
+  try {
+    stored = await createRateLimitedEnquiry();
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2034"
+    ) {
+      stored = await createRateLimitedEnquiry();
+    } else {
+      throw error;
+    }
+  }
+
+  if (stored.outcome === "RATE_LIMITED") {
     return {
       error:
         "You have sent several messages recently. Please wait a while before trying again.",
     };
   }
-
-  const product =
-    result.data.kind === "PRODUCT"
-      ? await db.product.findFirst({
-          where: { id: result.data.productId, status: "ACTIVE" },
-          select: { id: true, name: true, slug: true },
-        })
-      : null;
-
-  if (result.data.kind === "PRODUCT" && !product) {
+  if (stored.outcome === "PRODUCT_UNAVAILABLE") {
     return {
       error:
         "This product is no longer available. Please refresh and try again.",
     };
   }
-
-  const enquiry = await db.enquiry.create({
-    data: {
-      kind: result.data.kind,
-      name: result.data.name,
-      email: result.data.email,
-      phone: result.data.phone,
-      message: result.data.message,
-      productId: product?.id,
-      customerId: session?.user.id,
-      ipHash,
-      statusHistory: {
-        create: { toStatus: "NEW", reason: "Enquiry received" },
-      },
-    },
-    select: { id: true },
-  });
+  const { enquiry, product } = stored;
 
   const reference = `ENQ-${enquiry.id.slice(-8).toUpperCase()}`;
   const appUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(

@@ -11,14 +11,26 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      # Pin third-party actions to immutable commits. The trailing version
+      # comment keeps automated review readable while preventing a moved tag
+      # from changing executable CI code without a repository diff.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # Secret scanning must see every reachable revision, not only the
+          # default shallow checkout tip.
+          fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
 
       - run: npm ci
+      # Registry signatures protect package provenance; the repository scanner
+      # reports paths only and checks all reachable history from the full
+      # checkout without echoing any candidate credential.
+      - run: npm audit signatures
+      - run: npm run security:secrets
       - run: npm run format:check
       - run: npm run lint
       - run: npm run typecheck
@@ -30,9 +42,9 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm

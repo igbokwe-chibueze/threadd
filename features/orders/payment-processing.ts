@@ -2,6 +2,8 @@ import "server-only";
 
 import { Prisma } from "@/generated/prisma/client";
 import type { PaymentVerification } from "@/features/payments/types";
+import { decimalNairaToKobo } from "@/features/payments/money";
+import { hasAppliedSuccessfulPayment } from "@/features/payments/payment-state";
 import { db } from "@/lib/db/client";
 
 export async function applySuccessfulPayment(
@@ -17,7 +19,14 @@ export async function applySuccessfulPayment(
       });
       if (!payment)
         throw new Error("Payment reference does not belong to an order.");
-      if (payment.status === "SUCCESS") return payment.order;
+      /*
+       * SUCCESS and refund states all prove that the original successful
+       * payment transition already ran. A delayed or replayed success event
+       * must not deduct inventory again or move a refunded order back to PAID.
+       */
+      if (hasAppliedSuccessfulPayment(payment.status)) {
+        return payment.order;
+      }
       if (verification.status !== "success") {
         await tx.payment.update({
           where: { id: payment.id },
@@ -29,7 +38,7 @@ export async function applySuccessfulPayment(
         throw new Error("Payment has not been confirmed.");
       }
 
-      const expectedKobo = Math.round(Number(payment.amount) * 100);
+      const expectedKobo = decimalNairaToKobo(payment.amount);
       if (
         verification.reference !== payment.reference ||
         verification.amountKobo !== expectedKobo ||

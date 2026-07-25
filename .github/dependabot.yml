@@ -1,0 +1,32 @@
+version: 2
+
+updates:
+  # Dependency updates remain review-controlled pull requests. Grouping keeps
+  # routine patch/minor updates manageable, while major upgrades stay separate
+  # because Next.js, Prisma, authentication, and lint majors require explicit
+  # migration and security review.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Africa/Lagos
+    open-pull-requests-limit: 5
+    groups:
+      safe-minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # GitHub Actions are pinned to full commit SHAs in workflow files. Dependabot
+  # opens the auditable SHA change while preserving the human-readable version
+  # comment beside each action reference.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:30"
+      timezone: Africa/Lagos
+    open-pull-requests-limit: 3

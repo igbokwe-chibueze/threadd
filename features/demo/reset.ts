@@ -5,6 +5,7 @@ import path from "node:path";
 
 import { seedCanonicalDemo } from "@/prisma/seed";
 
+import { removeCatalogueImage } from "@/features/catalogue/media-storage";
 import { db } from "@/lib/db/client";
 
 const RESET_LOCK_ID = 842_190_731;
@@ -24,8 +25,17 @@ export type DemoResetResult = Readonly<{
 
 export async function resetDemoDatabase(): Promise<DemoResetResult> {
   const uploadedImages = await db.productImage.findMany({
-    where: { url: { startsWith: "/uploads/catalogue/" } },
-    select: { url: true },
+    where: {
+      OR: [
+        { url: { startsWith: "/uploads/catalogue/" } },
+        { storageProvider: { in: ["local_demo", "cloudinary"] } },
+      ],
+    },
+    select: {
+      url: true,
+      storageProvider: true,
+      storageKey: true,
+    },
   });
 
   const result = await db.$transaction(
@@ -106,7 +116,19 @@ export async function resetDemoDatabase(): Promise<DemoResetResult> {
     "catalogue",
   );
   await Promise.allSettled(
-    uploadedImages.map(({ url }) => {
+    uploadedImages.map(({ url, storageProvider, storageKey }) => {
+      if (
+        storageKey &&
+        (storageProvider === "local_demo" || storageProvider === "cloudinary")
+      ) {
+        return removeCatalogueImage({ storageProvider, storageKey });
+      }
+
+      /*
+       * Compatibility cleanup for demo uploads created before storage identity
+       * was persisted. Only the fixed historical URL prefix can reach this
+       * branch; current uploads always use the provider/key path above.
+       */
       const target = path.resolve(process.cwd(), "public", url.slice(1));
       const relative = path.relative(uploadRoot, target);
 

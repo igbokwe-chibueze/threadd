@@ -11,7 +11,7 @@
 | Phase status     | In progress                                                   |
 | Previous phase   | Phase 10 — Completed on 24 July 2026                        |
 | Next phase       | Phase 12 — Release and Document THREADD                     |
-| Last reviewed    | 24 July 2026                                                |
+| Last reviewed    | 25 July 2026                                                |
 
 ### Status Rules
 
@@ -637,10 +637,32 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
   controls.
 - [x] Harden Better Auth trusted origins, session lifetime, cookie attributes,
   production secret requirements, and production URL validation.
+- [x] Centralize the admin page guard and record the complete current
+  authorization matrix for pages, mutations, ownership checks, and route
+  handlers.
+- [x] Harden catalogue image parsing and dimension limits, document the local
+  adapter as demo-only, and prevent customer configuration from selecting it.
+- [x] Harden payment verification, webhook data minimization, exact minor-unit
+  conversion, delayed-event handling, and refund idempotency.
+- [x] Add database-backed authentication throttles, concurrency-safe enquiry
+  limiting, and provider-initialization cooldowns.
+- [x] Complete dependency, install-script, CI supply-chain, browser-secret, and
+  repository-history secret reviews with reproducible controls.
 - [x] Start the evidence-backed audit record in `SECURITY_EVIDENCE.md`.
-- [ ] Complete the remaining authorization, payment, upload, rate-limit,
-  dependency, secret, logging/privacy, recovery, and deployment-configuration
-  reviews.
+- [x] Complete the source-level logging/privacy and deployment-configuration
+  reviews with structured redaction, server error capture, strict database TLS,
+  a readiness probe, and an executable production preflight.
+- [x] Document backup, restore, migration, rollback, and incident procedures
+  without inventing merchant retention requirements.
+- [x] Select Cloudinary, implement its server-only catalogue adapter, persist
+  deletion-safe provider identities, and extend demo reset to managed media.
+- [x] Add encrypted Cloudinary credentials and verify a live folder-scoped
+  upload/deletion probe.
+- [x] Deploy to Vercel and verify health, public routes, reset authorization,
+  and production security headers.
+- [ ] Verify protected browser upload/replacement and reset cleanup; configure
+  monitoring/backup evidence, alerts, retention, and a controlled restore in
+  the deployed environment.
 
 ### Deliverables
 

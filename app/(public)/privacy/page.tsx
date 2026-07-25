@@ -28,6 +28,14 @@ export default function PrivacyPage() {
           body: "Card details will be handled by Paystack and are not stored by THREADD. The store retains provider references and verified payment outcomes.",
         },
         {
+          title: "Operational logs",
+          body: "Security and reliability logs use route templates, internal references, status values, and error categories. Passwords, tokens, payment-card data, customer contact details, request bodies, and full provider responses are deliberately excluded or redacted.",
+        },
+        {
+          title: "Retention and requests",
+          body: "Order and payment records may need to be retained for fulfilment, support, reconciliation, and legal obligations. A real merchant must publish its approved retention periods and a verified process for access, correction, deletion, or other privacy requests before launch.",
+        },
+        {
           title: "Public demo",
           body: "The portfolio deployment uses isolated demonstration data. Visitors should not enter real private information because demo changes are designed to be reset.",
         },

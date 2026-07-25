@@ -25,7 +25,10 @@ describe("security headers", () => {
     expect(policy).toContain("base-uri 'self'");
     expect(policy).toContain("form-action 'self'");
     expect(policy).toContain("frame-ancestors 'none'");
-    expect(policy).not.toContain("https:");
+    expect(policy).toContain(
+      "img-src 'self' https://res.cloudinary.com blob: data:",
+    );
+    expect(policy).not.toMatch(/(?:^|\s)https:(?:\s|;|$)/);
   });
 
   it("enforces transport security only in production", () => {

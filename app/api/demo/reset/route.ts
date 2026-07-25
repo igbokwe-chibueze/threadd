@@ -5,10 +5,11 @@ import {
   DemoSafetyError,
 } from "@/features/demo/policy";
 import { resetDemoDatabase } from "@/features/demo/reset";
+import { logger } from "@/lib/logging/logger";
 
 export const runtime = "nodejs";
 
-export async function POST(request: Request): Promise<NextResponse> {
+async function resetDemo(request: Request): Promise<NextResponse> {
   const authorization = request.headers.get("authorization");
   const providedSecret = authorization?.startsWith("Bearer ")
     ? authorization.slice("Bearer ".length)
@@ -29,10 +30,18 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    console.error("Demo reset failed", error);
+    logger.error("Demo reset failed.", { error });
     return NextResponse.json(
       { error: "Demo reset could not be completed." },
       { status: 503 },
     );
   }
 }
+
+/**
+ * Vercel Cron invokes configured routes with GET and attaches CRON_SECRET as a
+ * bearer token. The same fully authenticated handler remains available as POST
+ * for an external scheduler or a controlled operator invocation.
+ */
+export const GET = resetDemo;
+export const POST = resetDemo;

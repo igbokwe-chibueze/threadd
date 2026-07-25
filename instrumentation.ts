@@ -1,28 +1,33 @@
 import type { Instrumentation } from "next";
 
-export async function register(): Promise<void> {
-  if (process.env.NEXT_RUNTIME === "nodejs") {
-    await import("./lib/env/server");
-  }
-}
+import { logger } from "@/lib/logging/logger";
 
-export const onRequestError: Instrumentation.onRequestError = async (
+/**
+ * Capture errors observed by the Next.js server at one provider-neutral
+ * boundary. The hosting platform can retain/forward these JSON lines now; a
+ * future monitoring adapter can consume the same stable event shape.
+ *
+ * Request URLs, headers, error messages, and stacks are intentionally omitted.
+ * They commonly contain tokens, search terms, form values, or customer PII.
+ * `routePath` is Next.js's route template (for example `/orders/[id]`), not the
+ * customer's concrete URL, so it is safe for grouping failures.
+ */
+export const onRequestError: Instrumentation.onRequestError = (
   error,
   request,
   context,
 ) => {
-  if (process.env.NEXT_RUNTIME !== "nodejs") {
-    return;
-  }
+  const digest =
+    typeof error === "object" && error !== null && "digest" in error
+      ? String(error.digest)
+      : undefined;
 
-  const { logger } = await import("./lib/logging/logger");
-
-  logger.error("Unhandled request error", {
-    errorName: error instanceof Error ? error.name : "UnknownError",
-    errorMessage: error instanceof Error ? error.message : "Unknown error",
-    path: request.path,
+  logger.error("Unhandled server request error.", {
+    error,
+    digest,
     method: request.method,
     routePath: context.routePath,
     routeType: context.routeType,
+    routerKind: context.routerKind,
   });
 };

@@ -8,6 +8,7 @@ import { getCurrentSession } from "@/features/auth/authorization";
 import { findCurrentCart, cartTotals } from "@/features/cart/service";
 import { checkoutSchema } from "@/features/checkout/validation";
 import { getPaymentProvider } from "@/features/payments/provider";
+import { decimalNairaToKobo } from "@/features/payments/money";
 import { getShippingQuote } from "@/features/shipping/zones";
 import { db } from "@/lib/db/client";
 
@@ -138,6 +139,22 @@ export async function beginCheckoutAction(
     if (order.status !== "PENDING_PAYMENT") {
       throw new Error("This cart has already been checked out.");
     }
+    /*
+     * A payment reference is reused while it remains pending, but repeatedly
+     * invoking provider initialization can still consume provider resources
+     * and generate multiple hosted-checkout sessions. The database timestamp
+     * supplies a shared per-payment cooldown across application instances.
+     * INITIALIZED payments are exempt so a failed first provider request can
+     * be retried immediately.
+     */
+    if (
+      payment.status === "PENDING" &&
+      Date.now() - payment.updatedAt.getTime() < 60_000
+    ) {
+      throw new Error(
+        "This payment was prepared recently. Please wait a minute before trying again.",
+      );
+    }
 
     const appUrl = (process.env.APP_URL ?? "http://localhost:3000").replace(
       /\/$/,
@@ -147,7 +164,7 @@ export async function beginCheckoutAction(
       email: order.email,
       recipientName: order.recipientName,
       phone: order.phone,
-      amountKobo: Math.round(Number(order.total) * 100),
+      amountKobo: decimalNairaToKobo(order.total),
       reference: payment.reference,
       callbackUrl:
         provider.name === "paystack"
@@ -160,6 +177,15 @@ export async function beginCheckoutAction(
       cancelUrl: `${appUrl}/checkout?payment=cancelled`,
       orderId: order.id,
     });
+    /*
+     * Provider initialization is not proof of payment, but accepting a
+     * different reference here would sever the later verification from the
+     * database-owned payment. Fail before redirecting if the provider response
+     * does not echo the exact server-generated reference.
+     */
+    if (initialized.reference !== payment.reference) {
+      throw new Error("The payment provider returned an invalid reference.");
+    }
     await db.payment.update({
       where: { id: payment.id },
       data: {
