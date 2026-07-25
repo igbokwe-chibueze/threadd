@@ -108,3 +108,11 @@ timing limitation rather than disabling Next.js streaming metadata for all
 visitors. The mobile reports also note that the measured machine was slower
 than Lighthouse's expected calibration, so performance scores are treated as
 repeatable release observations rather than laboratory guarantees.
+
+### Final focused accessibility verification — 25 July 2026
+
+After commit `45f7a31` deployed the remaining catalogue contrast adjustments,
+focused Lighthouse audits scored `/shop` **100 accessibility on mobile** and
+**100 accessibility on desktop**, with no failed binary accessibility audits.
+The reports were written successfully; Lighthouse again returned only the
+known Windows temporary-profile cleanup warning after measurement.

@@ -25,7 +25,7 @@ Customer release requirements are intentionally stricter and are documented in
 
 | Check | Status | Evidence or remaining action |
 | --- | --- | --- |
-| Production build | Passed for latest published revision | Vercel build for commit `74bcf2d` is Ready. Re-run after the final catalogue contrast adjustment is published. |
+| Production build | Passed | Vercel reports success for final contrast revision `45f7a31`; deployed shop, sitemap, and health routes return 200. |
 | Quality and browser journeys | Passed for latest published revision | GitHub Quality/E2E and local suite: formatting, lint, strict types, 72 unit tests, 21 Playwright tests, secret scan, and production build. Re-run after the current release fixes are published. |
 | Public smoke tests | Passed | Home, shop, Serein product, sitemap, robots, and health returned 200. |
 | Demo banner and credentials | Passed | Demo banner is present in portfolio mode; seeded convenience accounts use normal Better Auth credentials and server authorization. |
@@ -43,7 +43,7 @@ Customer release requirements are intentionally stricter and are documented in
 | Robots | Passed | Deployed `robots.txt` returns 200, references the canonical sitemap, and blocks private/admin areas. |
 | Dynamic sitemap | Passed | The deployed sitemap is dynamic, uses HTTPS, and contains `/products/serein-knot-gown` after canonical reset. |
 | Search Console | Pending owner setup | Add the free Google verification token to Vercel, verify the final origin, and submit `/sitemap.xml`. |
-| Lighthouse baseline | Published candidate measured | Six post-deployment measurements are recorded in `STOREFRONT_QUALITY.md`; layout shift and landmark issues are resolved. Rerun `/shop` after the final three contrast adjustments are published. |
+| Lighthouse baseline | Passed | Six post-deployment measurements are recorded in `STOREFRONT_QUALITY.md`; layout shift and landmark issues are resolved. Final focused `/shop` accessibility scored 100 on mobile and desktop after the contrast revision. |
 
 ## Documentation
 
@@ -59,8 +59,5 @@ Customer release requirements are intentionally stricter and are documented in
 
 Phase 12 cannot be signed off until:
 
-1. the final catalogue contrast adjustment is published and its Vercel/CI runs
-   pass;
-2. `/shop` Lighthouse accessibility is rerun against that deployment;
-3. Google Search Console verification and sitemap submission are completed;
-4. Paystack test webhook registration/delivery evidence is confirmed.
+1. Google Search Console verification and sitemap submission are completed;
+2. Paystack test webhook registration/delivery evidence is confirmed.

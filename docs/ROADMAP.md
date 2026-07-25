@@ -722,7 +722,7 @@ evidence remains intentionally assigned to the Phase 12 release checklist.
   only during a manually dispatched reset workflow.
 - [x] Publish the Phase 12 release slice and verify Vercel, dynamic sitemap,
   final-candidate Lighthouse results, and the controlled runtime-log event.
-- [ ] Publish the final catalogue contrast adjustment and rerun the focused
+- [x] Publish the final catalogue contrast adjustment and rerun the focused
   `/shop` accessibility audit.
 - [ ] Record Google Search Console verification/sitemap submission and Paystack
   test webhook delivery evidence.

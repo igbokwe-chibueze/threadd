@@ -233,12 +233,13 @@ Current Phase 12 release state:
 Commit `74bcf2d` is deployed and its hosted preflight passed. The dynamic sitemap
 contains the reset-seeded Serein product, public smoke checks pass, six final
 candidate Lighthouse reports are recorded, and the manually dispatched reset
-produced the expected privacy-safe Vercel runtime event. Three remaining
-catalogue contrast labels are corrected locally and require publication plus a
-focused `/shop` Lighthouse rerun.
+produced the expected privacy-safe Vercel runtime event. Commit `45f7a31`
+published the three remaining catalogue contrast corrections. Vercel reports
+success; shop, sitemap, and health smoke checks pass; and focused Lighthouse
+audits score `/shop` 100 accessibility on mobile and desktop.
 
-After that publication, remaining owner evidence is limited to Google Search
-Console verification/sitemap submission and the Paystack test webhook
+Remaining owner evidence is limited to Google Search Console
+verification/sitemap submission and the Paystack test webhook
 registration/delivery record.
 
 ## Useful Documents
