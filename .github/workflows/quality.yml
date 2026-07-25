@@ -9,6 +9,28 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # CI owns this ephemeral PostgreSQL service. Never inject the portfolio or
+      # customer DATABASE_URL into dependency installation, tests, or builds.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/threadd_quality?sslmode=disable
+
+    services:
+      postgres:
+        # Keep the CI database on the same supported PostgreSQL major as the
+        # application contract. The runner destroys this container and its
+        # volume when the job finishes.
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: threadd_quality
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d threadd_quality"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       # Pin third-party actions to immutable commits. The trailing version
@@ -25,7 +47,13 @@ jobs:
           node-version: 22
           cache: npm
 
+      # DATABASE_URL is present before npm ci because postinstall generates the
+      # Prisma client and Prisma 7 loads prisma.config.ts during generation.
       - run: npm ci
+      - name: Prepare isolated quality database
+        run: |
+          npm run db:deploy
+          npm exec prisma db seed
       # Registry signatures protect package provenance; the repository scanner
       # reports paths only and checks all reachable history from the full
       # checkout without echoing any candidate credential.
@@ -40,6 +68,26 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # Browser tests may create accounts, carts, orders, inventory movements,
+      # and sessions. Their dedicated database prevents cross-job races and
+      # guarantees that no test can mutate the public portfolio deployment.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/threadd_e2e?sslmode=disable
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: threadd_e2e
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d threadd_e2e"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -50,5 +98,9 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - name: Prepare isolated browser-test database
+        run: |
+          npm run db:deploy
+          npm exec prisma db seed
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

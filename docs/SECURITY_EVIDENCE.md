@@ -486,6 +486,7 @@ automatic breaking remediation was applied.
 | Production database TLS and pooling | `lib/env/schema.ts`; `lib/db/client.ts` | Production requires `verify-full` generally, permits Prisma's issued mode only on its exact direct/pooled hosts, uses `pooled.db.prisma.io` on Vercel, and caps each function pool at one connection. |
 | Deployment preflight | `scripts/operations/check-deployment-readiness.ts`; `lib/env/deployment-readiness.ts` | Requires production mode and monitoring ownership. Only disposable portfolio mode may select canonical reseeding; customer mode requires managed retention and past restore evidence. It prints control state only. |
 | Automated demo reset | `.github/workflows/demo-reset.yml`; GitHub Actions run `30152744808` | Least-privilege six-hour workflow is published on `main`; encrypted bearer authentication, health preflight, canonical-response validation, and the first manual run succeeded. |
+| CI database isolation | `.github/workflows/quality.yml` | Quality and browser jobs use separate ephemeral PostgreSQL services with job-local credentials, committed migrations, and canonical seed data. Neither job consumes the portfolio or customer datasource. |
 | Migration/rollback procedure | `package.json`; `docs/RECOVERY_RUNBOOK.md` | Production migration uses `prisma migrate deploy`; restore testing, media consistency, rollback limits, and incident escalation are documented. |
 
 No external monitoring or backup product was added: provider selection changes

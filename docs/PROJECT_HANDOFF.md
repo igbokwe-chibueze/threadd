@@ -157,6 +157,9 @@ The first Phase 11 slice is implemented in the current working tree:
   its failure notifications, with Vercel runtime logs for diagnosis.
   `igbokwe-chibueze` is the recorded monitoring owner. Customer deployments
   still require merchant-approved alerting and retention;
+- GitHub Quality and E2E jobs provision separate ephemeral PostgreSQL 16
+  service databases, apply committed migrations, and seed canonical test data.
+  CI never receives or mutates the public portfolio database URL;
 - [`RECOVERY_RUNBOOK.md`](./RECOVERY_RUNBOOK.md) defines isolated restore,
   migration, rollback, media consistency, and incident escalation procedures;
 - [`SECURITY_EVIDENCE.md`](./SECURITY_EVIDENCE.md) records the evidence and the
