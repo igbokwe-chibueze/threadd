@@ -194,6 +194,39 @@ const catalogue = [
     sizes: ["XS", "S", "M", "L", "XL"],
     sku: "TH-ET02",
   },
+  {
+    name: "Serein Knot Gown",
+    slug: "serein-knot-gown",
+    shortDescription:
+      "A luminous evening gown shaped by fluid drape and a sculptural side knot.",
+    description:
+      "Serein Knot Gown falls from a softly draped neckline into a sweeping, floor-length silhouette. A hand-finished knot gathers the satin at the hip, creating movement through the skirt and an elegant split. Designed for modern occasion dressing, it is fully lined through the body and finished with an invisible side fastening.",
+    category: "Dresses",
+    categorySlug: "dresses",
+    price: 89500,
+    compareAtPrice: null,
+    image: "/images/catalogue/serein-knot-gown-black.png",
+    additionalImages: [
+      "/images/catalogue/serein-knot-gown-ivory.png",
+      "/images/catalogue/serein-knot-gown-sage.png",
+    ],
+    imageAlts: [
+      "Woman wearing the THREADD Serein Knot Gown in black",
+      "Woman wearing the THREADD Serein Knot Gown in ivory",
+      "Woman wearing the THREADD Serein Knot Gown in sage",
+    ],
+    imageAlt: "Woman wearing the THREADD Serein Knot Gown",
+    collection: "Study 001",
+    collectionSlug: "study-001",
+    featured: true,
+    colours: [
+      ["Black", "#111111"],
+      ["Ivory", "#eee5d8"],
+      ["Sage", "#85887b"],
+    ],
+    sizes: ["XS", "S", "M", "L", "XL"],
+    sku: "TH-SKG01",
+  },
 ] as const;
 
 export async function seedCanonicalDemo(
@@ -315,17 +348,19 @@ export async function seedCanonicalDemo(
 
     const additionalImages =
       "additionalImages" in item ? item.additionalImages : [];
+    const imageAlts = "imageAlts" in item ? item.imageAlts : [];
 
     await client.productImage.createMany({
       data: [item.image, ...additionalImages].map((url, imagePosition) => ({
         productId: product.id,
         url,
         altText:
-          additionalImages.length === 0
+          imageAlts[imagePosition] ??
+          (additionalImages.length === 0
             ? item.imageAlt
             : imagePosition === 0
               ? `${item.imageAlt} in black`
-              : `${item.imageAlt} in sand`,
+              : `${item.imageAlt} in sand`),
         position: imagePosition,
       })),
     });

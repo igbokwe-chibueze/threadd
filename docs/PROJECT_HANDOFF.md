@@ -51,6 +51,12 @@ Before changing code, also read:
 
 - Responsive visual storefront, collections, catalogue filters, product pages,
   multiple product images, carousel, and full-screen image viewing.
+- The canonical catalogue includes the Serein Knot Gown at ₦89,500 with Black,
+  Ivory, and Sage colour variants across XS–XL. Its three repository images are
+  restored by every canonical demo reset.
+- Mobile navigation opens and closes as an animated editorial curtain with
+  staggered links, an animated close control, keyboard-safe dialog behaviour,
+  and a reduced-motion equivalent.
 - Admin catalogue creation/editing, automatic slugs, multiple categories and
   collections, image selection/removal, variants, archive flow, and
   human-readable field errors that preserve form data.

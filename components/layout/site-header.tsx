@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -30,6 +31,7 @@ export function SiteHeader({
 }: SiteHeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const prefersReducedMotion = useReducedMotion();
   const isSolid = appearance === "solid";
 
   useEffect(() => {
@@ -42,11 +44,15 @@ export function SiteHeader({
     if (isOpen && !dialog.open) {
       dialog.showModal();
     }
+  }, [isOpen]);
 
-    if (!isOpen && dialog.open) {
+  function finishClosingMenu() {
+    const dialog = dialogRef.current;
+
+    if (!isOpen && dialog?.open) {
       dialog.close();
     }
-  }, [isOpen]);
+  }
 
   return (
     <>
@@ -183,69 +189,120 @@ export function SiteHeader({
       <dialog
         ref={dialogRef}
         aria-label="THREADD navigation"
-        onCancel={() => setIsOpen(false)}
+        onCancel={(event) => {
+          event.preventDefault();
+          setIsOpen(false);
+        }}
         onClose={() => setIsOpen(false)}
-        className="m-0 h-dvh max-h-none w-full max-w-none border-0 bg-[#d7ff3f] p-0 text-[#171713] backdrop:bg-black/40"
+        className="m-0 h-dvh max-h-none w-full max-w-none overflow-hidden border-0 bg-transparent p-0 text-[#171713] backdrop:bg-black/40"
       >
-        <div className="flex min-h-dvh flex-col px-5 py-5 sm:px-10">
-          <div className="flex items-center justify-between">
-            <Wordmark />
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className="grid size-10 place-items-center rounded-full border border-black/35 text-xl"
-              aria-label="Close navigation"
+        <AnimatePresence onExitComplete={finishClosingMenu}>
+          {isOpen ? (
+            <motion.div
+              key="mobile-navigation-panel"
+              initial={
+                prefersReducedMotion ? false : { y: "-100%", opacity: 0.92 }
+              }
+              animate={{ y: 0, opacity: 1 }}
+              exit={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : { y: "-100%", opacity: 0.92 }
+              }
+              transition={{
+                duration: prefersReducedMotion ? 0.01 : 0.46,
+                ease: [0.76, 0, 0.24, 1],
+              }}
+              className="flex min-h-dvh flex-col bg-[#d7ff3f] px-5 py-5 sm:px-10"
             >
-              ×
-            </button>
-          </div>
-
-          <nav
-            aria-label="Mobile navigation"
-            className="my-auto grid border-t border-black/25"
-          >
-            {navigation
-              .filter((item) => item.href !== "/demo-outbox" || isSignedIn)
-              .map((item, index) => (
-                <Link
-                  key={item.href}
-                  href={
-                    item.href === "/sign-in" && isSignedIn
-                      ? "/account"
-                      : item.href
-                  }
+              <motion.div
+                initial={prefersReducedMotion ? false : { opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: prefersReducedMotion ? 0 : 0.2,
+                  duration: prefersReducedMotion ? 0 : 0.24,
+                }}
+                className="flex items-center justify-between"
+              >
+                <Wordmark />
+                <button
+                  type="button"
                   onClick={() => setIsOpen(false)}
-                  className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b border-black/25 py-5"
+                  className="grid size-10 place-items-center rounded-full border border-black/35 text-xl transition-transform hover:rotate-90 focus-visible:outline-2 focus-visible:outline-offset-4"
+                  aria-label="Close navigation"
                 >
-                  <span className="text-[0.6rem] font-semibold">
-                    0{index + 1}
-                  </span>
-                  <span className="text-4xl font-medium tracking-[-0.06em]">
-                    {item.href === "/sign-in" && isSignedIn
-                      ? "Account"
-                      : item.label}
-                    {item.href === "/cart" ? ` (${cartQuantity})` : ""}
-                    {item.href === "/demo-outbox" && unreadMessageCount
-                      ? ` (${unreadMessageCount})`
-                      : ""}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="text-2xl transition-transform group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
-                </Link>
-              ))}
-          </nav>
+                  ×
+                </button>
+              </motion.div>
 
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase">
-              Lagos / Nigeria / Everywhere
-            </p>
-            {isSignedIn ? <SignOutButton /> : null}
-          </div>
-        </div>
+              <nav
+                aria-label="Mobile navigation"
+                className="my-auto grid border-t border-black/25"
+              >
+                {navigation
+                  .filter((item) => item.href !== "/demo-outbox" || isSignedIn)
+                  .map((item, index) => (
+                    <motion.div
+                      key={item.href}
+                      initial={
+                        prefersReducedMotion ? false : { opacity: 0, x: -28 }
+                      }
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        delay: prefersReducedMotion ? 0 : 0.18 + index * 0.055,
+                        duration: prefersReducedMotion ? 0 : 0.32,
+                        ease: "easeOut",
+                      }}
+                    >
+                      <Link
+                        href={
+                          item.href === "/sign-in" && isSignedIn
+                            ? "/account"
+                            : item.href
+                        }
+                        onClick={() => setIsOpen(false)}
+                        className="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b border-black/25 py-5 focus-visible:outline-2 focus-visible:outline-offset-[-2px]"
+                      >
+                        <span className="text-[0.6rem] font-semibold">
+                          0{index + 1}
+                        </span>
+                        <span className="text-4xl font-medium tracking-[-0.06em]">
+                          {item.href === "/sign-in" && isSignedIn
+                            ? "Account"
+                            : item.label}
+                          {item.href === "/cart" ? ` (${cartQuantity})` : ""}
+                          {item.href === "/demo-outbox" && unreadMessageCount
+                            ? ` (${unreadMessageCount})`
+                            : ""}
+                        </span>
+                        <span
+                          aria-hidden="true"
+                          className="text-2xl transition-transform group-hover:translate-x-1"
+                        >
+                          →
+                        </span>
+                      </Link>
+                    </motion.div>
+                  ))}
+              </nav>
+
+              <motion.div
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: prefersReducedMotion ? 0 : 0.38,
+                  duration: prefersReducedMotion ? 0 : 0.24,
+                }}
+                className="flex items-center justify-between gap-4"
+              >
+                <p className="text-[0.62rem] font-semibold tracking-[0.2em] uppercase">
+                  Lagos / Nigeria / Everywhere
+                </p>
+                {isSignedIn ? <SignOutButton /> : null}
+              </motion.div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </dialog>
     </>
   );
