@@ -13,19 +13,19 @@ Customer release requirements are intentionally stricter and are documented in
 | Public HTTPS deployment | Passed | `https://threadd-smoky.vercel.app`; deployed home, shop, sign-in, product, and health routes returned 200. |
 | Isolated demo database | Passed | Dedicated Prisma Postgres datasource; runtime and reset URLs are equality-guarded. |
 | Isolated media | Passed | Dedicated Cloudinary folder; upload, replacement, deletion, and reset cleanup were verified in Phase 11. |
-| Hosted environment preflight | Passed | Vercel production build for commit `35ab347` validated HTTPS/auth/database isolation, monitoring ownership, and portfolio recovery policy. The prebuild gate remains active for every production build. |
+| Hosted environment preflight | Passed | Vercel production build for commit `74bcf2d` validated HTTPS/auth/database isolation, monitoring ownership, and portfolio recovery policy. The prebuild gate remains active for every production build. |
 | Database migrations | Passed | Committed migrations use `prisma migrate deploy`; the current release adds no schema migration. |
 | Canonical seed and demo accounts | Passed | Protected manual reset restored the canonical state; Serein Knot Gown and its Black, Ivory, and Sage variants are live. |
 | Six-hour reset | Passed | GitHub Actions run `30152744808`; least-privilege scheduled workflow and encrypted reset secret. |
 | Backup/recovery | Portfolio risk accepted | Prisma Free has no automated backups. This disposable demo is recreated from migrations, canonical seed code, and repository images. The exception cannot be used for customer data. |
 | Monitoring owner and alert path | Passed for portfolio | `igbokwe-chibueze`; GitHub workflow failure notifications plus Vercel runtime logs. |
-| Controlled monitoring event | Pending | Emit and confirm one privacy-safe test error in Vercel runtime logs before final sign-off. |
+| Controlled monitoring event | Passed | The manually dispatched reset emitted one fixed `portfolio_monitoring_test` event at `2026-07-25T16:52:37.808Z`; Vercel runtime logs contained no visitor data or credentials. |
 
 ## Application release
 
 | Check | Status | Evidence or remaining action |
 | --- | --- | --- |
-| Production build | Passed for latest published revision | Vercel build is Ready. Re-run after the current Phase 12 SEO/accessibility fixes are published. |
+| Production build | Passed for latest published revision | Vercel build for commit `74bcf2d` is Ready. Re-run after the final catalogue contrast adjustment is published. |
 | Quality and browser journeys | Passed for latest published revision | GitHub Quality/E2E and local suite: formatting, lint, strict types, 72 unit tests, 21 Playwright tests, secret scan, and production build. Re-run after the current release fixes are published. |
 | Public smoke tests | Passed | Home, shop, Serein product, sitemap, robots, and health returned 200. |
 | Demo banner and credentials | Passed | Demo banner is present in portfolio mode; seeded convenience accounts use normal Better Auth credentials and server authorization. |
@@ -41,9 +41,9 @@ Customer release requirements are intentionally stricter and are documented in
 | Check | Status | Evidence or remaining action |
 | --- | --- | --- |
 | Robots | Passed | Deployed `robots.txt` returns 200, references the canonical sitemap, and blocks private/admin areas. |
-| Dynamic sitemap | Fix prepared | A release audit found the cached sitemap omitted a product added by reset. `app/sitemap.ts` now opts out of default metadata-route caching; verify after deployment. |
+| Dynamic sitemap | Passed | The deployed sitemap is dynamic, uses HTTPS, and contains `/products/serein-knot-gown` after canonical reset. |
 | Search Console | Pending owner setup | Add the free Google verification token to Vercel, verify the final origin, and submit `/sitemap.xml`. |
-| Lighthouse baseline | Measured; fixes prepared | Pre-fix production measurements are recorded in `STOREFRONT_QUALITY.md`. Landmark, layout-reservation, and contrast fixes require deployment and a final rerun. |
+| Lighthouse baseline | Published candidate measured | Six post-deployment measurements are recorded in `STOREFRONT_QUALITY.md`; layout shift and landmark issues are resolved. Rerun `/shop` after the final three contrast adjustments are published. |
 
 ## Documentation
 
@@ -59,9 +59,8 @@ Customer release requirements are intentionally stricter and are documented in
 
 Phase 12 cannot be signed off until:
 
-1. the current sitemap, landmark, layout-shift, contrast, and documentation
-   changes are published and the new Vercel/CI runs pass;
-2. Lighthouse is rerun against that deployment;
+1. the final catalogue contrast adjustment is published and its Vercel/CI runs
+   pass;
+2. `/shop` Lighthouse accessibility is rerun against that deployment;
 3. Google Search Console verification and sitemap submission are completed;
-4. Paystack test webhook registration/delivery evidence is confirmed;
-5. a controlled privacy-safe monitoring event is observed in Vercel logs.
+4. Paystack test webhook registration/delivery evidence is confirmed.

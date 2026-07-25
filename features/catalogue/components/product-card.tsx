@@ -53,14 +53,14 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             <h2 className="text-lg font-medium tracking-[-0.025em]">
               {product.name}
             </h2>
-            <p className="mt-1 line-clamp-1 text-xs text-black/50">
+            <p className="mt-1 line-clamp-1 text-xs text-black/65">
               {product.shortDescription}
             </p>
           </div>
           <div className="text-right text-sm">
             <p>{formatNaira(product.basePrice.toString())}</p>
             {product.compareAtPrice ? (
-              <p className="mt-1 text-xs text-black/40 line-through">
+              <p className="mt-1 text-xs text-black/65 line-through">
                 {formatNaira(product.compareAtPrice.toString())}
               </p>
             ) : null}

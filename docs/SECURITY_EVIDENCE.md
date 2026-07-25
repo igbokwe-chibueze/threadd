@@ -484,7 +484,8 @@ automatic breaking remediation was applied.
 | Safe operator correlation | `/api/health`; structured logger | Database readiness failures return a random request ID and a generic 503 response; the same ID appears in the protected server log. |
 | Privacy disclosure | `/privacy` | The implementation-stage policy now describes operational logging exclusions and identifies merchant/legal approval of retention and privacy-request handling as a launch requirement. |
 | Production database TLS and pooling | `lib/env/schema.ts`; `lib/db/client.ts` | Production requires `verify-full` generally, permits Prisma's issued mode only on its exact direct/pooled hosts, uses `pooled.db.prisma.io` on Vercel, and caps each function pool at one connection. |
-| Deployment preflight | `scripts/operations/check-deployment-readiness.ts`; `scripts/operations/check-hosted-build-readiness.ts`; Vercel deployment for commit `35ab347` | Production Vercel builds validate the real encrypted environment before Next.js builds. The closing deployment passed portfolio-demo mode, HTTPS/auth/database isolation, monitoring ownership, and canonical-reseed recovery controls. |
+| Deployment preflight | `scripts/operations/check-deployment-readiness.ts`; `scripts/operations/check-hosted-build-readiness.ts`; Vercel deployment for commit `74bcf2d` | Production Vercel builds validate the real encrypted environment before Next.js builds. The release-candidate deployment passed portfolio-demo mode, HTTPS/auth/database isolation, monitoring ownership, and canonical-reseed recovery controls. |
+| Controlled monitoring event | `/api/demo/monitoring-test`; `.github/workflows/demo-reset.yml`; Vercel runtime logs | A manual reset emitted one fixed `portfolio_monitoring_test` event at `2026-07-25T16:52:37.808Z`. The structured record contained its controlled source and no visitor identity, request body, credential, or stack trace. Unauthorized direct requests return 403. |
 | Automated demo reset | `.github/workflows/demo-reset.yml`; GitHub Actions run `30152744808` | Least-privilege six-hour workflow is published on `main`; encrypted bearer authentication, health preflight, canonical-response validation, and the first manual run succeeded. |
 | CI database isolation | `.github/workflows/quality.yml` | Quality and browser jobs use separate ephemeral PostgreSQL services with job-local credentials, committed migrations, and canonical seed data. Neither job consumes the portfolio or customer datasource. |
 | Closing deployment verification | Vercel deployment for commit `35ab347`; GitHub Actions run `30155086768` | Hosted preflight and production build passed; `/`, `/shop`, `/sign-in`, and `/api/health` returned 200; CSP, HSTS, MIME, referrer, and permissions headers were present; unauthenticated demo reset returned 403; Quality and E2E passed. |
@@ -536,13 +537,16 @@ configuration and verification in Phase 12.
 - Status: Portfolio-demo risk accepted; remains release-blocking for customer
   deployment
 - Verification evidence: `npm run deployment:check` provides the configuration
-  gate; provider dashboard evidence and alert receipt remain required.
+  gate. The manual reset's controlled event was observed in Vercel runtime logs;
+  provider retention/access approval and alert-receipt evidence remain required
+  for a customer deployment.
 
 Portfolio-demo disposition (25 July 2026): risk accepted for the free,
 disposable showcase. `igbokwe-chibueze` is the monitoring owner; GitHub run
 `30152744808` proves the six-hour health/reset workflow can execute, workflow
 failure notifications provide the zero-cost alert, and Vercel runtime logs are
-available for diagnosis. The finding remains release-blocking for customer
+available for diagnosis. A manual reset also produced the controlled
+privacy-safe runtime event. The finding remains release-blocking for customer
 mode, which requires approved retention, access, and alert-delivery evidence.
 
 ### SEC-011-018 — Backup retention and restoration are not provider-verified

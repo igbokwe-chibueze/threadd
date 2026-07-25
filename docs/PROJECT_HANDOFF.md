@@ -205,7 +205,7 @@ Phase 12 releases and documents THREADD:
 
 Do not report Lighthouse or Search Console as verified from localhost.
 
-Current Phase 12 release work in the working tree:
+Current Phase 12 release state:
 
 - `README.md` now links the public demo, complete local database setup, release
   records, demo boundaries, adaptation guide, and case study;
@@ -230,10 +230,16 @@ Current Phase 12 release work in the working tree:
   exceeded its five-second default once; its explicit 20-second loading budget
   passed on focused rerun.
 
-Remaining release evidence requires publishing this slice, rerunning deployed
-Lighthouse and sitemap checks, manually dispatching the reset to confirm the
-controlled Vercel log event, and recording Search Console plus Paystack test
-webhook dashboard evidence.
+Commit `74bcf2d` is deployed and its hosted preflight passed. The dynamic sitemap
+contains the reset-seeded Serein product, public smoke checks pass, six final
+candidate Lighthouse reports are recorded, and the manually dispatched reset
+produced the expected privacy-safe Vercel runtime event. Three remaining
+catalogue contrast labels are corrected locally and require publication plus a
+focused `/shop` Lighthouse rerun.
+
+After that publication, remaining owner evidence is limited to Google Search
+Console verification/sitemap submission and the Paystack test webhook
+registration/delivery record.
 
 ## Useful Documents
 

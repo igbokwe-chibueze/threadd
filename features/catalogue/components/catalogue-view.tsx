@@ -109,7 +109,7 @@ export async function CatalogueView({
                 ← Previous
               </Link>
             ) : (
-              <span className="text-black/30">← Previous</span>
+              <span className="text-black/60">← Previous</span>
             )}
             <span className="text-xs tracking-[0.15em] uppercase">
               {page} / {pageCount}
@@ -117,7 +117,7 @@ export async function CatalogueView({
             {page < pageCount ? (
               <Link href={pageHref(filters, page + 1, preserve)}>Next →</Link>
             ) : (
-              <span className="text-black/30">Next →</span>
+              <span className="text-black/60">Next →</span>
             )}
           </nav>
         ) : null}

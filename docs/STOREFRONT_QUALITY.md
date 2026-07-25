@@ -82,3 +82,29 @@ returned an `EPERM` warning only while Lighthouse attempted to delete its
 temporary Chrome profile after writing the report. The scores above were parsed
 from the completed report files. Final release evidence requires a clean
 post-deployment rerun.
+
+### Published release-candidate measurements — 25 July 2026
+
+Measured after commit `74bcf2d` reached the production deployment:
+
+| Route | Profile | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `/` | Mobile | 83 | 100 | 100 | 100 | 2.6 s | 0 | 530 ms |
+| `/shop` | Mobile | 83 | 96 | 100 | 100 | 2.6 s | 0 | 510 ms |
+| `/products/serein-knot-gown` | Mobile | 81 | 100 | 100 | 92 | 2.6 s | 0 | 580 ms |
+| `/` | Desktop | 99 | 100 | 100 | 100 | 0.7 s | 0 | 50 ms |
+| `/shop` | Desktop | 99 | 96 | 100 | 100 | 0.7 s | 0.006 | 30 ms |
+| `/products/serein-knot-gown` | Desktop | 98 | 100 | 100 | 92 | 0.8 s | 0.005 | 40 ms |
+
+The semantic wrapper and reserved height removed the material catalogue and
+product layout shift. The final contrast review found three catalogue-only
+secondary labels still below the target; their opacity is raised in the next
+release revision and `/shop` must be rerun after publication.
+
+Lighthouse did not recognize the product description during its streamed-page
+audit, although the deployed response contains the trusted server-generated
+description and Open Graph description. This is recorded as a measurement
+timing limitation rather than disabling Next.js streaming metadata for all
+visitors. The mobile reports also note that the measured machine was slower
+than Lighthouse's expected calibration, so performance scores are treated as
+repeatable release observations rather than laboratory guarantees.
