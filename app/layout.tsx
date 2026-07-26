@@ -36,12 +36,29 @@ export const metadata: Metadata = {
       "A modern Nigerian unisex fashion store for clothes without categories.",
     url: "/",
     locale: "en_NG",
+    images: [
+      {
+        url: "/images/social/threadd-og.png",
+        width: 1731,
+        height: 909,
+        alt: "THREADD — Clothes without categories",
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "THREADD — Clothes without categories",
     description:
       "A modern Nigerian unisex fashion store for clothes without categories.",
+    images: [
+      {
+        url: "/images/social/threadd-og.png",
+        width: 1731,
+        height: 909,
+        alt: "THREADD — Clothes without categories",
+      },
+    ],
   },
   verification: process.env.GOOGLE_SITE_VERIFICATION
     ? { google: process.env.GOOGLE_SITE_VERIFICATION }
