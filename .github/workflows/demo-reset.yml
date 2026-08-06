@@ -3,8 +3,8 @@ name: Reset portfolio demo
 on:
   # Run every six hours at minute 17. Avoiding minute zero reduces the chance
   # of GitHub's globally busy top-of-hour scheduling window delaying the job.
-  schedule:
-    - cron: "17 */6 * * *"
+  #schedule:
+    #- cron: "17 */6 * * *"
 
   # Keep a manual recovery control in the Actions UI. It uses the identical
   # authenticated endpoint and does not introduce a less-protected reset path.
